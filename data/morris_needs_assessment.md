@@ -3,7 +3,7 @@
 _Demographic figures are live Census values; health/ALICE/provider indicators pending (listed below)._
 
 ## Poverty, income, and the case for concentrated need
-The communities Zufall Health serves within Morris County, New Jersey include urbanized areas with pockets of concentrated poverty and limited access to care. Morris County's median household income is $137,326, above the statewide median of $103,556, and 4.7% of residents live in poverty, below the New Jersey rate of 9.2%.[1] County-wide averages, however, understate need that concentrates in specific urban communities; tract-level analysis (in progress) is required to locate it precisely.
+The communities Zufall Health serves within Morris County, New Jersey include urbanized areas with pockets of concentrated poverty and limited access to care. Morris County's median household income is $137,326, above the statewide median of $103,556, and 4.7% of residents live in poverty, below the New Jersey rate of 9.2%.[1] Beneath the county average, need concentrates sharply: 8 of 110 census tracts exceed the statewide uninsured rate, and the highest-need tract shows 1.64% uninsured with 27.97% of residents below 200% of the federal poverty level.[2]
 
 ## Barriers to care: insurance and providers
 Access to coverage is a clear barrier. 5.8% of Morris County residents under age 65 are uninsured, below the statewide rate of 9.1%.[1] Provider-supply measures — primary-care and mental-health provider-to-population ratios — are pending (see below) and are expected to reinforce this access gap.
@@ -16,7 +16,7 @@ Morris County is home to 524,251 residents. 17.1% identify as Hispanic or Latino
 - Chronic disease prevalence, prenatal care, and infant mortality (incl. racial disparity) — *New Jersey State Health Assessment Data (NJSHAD)*
 - Primary-care and mental-health provider-to-population ratios; severe housing problems — *County Health Rankings & Roadmaps (Univ. of Wisconsin)*
 - Food insecurity rate — *Feeding America — Map the Meal Gap*
-- Share below 200% of the federal poverty level, and tract-level detail — *ACS 5-year via the Needs Atlas pipeline*
 
 ## References
 1. U.S. Census Bureau QuickFacts. Morris County, New Jersey and New Jersey. 2020-2024 American Community Survey 5-Year Estimates and 2025 Population Estimates. Accessed August 29, 2026.
+2. U.S. Census Bureau, American Community Survey 5-Year Estimates, census-tract tables (C17002, B27001), retrieved via the Needs Atlas data pipeline. Accessed August 29, 2026.
