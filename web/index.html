@@ -125,6 +125,7 @@
     // apiKey: "…", authDomain: "…", projectId: "…", appId: "…"
   };
   const DATA_URL = "tracts_need.csv";     // built by scripts/build_need_index.py
+  const COUNTIES_URL = "counties.json";   // authoritative county rollup (matches the assessment docs)
   const ARCGIS_EMBED_URL = "";            // your published ArcGIS map/dashboard URL
   // ──────────────────────────────────────────────────────────────────────
 
@@ -133,6 +134,15 @@
   const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
   const fmt = n => n==null||n===''?'—':Number(n).toLocaleString();
 
+  // Exclude likely group-quarters / non-residential tracts (dorms, institutions) from the
+  // "highest-need tracts" ranking — mirrors scripts/generate_assessment.py so the site and docs agree.
+  function isArtifact(t){
+    const u=t.uninsured_pct, f=t.under_200_fpl_pct, p=t.total_pop;
+    if(p!=null && p<1200) return true;
+    if(u!=null && +u===0 && f!=null && +f>=90) return true;
+    if(u==null || f==null) return true;
+    return false;
+  }
   function heat(s){
     if(s==null) return cssv('--line');
     const stops=[[10,[63,143,116]],[45,[228,178,74]],[100,[192,68,46]]];
@@ -164,12 +174,34 @@
       return o;});
   }
 
+  // Normalize a counties.json rollup row into the shape render() expects.
+  function normCounties(rollup){
+    return rollup.counties.map(c=>({
+      county:c.county, tracts:c.tracts, population:c.population,
+      need_score:c.need_index,                    // authoritative composite (matches the docs)
+      uninsured_pct:c.uninsured_pct, under_200_fpl_pct:c.under_200_fpl_pct,
+      lep_pct:c.lep_pct, pct_65_plus:c.pct_65_plus, pov_rate:c.poverty_pct,
+      pct_hispanic:c.pct_hispanic, pct_black:c.pct_black,
+      median_hh_income:c.median_hh_income
+    }));
+  }
+
   let D=null;
   async function loadData(){
+    let tracts=null, counties=null;
     try{
       const r=await fetch(DATA_URL,{cache:'no-store'});
-      if(r.ok){const t=await r.text();const tr=parseCSV(t);if(tr.length){$('datamode').textContent='Live data';$('datamode').classList.add('live');return aggregate(tr);}}
-    }catch(e){/* fall through to sample */}
+      if(r.ok){const tr=parseCSV(await r.text());if(tr.length)tracts=tr;}
+    }catch(e){/* ignore */}
+    try{
+      const r=await fetch(COUNTIES_URL,{cache:'no-store'});
+      if(r.ok){const j=await r.json();if(j&&j.counties&&j.counties.length)counties=normCounties(j);}
+    }catch(e){/* ignore */}
+    if(tracts){
+      $('datamode').textContent='Live data';$('datamode').classList.add('live');
+      // Prefer the authoritative county rollup; fall back to aggregating the tracts.
+      return counties ? {counties, tracts} : aggregate(tracts);
+    }
     $('datamode').textContent='Demo data';
     return window.ATLAS_SAMPLE;
   }
@@ -178,29 +210,33 @@
   function render(name){
     const c=D.counties.find(x=>x.county===name);
     const avg=k=>Math.round(D.counties.reduce((s,x)=>s+(+x[k]||0),0)/D.counties.length*10)/10;
-    const kpis=[['Population',fmt(c.population),''],['Need score',c.need_score,'0–100',true],
+    const kpis=[['Population',fmt(c.population),''],['Need index',c.need_score,'0–100 · vs 7 counties',true],
       ['Uninsured',c.uninsured_pct+'%',''],['Under 200% FPL',c.under_200_fpl_pct+'%',''],
       ['Limited English',c.lep_pct+'%',''],['Age 65+',c.pct_65_plus+'%',''],
-      ['Median income','$'+fmt(c.median_hh_income),'']];
+      ['Census tracts',fmt(c.tracts),'']];
     $('kpis').innerHTML=kpis.map(k=>`<div class="kpi ${k[3]?'hot':''}"><div class="k">${k[0]}</div><div class="v">${k[1]}</div><div class="u">${k[2]}</div></div>`).join('');
     const labels=D.counties.map(x=>x.county),vals=D.counties.map(x=>x.need_score);
     const colors=D.counties.map(x=>x.county===name?heat(x.need_score):cssv('--line-strong'));
-    if(countyChart)countyChart.destroy();
-    countyChart=new Chart($('countyChart'),{type:'bar',data:{labels,datasets:[{data:vals,backgroundColor:colors,borderRadius:6}]},
-      options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:cssv('--line')},ticks:{color:cssv('--ink-soft')}},x:{grid:{display:false},ticks:{color:cssv('--ink-soft'),font:{size:11}}}}}});
-    $('profTitle').textContent=name+' County — indicator profile';
     const inds=[['Poverty','pov_rate'],['Uninsured','uninsured_pct'],['<200% FPL','under_200_fpl_pct'],['Limited Eng.','lep_pct'],['Age 65+','pct_65_plus']];
-    if(profChart)profChart.destroy();
-    profChart=new Chart($('profChart'),{type:'bar',data:{labels:inds.map(i=>i[0]),datasets:[
-      {label:name,data:inds.map(i=>c[i[1]]),backgroundColor:cssv('--primary'),borderRadius:5},
-      {label:'7-county avg',data:inds.map(i=>avg(i[1])),backgroundColor:cssv('--heat-lo'),borderRadius:5}]},
-      options:{plugins:{legend:{labels:{color:cssv('--ink-soft'),font:{size:11},boxWidth:12}}},scales:{y:{beginAtZero:true,grid:{color:cssv('--line')},ticks:{color:cssv('--ink-soft')}},x:{grid:{display:false},ticks:{color:cssv('--ink-soft'),font:{size:10}}}}}});
+    $('profTitle').textContent=name+' County — indicator profile';
+    // Charts are progressive enhancement: if Chart.js is unavailable, the tables below still render.
+    if(typeof Chart!=='undefined'){
+      if(countyChart)countyChart.destroy();
+      countyChart=new Chart($('countyChart'),{type:'bar',data:{labels,datasets:[{data:vals,backgroundColor:colors,borderRadius:6}]},
+        options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:cssv('--line')},ticks:{color:cssv('--ink-soft')}},x:{grid:{display:false},ticks:{color:cssv('--ink-soft'),font:{size:11}}}}}});
+      if(profChart)profChart.destroy();
+      profChart=new Chart($('profChart'),{type:'bar',data:{labels:inds.map(i=>i[0]),datasets:[
+        {label:name,data:inds.map(i=>c[i[1]]),backgroundColor:cssv('--primary'),borderRadius:5},
+        {label:'7-county avg',data:inds.map(i=>avg(i[1])),backgroundColor:cssv('--heat-lo'),borderRadius:5}]},
+        options:{plugins:{legend:{labels:{color:cssv('--ink-soft'),font:{size:11},boxWidth:12}}},scales:{y:{beginAtZero:true,grid:{color:cssv('--line')},ticks:{color:cssv('--ink-soft')}},x:{grid:{display:false},ticks:{color:cssv('--ink-soft'),font:{size:10}}}}}});
+    }
     const tr=D.tracts.filter(t=>t.county_name===name).sort((a,b)=>(b.need_score||0)-(a.need_score||0));
     $('heatTitle').textContent=name+' County — '+tr.length+' census tracts by need';
     $('cells').innerHTML=tr.map(t=>`<div class="cell" title="Tract ${t.GEOID} · need ${t.need_score} · uninsured ${t.uninsured_pct}%" style="background:${heat(t.need_score)}"></div>`).join('');
     $('tableTitle').textContent='Highest-need tracts — '+name+' County';
+    const trReal=tr.filter(t=>!isArtifact(t));   // residential neighborhoods only
     $('tractTable').innerHTML='<tr><th>Tract (GEOID)</th><th>Need</th><th>Uninsured</th><th>&lt;200% FPL</th><th>Median income</th></tr>'+
-      tr.slice(0,8).map(t=>`<tr><td class="mono">${t.GEOID}</td><td><span class="score-pill" style="background:${heat(t.need_score)}">${t.need_score}</span></td><td>${t.uninsured_pct}%</td><td>${t.under_200_fpl_pct}%</td><td>$${fmt(t.median_hh_income)}</td></tr>`).join('');
+      trReal.slice(0,8).map(t=>`<tr><td class="mono">${t.GEOID}</td><td><span class="score-pill" style="background:${heat(t.need_score)}">${t.need_score}</span></td><td>${t.uninsured_pct}%</td><td>${t.under_200_fpl_pct}%</td><td>$${fmt(t.median_hh_income)}</td></tr>`).join('');
   }
 
   function startApp(){
@@ -208,7 +244,7 @@
     const sel=$('county');
     sel.innerHTML=D.counties.map(c=>`<option value="${c.county}">${c.county} County</option>`).join('');
     sel.addEventListener('change',e=>render(e.target.value));
-    $('foot').textContent='Needs Atlas · Food Aid Project, Inc. · '+($('datamode').textContent==='Live data'?'live ACS/PLACES/SVI, 2020 census tracts':'sample data — run the pipeline for live values');
+    $('foot').textContent='Needs Atlas · Food Aid Project, Inc. · '+($('datamode').textContent==='Live data'?'live U.S. Census ACS 2020–2024 5-year estimates, census-tract level':'sample data — run the pipeline for live values');
     $('gate').style.display='none';$('app').style.display='block';
     render(D.counties[0].county);
   }
