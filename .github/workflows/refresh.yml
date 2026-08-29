@@ -1,0 +1,53 @@
+name: Build Atlas data
+
+# Pulls real ACS data, builds the need index + county rollup, generates all
+# county assessments, and commits everything. ACS updates annually; run quarterly
+# or on demand from the Actions tab.
+on:
+  schedule:
+    - cron: "0 8 1 */3 *"     # 08:00 UTC, 1st of Jan/Apr/Jul/Oct
+  workflow_dispatch: {}        # manual "Run workflow" button
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install python-docx (for assessments)
+        run: pip install python-docx
+
+      - name: Pull ACS + build need index + county rollup
+        env:
+          CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
+        run: |
+          python scripts/pull_acs.py
+          python scripts/build_need_index.py
+
+      - name: Pull PLACES (optional)
+        continue-on-error: true
+        env:
+          SOCRATA_APP_TOKEN: ${{ secrets.SOCRATA_APP_TOKEN }}
+        run: python scripts/pull_places.py
+
+      - name: Generate all county assessments
+        working-directory: scripts
+        run: python generate_all_assessments.py
+
+      - name: Publish data to the web app
+        run: |
+          cp data/tracts_need.csv web/tracts_need.csv || true
+          cp data/counties.json   web/counties.json   || true
+
+      - name: Commit outputs
+        run: |
+          git config user.name  "atlas-bot"
+          git config user.email "atlas-bot@users.noreply.github.com"
+          git add -f data/tracts_need.csv data/counties.json data/*.docx data/*.md web/tracts_need.csv web/counties.json 2>/dev/null || true
+          git commit -m "data: build $(date -u +%Y-%m-%d)" || echo "no changes"
+          git push
