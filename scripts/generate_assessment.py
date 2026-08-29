@@ -3,12 +3,18 @@
 generate_assessment.py — Generate a county Community Needs Assessment in Zufall's
 house style.
 
-County + statewide comparisons come from config/real_counties.json (Census
-QuickFacts — consistent county/state fields). When the ACS pipeline has run
-(data/tracts_need.csv present), the narrative is ENRICHED with real tract-level
-detail (concentration of need within the county) — the thing county averages hide.
+County + statewide HEADLINE figures come from config/real_counties.json (Census
+QuickFacts — the accurate published county/state values). When the ACS pipeline
+has run (data/tracts_need.csv present), the report is ENRICHED with a real
+census-tract concentration analysis — the thing county averages hide: how many
+neighborhoods carry above-average need, how much of the county's population lives
+in them, and where the sharpest need sits.
 
-    python scripts/generate_assessment.py Union
+Indicators that require external sources not yet wired in (United Way ALICE,
+provider-to-population ratios, chronic-disease prevalence, food insecurity) are
+listed honestly as pending — never estimated or fabricated.
+
+    python scripts/generate_assessment.py Middlesex
 """
 import csv, json, re, sys, datetime
 from pathlib import Path
@@ -18,108 +24,222 @@ R = json.loads((ROOT / "config" / "real_counties.json").read_text())
 STATE = R["state"]
 BY_NAME = {c["county"]: c for c in R["counties"]}
 TRACTS = ROOT / "data" / "tracts_need.csv"
+ROLLUP = ROOT / "data" / "counties.json"
 TODAY = datetime.date.today().strftime("%B %d, %Y")
 
 CITES = {
     "qf": ("U.S. Census Bureau QuickFacts. {county} County, New Jersey and New Jersey. "
            "2020-2024 American Community Survey 5-Year Estimates and 2025 Population "
            "Estimates. Accessed " + TODAY + "."),
-    "acs": ("U.S. Census Bureau, American Community Survey 5-Year Estimates, census-tract "
-            "tables (C17002, B27001), retrieved via the Needs Atlas data pipeline. "
-            "Accessed " + TODAY + "."),
+    "acs": ("U.S. Census Bureau, American Community Survey 2020-2024 5-Year Estimates, "
+            "census-tract tables B27001 (health insurance), C17002 (ratio of income to "
+            "poverty), B17001 (poverty), C16002 (household language), retrieved via the "
+            "Needs Atlas data pipeline and aggregated to the tract level. Accessed "
+            + TODAY + "."),
 }
 
 PENDING_ALL = [
-    ("alice", "ALICE (Asset Limited, Income Constrained, Employed) household rate",
+    ("alice", "ALICE (Asset Limited, Income Constrained, Employed) household rate, county and municipal",
      "United Way United For ALICE — New Jersey"),
-    ("njshad", "Chronic disease prevalence, prenatal care, and infant mortality (incl. racial disparity)",
+    ("njshad", "Chronic-disease prevalence, prenatal care, and infant mortality (including racial disparity)",
      "New Jersey State Health Assessment Data (NJSHAD)"),
-    ("chr", "Primary-care and mental-health provider-to-population ratios; severe housing problems",
+    ("chr", "Primary-care, dental, and mental-health provider-to-population ratios; severe housing problems",
      "County Health Rankings & Roadmaps (Univ. of Wisconsin)"),
-    ("feeding", "Food insecurity rate", "Feeding America — Map the Meal Gap"),
-    ("tract", "Share below 200% of the federal poverty level, and tract-level detail",
-     "ACS 5-year via the Needs Atlas pipeline"),
+    ("feeding", "Food-insecurity rate and SNAP participation", "Feeding America — Map the Meal Gap"),
 ]
 
 CITE_RE = re.compile(r"\[\[cite:([a-z_]+)\]\]")
+
+
+def num(r, k):
+    try:
+        v = float(r[k]); return v
+    except (ValueError, KeyError, TypeError):
+        return None
 
 
 def rel(cv, sv, hi="above", lo="below", eq="comparable to"):
     return eq if abs(cv - sv) < max(0.4, 0.03 * sv) else (hi if cv > sv else lo)
 
 
-def tract_enrichment(county):
-    """Return (sentence, has_tracts). Sentence uses real tract data if available."""
+# ---------------------------------------------------------------------------
+# Tract analysis (real ACS data)
+# ---------------------------------------------------------------------------
+def load_tracts():
     if not TRACTS.exists():
-        return ("County-wide averages, however, understate need that concentrates in "
-                "specific urban communities; tract-level analysis (in progress) is "
-                "required to locate it precisely.", False)
-    rows = [r for r in csv.DictReader(TRACTS.open()) if r["county_name"] == county]
-    def fnum(r, k):
-        try: return float(r[k])
-        except (ValueError, KeyError, TypeError): return None
-    state_unins = STATE["uninsured_under65_pct"]
-    n_high = sum(1 for r in rows if (fnum(r, "uninsured_pct") or 0) > state_unins)
-    top = max(rows, key=lambda r: fnum(r, "need_score") or 0, default=None)
-    if not top:
-        return ("Tract-level detail is being finalized.", True)
-    return (f"Beneath the county average, need concentrates sharply: {n_high} of "
-            f"{len(rows)} census tracts exceed the statewide uninsured rate, and the "
-            f"highest-need tract shows {top.get('uninsured_pct')}% uninsured with "
-            f"{top.get('under_200_fpl_pct')}% of residents below 200% of the federal "
-            f"poverty level.[[cite:acs]]", True)
+        return None
+    return [r for r in csv.DictReader(TRACTS.open())]
 
 
-def build(c):
+def wmean(rows, k):
+    n = d = 0.0
+    for r in rows:
+        v, p = num(r, k), num(r, "total_pop")
+        if v is not None and p:
+            n += v * p; d += p
+    return (n / d) if d else None
+
+
+def is_artifact(r):
+    """Flag likely group-quarters / non-residential tracts so they never headline a
+    'highest-need neighborhood'. Signals: 0% uninsured with ~100% below 200% FPL
+    (dorms, facilities), missing insurance universe, or a very small population."""
+    u = num(r, "uninsured_pct"); f200 = num(r, "under_200_fpl_pct"); pop = num(r, "total_pop")
+    if pop is not None and pop < 1200:
+        return True
+    if u is not None and u == 0.0 and f200 is not None and f200 >= 90.0:
+        return True
+    if u is None or f200 is None:
+        return True
+    return False
+
+
+def concentration(county, tracts, ref):
+    """Return dict of real concentration stats for one county, or None."""
+    rs = [r for r in tracts if r["county_name"] == county]
+    if not rs:
+        return None
+    pop = sum(num(r, "total_pop") or 0 for r in rs)
+    su, sf = ref["uninsured_pct"], ref["under_200_fpl_pct"]
+    n_unins = sum(1 for r in rs if (num(r, "uninsured_pct") or 0) > su)
+    n_f200 = sum(1 for r in rs if (num(r, "under_200_fpl_pct") or 0) > sf)
+    pop_hi = sum((num(r, "total_pop") or 0) for r in rs
+                 if (num(r, "under_200_fpl_pct") or 0) >= 25)
+    scores = [num(r, "need_score") for r in rs if num(r, "need_score") is not None]
+    real = [r for r in rs if not is_artifact(r)]
+    spot = sorted(real, key=lambda r: num(r, "need_score") or 0, reverse=True)[:5]
+    return {
+        "n": len(rs), "pop": int(pop),
+        "n_unins": n_unins, "n_f200": n_f200,
+        "pop_hi": int(pop_hi), "pop_hi_pct": round(100 * pop_hi / pop) if pop else 0,
+        "smin": round(min(scores)) if scores else None,
+        "smax": round(max(scores)) if scores else None,
+        "spot": spot,
+    }
+
+
+def county_rank():
+    """Map county -> (rank, total) by ACS need_index, 1 = highest need."""
+    if not ROLLUP.exists():
+        return {}
+    cs = json.loads(ROLLUP.read_text())["counties"]
+    order = sorted(cs, key=lambda c: c.get("need_index", 0), reverse=True)
+    return {c["county"]: (i + 1, len(cs)) for i, c in enumerate(order)}
+
+
+ORD = {1: "highest", 2: "second-highest", 3: "third-highest", 4: "fourth-highest",
+       5: "fifth-highest", 6: "sixth-highest", 7: "lowest"}
+
+
+# ---------------------------------------------------------------------------
+# Narrative
+# ---------------------------------------------------------------------------
+def build(c, tracts, ref, ranks):
     s = STATE
-    tline, has_tracts = tract_enrichment(c["county"])
+    conc = concentration(c["county"], tracts, ref) if tracts else None
+    has_tracts = conc is not None
     secs = [
         ("Poverty, income, and the case for concentrated need",
          f"The communities Zufall Health serves within {c['county']} County, New Jersey "
-         f"include urbanized areas with pockets of concentrated poverty and limited "
-         f"access to care. {c['county']} County's median household income is "
-         f"${c['median_hh_income']:,}, {rel(c['median_hh_income'], s['median_hh_income'], 'above', 'below', 'near')} "
-         f"the statewide median of ${s['median_hh_income']:,}, and {c['poverty_pct']}% of "
-         f"residents live in poverty, {rel(c['poverty_pct'], s['poverty_pct'])} the New "
-         f"Jersey rate of {s['poverty_pct']}%.[[cite:qf]] {tline}"),
-        ("Barriers to care: insurance and providers",
-         f"Access to coverage is a clear barrier. {c['uninsured_under65_pct']}% of "
-         f"{c['county']} County residents under age 65 are uninsured, "
-         f"{rel(c['uninsured_under65_pct'], s['uninsured_under65_pct'])} the statewide "
-         f"rate of {s['uninsured_under65_pct']}%.[[cite:qf]] Provider-supply measures — "
-         f"primary-care and mental-health provider-to-population ratios — are pending "
-         f"(see below) and are expected to reinforce this access gap."),
-        ("Demographics and language access",
-         f"{c['county']} County is home to {c['population']:,} residents. "
-         f"{c['pct_hispanic']}% identify as Hispanic or Latino and {c['pct_black']}% as "
-         f"Black or African American, compared with {s['pct_hispanic']}% and "
-         f"{s['pct_black']}% statewide.[[cite:qf]] Language access is a substantial need: "
-         f"{c['language_other_pct']}% of residents age 5 and over speak a language other "
-         f"than English at home, {rel(c['language_other_pct'], s['language_other_pct'])} "
-         f"the New Jersey figure of {s['language_other_pct']}%.[[cite:qf]] Adults age 65 "
-         f"and over make up {c['pct_65_plus']}% of the population (New Jersey: "
-         f"{s['pct_65_plus']}%).[[cite:qf]]"),
+         f"include areas of concentrated poverty and constrained access to care. "
+         f"{c['county']} County's median household income is ${c['median_hh_income']:,}, "
+         f"{rel(c['median_hh_income'], s['median_hh_income'], 'above', 'below', 'near')} the "
+         f"statewide median of ${s['median_hh_income']:,}, and {c['poverty_pct']}% of "
+         f"residents live in poverty, {rel(c['poverty_pct'], s['poverty_pct'])} the New Jersey "
+         f"rate of {s['poverty_pct']}%.[[cite:qf]] County averages, however, flatten the "
+         f"neighborhoods where need concentrates — which a census-tract view brings into focus."),
     ]
-    pending = [p for p in PENDING_ALL if not (has_tracts and p[0] == "tract")]
-    return secs, pending
+
+    if has_tracts:
+        rk = ranks.get(c["county"])
+        rank_line = (f" Across the seven counties Zufall serves, {c['county']} carries the "
+                     f"{ORD.get(rk[0], str(rk[0]) + 'th')} composite need." if rk else "")
+        spot = conc["spot"]
+        spot_txt = ""
+        if spot:
+            t = spot[0]
+            lep = num(t, "lep_pct")
+            lep_clause = (f", and {lep:.0f}% of households are limited-English-speaking"
+                          if lep is not None else "")
+            short = f"{int(t['GEOID'][-6:]) / 100:.2f}".rstrip("0").rstrip(".")
+            spot_txt = (f" The sharpest need sits in and around Census Tract {short} "
+                        f"(GEOID {t['GEOID']}): there, "
+                        f"{num(t,'uninsured_pct'):.0f}% of residents are uninsured and "
+                        f"{num(t,'under_200_fpl_pct'):.0f}% live below 200% of the federal "
+                        f"poverty level{lep_clause} — a concentration that county-level averages "
+                        f"hide entirely.")
+        if conc["pop_hi"] > 0:
+            conc_line = (f"{conc['pop_hi_pct']}% of the county's residents — roughly "
+                         f"{conc['pop_hi']:,} people — live in tracts where at least one in four "
+                         f"residents falls below 200% of the federal poverty level.")
+        else:
+            conc_line = ("No census tract in the county reaches the threshold of a quarter or more "
+                         "residents below 200% of the poverty level — need here is lower and more "
+                         "evenly distributed than in Zufall's higher-need counties.")
+        secs.append((
+            "Where the need concentrates: a census-tract view",
+            f"{c['county']} County contains {conc['n']} census tracts. Measured against the "
+            f"seven-county service-area average, {conc['n_unins']} of those tracts carry an "
+            f"above-average uninsured rate and {conc['n_f200']} carry an above-average share of "
+            f"residents below 200% of the federal poverty level.[[cite:acs]] "
+            f"{conc_line}{spot_txt}{rank_line} This is precisely the sub-county geography a "
+            f"grant application must document, and it is where Zufall's sites and outreach can be "
+            f"targeted for greatest effect."))
+
+    secs.append((
+        "Barriers to care: insurance and providers",
+        f"Access to coverage is a clear barrier. {c['uninsured_under65_pct']}% of {c['county']} "
+        f"County residents under age 65 are uninsured, "
+        f"{rel(c['uninsured_under65_pct'], s['uninsured_under65_pct'])} the statewide rate of "
+        f"{s['uninsured_under65_pct']}%.[[cite:qf]] Provider-supply measures — primary-care, "
+        f"dental, and mental-health provider-to-population ratios — are pending source connection "
+        f"(see below) and are expected to reinforce this access gap."))
+
+    secs.append((
+        "Demographics and language access",
+        f"{c['county']} County is home to {c['population']:,} residents. {c['pct_hispanic']}% "
+        f"identify as Hispanic or Latino and {c['pct_black']}% as Black or African American, "
+        f"compared with {s['pct_hispanic']}% and {s['pct_black']}% statewide.[[cite:qf]] Language "
+        f"access is a substantial need: {c['language_other_pct']}% of residents age 5 and over "
+        f"speak a language other than English at home, "
+        f"{rel(c['language_other_pct'], s['language_other_pct'])} the New Jersey figure of "
+        f"{s['language_other_pct']}%.[[cite:qf]] Adults age 65 and over make up {c['pct_65_plus']}% "
+        f"of the population (New Jersey: {s['pct_65_plus']}%).[[cite:qf]]"))
+
+    return secs, PENDING_ALL, conc
 
 
 def render_runs(secs):
     order = []
-    def num(k):
+    def keynum(k):
         if k not in order: order.append(k)
         return str(order.index(k) + 1)
     out = []
     for title, text in secs:
         runs, pos = [], 0
         for m in CITE_RE.finditer(text):
-            runs.append(("t", text[pos:m.start()])); runs.append(("c", num(m.group(1)))); pos = m.end()
+            runs.append(("t", text[pos:m.start()])); runs.append(("c", keynum(m.group(1)))); pos = m.end()
         runs.append(("t", text[pos:]))
         out.append((title, runs))
     return out, order
 
 
-def to_docx(c, secs, order, pending, path):
+def spotlight_rows(conc):
+    """Return header + top-tract rows for the appendix table."""
+    hdr = ["Census tract (GEOID)", "Uninsured", "Below 200% FPL", "Lim.-Eng. HH", "Need score"]
+    rows = []
+    for t in (conc["spot"] if conc else []):
+        def g(k, suf="%"):
+            v = num(t, k); return f"{v:.0f}{suf}" if v is not None else "—"
+        rows.append([t["GEOID"], g("uninsured_pct"), g("under_200_fpl_pct"),
+                     g("lep_pct"), g("need_score", "")])
+    return hdr, rows
+
+
+# ---------------------------------------------------------------------------
+# Renderers
+# ---------------------------------------------------------------------------
+def to_docx(c, secs, order, pending, conc, path):
     from docx import Document
     from docx.shared import Pt, RGBColor, Inches
     doc = Document()
@@ -128,9 +248,11 @@ def to_docx(c, secs, order, pending, path):
     doc.styles["Normal"].font.name = "Calibri"; doc.styles["Normal"].font.size = Pt(11)
     r = doc.add_paragraph().add_run(f"{c['county']} County Needs Assessment — {datetime.date.today():%B %Y}")
     r.bold = True; r.font.size = Pt(16)
-    b = doc.add_paragraph().add_run(
-        "Demographic figures below are live U.S. Census Bureau values. Health, ALICE, and "
-        "provider indicators are pending source connection and are listed at the end.")
+    note = ("County and statewide figures below are published U.S. Census Bureau values; the "
+            "census-tract concentration analysis is drawn from ACS 5-year tract tables. "
+            "ALICE, provider-ratio, chronic-disease, and food-insecurity indicators are pending "
+            "source connection and are listed at the end — not estimated.")
+    b = doc.add_paragraph().add_run(note)
     b.italic = True; b.font.size = Pt(8.5); b.font.color.rgb = RGBColor(0x1E, 0x6B, 0x57)
     for title, runs in secs:
         doc.add_paragraph().add_run(title).bold = True
@@ -138,11 +260,30 @@ def to_docx(c, secs, order, pending, path):
         for kind, txt in runs:
             run = p.add_run(txt)
             if kind == "c": run.font.superscript = True
+
+    # Real tract appendix table
+    if conc and conc["spot"]:
+        doc.add_paragraph().add_run("Highest-need census tracts (ACS 5-year)").bold = True
+        hdr, rows = spotlight_rows(conc)
+        tbl = doc.add_table(rows=1, cols=len(hdr)); tbl.style = "Light Grid Accent 1"
+        for j, h in enumerate(hdr):
+            cell = tbl.rows[0].cells[j]; cell.text = ""
+            rr = cell.paragraphs[0].add_run(h); rr.bold = True; rr.font.size = Pt(9)
+        for row in rows:
+            cells = tbl.add_row().cells
+            for j, val in enumerate(row):
+                cells[j].text = ""; rr = cells[j].paragraphs[0].add_run(val); rr.font.size = Pt(9)
+        cap = doc.add_paragraph().add_run(
+            "Group-quarters tracts (e.g., dormitories or institutional populations) are excluded "
+            "so the ranking reflects residential neighborhoods.")
+        cap.italic = True; cap.font.size = Pt(8)
+
     doc.add_paragraph().add_run("Indicators pending source connection").bold = True
     for _, label, src in pending:
         pp = doc.add_paragraph(style="List Bullet")
         pp.add_run(label + " — ").font.size = Pt(10)
         em = pp.add_run(src); em.italic = True; em.font.size = Pt(10)
+
     doc.add_paragraph().add_run("References").bold = True
     for i, k in enumerate(order, 1):
         rp = doc.add_paragraph(f"{i}. " + CITES[k].format(county=c["county"]))
@@ -150,12 +291,23 @@ def to_docx(c, secs, order, pending, path):
     doc.save(path)
 
 
-def to_md(c, secs, order, pending):
+def to_md(c, secs, order, pending, conc):
     out = [f"# {c['county']} County Needs Assessment — {datetime.date.today():%B %Y}", "",
-           "_Demographic figures are live Census values; health/ALICE/provider indicators pending (listed below)._\n"]
+           "_County/state figures are published Census values; the tract concentration analysis "
+           "is from ACS 5-year tract tables. ALICE / provider / chronic-disease / food-insecurity "
+           "indicators pending (listed below) — not estimated._\n"]
     for title, runs in secs:
         out.append(f"## {title}")
         out.append("".join(t if k == "t" else f"[{t}]" for k, t in runs) + "\n")
+    if conc and conc["spot"]:
+        out.append("## Highest-need census tracts (ACS 5-year)")
+        hdr, rows = spotlight_rows(conc)
+        out.append("| " + " | ".join(hdr) + " |")
+        out.append("| " + " | ".join(["---"] * len(hdr)) + " |")
+        for row in rows:
+            out.append("| " + " | ".join(row) + " |")
+        out.append("\n_Group-quarters tracts (dormitories/institutional) excluded so the ranking "
+                   "reflects residential neighborhoods._\n")
     out.append("## Indicators pending source connection")
     out += [f"- {label} — *{src}*" for _, label, src in pending]
     out.append("\n## References")
@@ -167,17 +319,24 @@ def generate(name):
     if name not in BY_NAME:
         raise SystemExit(f"Unknown county '{name}'. Options: {', '.join(BY_NAME)}")
     c = BY_NAME[name]
-    secs, pending = build(c)
+    tracts = load_tracts()
+    ref = None
+    if tracts:
+        ref = {"uninsured_pct": round(wmean(tracts, "uninsured_pct"), 1),
+               "under_200_fpl_pct": round(wmean(tracts, "under_200_fpl_pct"), 1)}
+    ranks = county_rank()
+    secs, pending, conc = build(c, tracts, ref, ranks)
     runs, order = render_runs(secs)
     outdir = ROOT / "data"; outdir.mkdir(exist_ok=True)
     stem = name.lower() + "_needs_assessment"
-    (outdir / f"{stem}.md").write_text(to_md(c, runs, order, pending))
-    to_docx(c, runs, order, pending, outdir / f"{stem}.docx")
+    (outdir / f"{stem}.md").write_text(to_md(c, runs, order, pending, conc))
+    to_docx(c, runs, order, pending, conc, outdir / f"{stem}.docx")
     return stem
 
 
 if __name__ == "__main__":
-    name = sys.argv[1] if len(sys.argv) > 1 else "Union"
+    name = sys.argv[1] if len(sys.argv) > 1 else "Middlesex"
     stem = generate(name)
     print(f"Wrote {stem}.docx/.md for {name} County"
-          + (" (with real tract enrichment)" if TRACTS.exists() else " (county-level; run pipeline for tract detail)"))
+          + (" (with real tract concentration analysis)" if TRACTS.exists()
+             else " (county-level; run pipeline for tract detail)"))
