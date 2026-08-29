@@ -1,0 +1,30 @@
+{
+  "_status": "ILLUSTRATIVE SAMPLE — plausible placeholder values, NOT verified data. Live values come from the pipeline (ACS) plus supplemental pulls (ALICE, NJSHAD, County Health Rankings, Feeding America).",
+  "county": "Union",
+  "service_area_note": "The Zufall service area spans urbanized, high-poverty communities within Union County",
+  "mup_community": "the City of Elizabeth, marked \"Low Income\"",
+  "acs_year": "2024",
+  "access_date": "August 18, 2026",
+
+  "pct_below_200_fpl": 28.4,
+  "alice_county": 44, "alice_state": 39, "alice_high_town": "Elizabeth", "alice_high_pct": 63,
+  "service_town": "the Zufall service area", "service_town_alice": 41,
+
+  "uninsured_overall": 12.6, "uninsured_hispanic": 24.1,
+  "adults_pcp_county": 80.2, "adults_pcp_state": 84.8,
+  "pcp_ratio_county": "1,410", "pcp_ratio_state": "1,260",
+  "mh_ratio_county": "410", "mh_ratio_state": "300",
+
+  "high_chol_county": 36.8, "high_chol_state": 35.6,
+  "hiv_mortality_county": 2.4, "hiv_mortality_state": 1.3,
+
+  "food_insecurity_county": 13.4, "food_insecurity_state": 13.0,
+  "transit_agree_pct": 52.0,
+  "no_vehicle_county": 12.5, "no_vehicle_state": 11.0,
+  "severe_housing_county": 24, "severe_housing_state": 20,
+
+  "prenatal_first_tri_county": 66.2, "prenatal_first_tri_state": 74.7,
+  "infant_mortality_county": 4.6, "infant_mortality_state": 3.8,
+  "infant_mortality_black": 8.8, "infant_mortality_white": 2.1,
+  "pct_black_county": 21.5, "pct_black_state": 15.8
+}

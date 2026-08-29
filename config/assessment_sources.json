@@ -1,0 +1,12 @@
+{
+  "_comment": "Citation registry — mirrors the sources Zufall cites in their real assessments. Numbers are assigned by order of first appearance at generation time.",
+  "hrsa":        "HRSA Medically Underserved Area (MUA) Find. Accessed {access_date}.",
+  "acs":         "U.S. Census Bureau. {acs_year} American Community Survey (ACS) 5-Year Estimates. Tables C17002 and S2701. Accessed {access_date}.",
+  "alice_sheet": "United Way United For ALICE. New Jersey Data Sheet. 2026. Accessed {access_date}.",
+  "alice_state": "United Way United For ALICE. The State of ALICE in New Jersey: 2026 Report.",
+  "njshad":      "New Jersey State Health Assessment Data (NJSHAD). Accessed {access_date}.",
+  "chr":         "University of Wisconsin Population Health Institute. County Health Rankings & Roadmaps New Jersey. 2025. Accessed {access_date}.",
+  "chna":        "Regional hospital Community Health Needs Assessment (CHNA). 2025-2027.",
+  "quickfacts":  "U.S. Census Bureau QuickFacts. {county} County, New Jersey and New Jersey. 2025 Population Estimates.",
+  "feeding":     "Feeding America. Map the Meal Gap 2026: 2024 Food Insecurity Estimates. Accessed {access_date}."
+}

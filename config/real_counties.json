@@ -1,0 +1,17 @@
+{
+  "_source": "U.S. Census Bureau QuickFacts, 2020-2024 ACS 5-year estimates + 2025 population estimates. Retrieved 2026-08-29. REAL, VERIFIED VALUES (NJ Black% 15.8 matches Zufall's Essex assessment citation).",
+  "state": {
+    "name": "New Jersey", "population": 9500000,
+    "median_hh_income": 103556, "poverty_pct": 9.2, "uninsured_under65_pct": 9.1,
+    "pct_65_plus": 18.5, "language_other_pct": 33.1, "pct_black": 15.8, "pct_hispanic": 24.0
+  },
+  "counties": [
+    {"county":"Morris","population":524251,"median_hh_income":137326,"poverty_pct":4.7,"uninsured_under65_pct":5.8,"pct_black":4.9,"pct_hispanic":17.1,"pct_65_plus":20.0,"language_other_pct":26.6},
+    {"county":"Sussex","population":148063,"median_hh_income":116186,"poverty_pct":5.2,"uninsured_under65_pct":5.1,"pct_black":4.0,"pct_hispanic":14.2,"pct_65_plus":21.1,"language_other_pct":12.2},
+    {"county":"Warren","population":112953,"median_hh_income":100869,"poverty_pct":8.2,"uninsured_under65_pct":6.8,"pct_black":8.6,"pct_hispanic":15.5,"pct_65_plus":21.6,"language_other_pct":15.4},
+    {"county":"Hunterdon","population":131781,"median_hh_income":141715,"poverty_pct":4.5,"uninsured_under65_pct":4.7,"pct_black":3.8,"pct_hispanic":10.2,"pct_65_plus":23.4,"language_other_pct":14.2},
+    {"county":"Somerset","population":356486,"median_hh_income":140374,"poverty_pct":5.8,"uninsured_under65_pct":6.4,"pct_black":11.3,"pct_hispanic":18.9,"pct_65_plus":18.9,"language_other_pct":34.7},
+    {"county":"Essex","population":896379,"median_hh_income":80789,"poverty_pct":13.4,"uninsured_under65_pct":13.2,"pct_black":40.5,"pct_hispanic":27.4,"pct_65_plus":14.5,"language_other_pct":37.8},
+    {"county":"Union","population":601863,"median_hh_income":103202,"poverty_pct":9.7,"uninsured_under65_pct":13.5,"pct_black":24.1,"pct_hispanic":37.7,"pct_65_plus":15.6,"language_other_pct":47.6}
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "_comment": "ACS 5-year (detailed B/C tables — long-stable codes). Vintage set in pull_acs.py (default 2023). On first run, the script prints row counts + a sample row so codes can be sanity-checked against api.census.gov/data/<year>/acs/acs5/variables.html.",
+
+  "singles": {
+    "B01003_001E": "total_pop",
+    "B19013_001E": "median_hh_income",
+    "B17001_001E": "pov_universe",
+    "B17001_002E": "pov_below",
+    "C17002_001E": "ratio_universe",
+    "B27001_001E": "insur_universe",
+    "B01001_001E": "age_universe",
+    "B03002_001E": "race_total",
+    "B03002_003E": "white_nh",
+    "B03002_004E": "black_nh",
+    "B03002_006E": "asian_nh",
+    "B03002_012E": "hispanic",
+    "C16002_001E": "lep_universe"
+  },
+
+  "_derived_note": "The lists below are summed in build_need_index.py to form numerators.",
+
+  "under_200_fpl_components": [
+    "C17002_002E","C17002_003E","C17002_004E","C17002_005E","C17002_006E","C17002_007E"
+  ],
+  "uninsured_components": [
+    "B27001_005E","B27001_008E","B27001_011E","B27001_014E","B27001_017E","B27001_020E",
+    "B27001_023E","B27001_026E","B27001_029E","B27001_033E","B27001_036E","B27001_039E",
+    "B27001_042E","B27001_045E","B27001_048E","B27001_051E","B27001_054E","B27001_057E"
+  ],
+  "age_65plus_components": [
+    "B01001_020E","B01001_021E","B01001_022E","B01001_023E","B01001_024E","B01001_025E",
+    "B01001_044E","B01001_045E","B01001_046E","B01001_047E","B01001_048E","B01001_049E"
+  ],
+  "lep_household_components": [
+    "C16002_004E","C16002_007E","C16002_010E","C16002_013E"
+  ]
+}
