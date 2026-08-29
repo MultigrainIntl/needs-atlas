@@ -22,7 +22,8 @@ jobs:
       - name: Install python-docx (for assessments)
         run: pip install python-docx
 
-      - name: Pull ACS + build need index + county rollup
+      - name: Pull ACS + build need index + county rollup (needs CENSUS_API_KEY)
+        continue-on-error: true      # tract pull needs a Census API key; county assessments below don't
         env:
           CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
         run: |
