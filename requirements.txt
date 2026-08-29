@@ -1,0 +1,6 @@
+# The data-pull and index scripts use only the Python standard library —
+# no install required to run pull_acs.py / build_need_index.py.
+#
+# These are optional, only if you extend the pipeline:
+# requests>=2.31      # friendlier HTTP than urllib, if you prefer it
+# pandas>=2.0         # if you rewrite build_need_index.py with dataframes
