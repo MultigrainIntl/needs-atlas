@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Needs Atlas</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600;700&display=swap');
+  :root{--ground:#EDF1EE;--paper:#FBFCFB;--paper-2:#F3F7F4;--ink:#16211D;--ink-soft:#4F615A;--ink-faint:#7B8C84;
+    --line:#D8E1DC;--line-strong:#C1CFC8;--primary:#1E6B57;--primary-deep:#124A3B;--primary-soft:#E1EDE8;
+    --heat-lo:#E4B24A;--heat-mid:#DE7C3B;--heat-hi:#C0442E;--shadow:0 1px 2px rgba(20,40,34,.05),0 8px 26px rgba(20,40,34,.06);--radius:14px;}
+  @media (prefers-color-scheme:dark){:root{--ground:#0C1411;--paper:#14201C;--paper-2:#1A2723;--ink:#E6EEE9;--ink-soft:#9EB0A8;--ink-faint:#71827A;
+    --line:#253431;--line-strong:#33443E;--primary:#53BF9F;--primary-deep:#82D4BA;--primary-soft:#16302A;
+    --heat-lo:#E7C062;--heat-mid:#E88A4C;--heat-hi:#E4634A;--shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);}}
+  *{box-sizing:border-box}img{max-width:100%}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:"Public Sans",system-ui,sans-serif;font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:"Bricolage Grotesque","Public Sans",sans-serif;font-weight:700;margin:0;line-height:1.1}
+  .mono{font-family:"IBM Plex Mono",monospace}
+  #gate{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,var(--paper-2),var(--ground));padding:24px}
+  #gate .card{max-width:400px;width:100%;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:36px 32px;box-shadow:var(--shadow);text-align:center}
+  #gate .lock{width:52px;height:52px;border-radius:14px;background:var(--primary-soft);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;color:var(--primary);font-size:24px}
+  #gate h1{font-size:1.8rem;letter-spacing:-.02em}
+  #gate .org{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--primary);letter-spacing:.08em;text-transform:uppercase;margin:8px 0 20px}
+  #gate input{width:100%;font-family:"Public Sans";font-size:14px;padding:11px 13px;border:1px solid var(--line-strong);border-radius:9px;margin-bottom:10px;background:var(--paper-2);color:var(--ink)}
+  #gate button{font-family:"Public Sans";font-weight:600;font-size:15px;background:var(--primary);color:#fff;border:0;border-radius:10px;padding:12px 22px;cursor:pointer;width:100%}
+  #gate button:hover{background:var(--primary-deep)}
+  #gate .err{color:var(--heat-hi);font-size:13px;min-height:18px;margin-top:8px}
+  #gate .mode{font-size:11.5px;color:var(--ink-faint);margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+  #app{display:none;max-width:1160px;margin:0 auto;padding:0 20px 60px}
+  .topbar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:18px 0;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--ground);z-index:10}
+  .brand{font-family:"Bricolage Grotesque";font-weight:800;font-size:1.25rem}.brand .dot{color:var(--primary)}
+  .spacer{flex:1}.badge{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;background:var(--heat-hi);color:#fff;padding:4px 9px;border-radius:6px}
+  .badge.live{background:var(--primary)}
+  select,button.ghost{font-family:"Public Sans";font-size:14px;font-weight:600;color:var(--ink);background:var(--paper);border:1px solid var(--line-strong);border-radius:9px;padding:9px 12px;cursor:pointer}
+  label.sel{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint)}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:22px 0}
+  .kpi{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:var(--shadow)}
+  .kpi .k{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-faint)}
+  .kpi .v{font-family:"Bricolage Grotesque";font-weight:700;font-size:1.7rem;margin-top:6px;line-height:1}
+  .kpi .u{font-size:12px;color:var(--ink-soft);margin-top:3px}.kpi.hot .v{color:var(--heat-hi)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}@media (max-width:840px){.grid2{grid-template-columns:1fr}}
+  .panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+  .panel h3{font-size:1.02rem;margin-bottom:4px}.panel .cap{font-size:12.5px;color:var(--ink-faint);margin-bottom:14px}
+  .chartwrap{position:relative;height:260px}
+  .cells{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}.cell{width:20px;height:20px;border-radius:4px}
+  .heatnote{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--ink-faint);margin-top:12px;flex-wrap:wrap}
+  .ramp{display:inline-flex;height:10px;width:120px;border-radius:3px;background:linear-gradient(90deg,#3f8f74,var(--heat-lo),var(--heat-hi))}
+  #arcgis-embed{width:100%;height:420px;border:0;border-radius:10px;margin-top:14px;background:var(--paper-2)}
+  .embed-ph{border:1px dashed var(--line-strong);border-radius:10px;padding:16px;margin-top:14px;background:var(--paper-2);font-size:13px;color:var(--ink-soft)}
+  .embed-ph b{color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line)}
+  th{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);font-weight:500}
+  td.mono{font-family:"IBM Plex Mono",monospace;font-size:12.5px}
+  .score-pill{display:inline-block;min-width:38px;text-align:center;padding:2px 8px;border-radius:20px;font-weight:600;font-size:12.5px;color:#fff}
+  footer{margin-top:28px;padding-top:18px;border-top:1px solid var(--line);font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-faint)}
+</style>
+</head>
+<body>
+<!--
+  Needs Atlas — production web app (Firebase-ready).
+  ────────────────────────────────────────────────────────────────────────
+  CONFIGURE:
+   1. Create a Firebase project → Web app → paste its config into FIREBASE_CONFIG below.
+   2. Enable Email/Password auth in Firebase console; invite Zufall users.
+   3. Put the built data next to this file:  cp ../data/tracts_need.csv ./tracts_need.csv
+      (or set DATA_URL to wherever you host it).
+   4. Deploy:  firebase deploy   (Hosting serves this /web folder).
+   5. Embed the ArcGIS temporal heat map: set ARCGIS_EMBED_URL to your published
+      dashboard / web-map app URL (shared to the org / via OAuth).
+
+  If FIREBASE_CONFIG is left blank, the app runs in DEMO MODE: a click-through
+  gate + sample data, so you can open index.html locally with no setup.
+-->
+<div id="gate">
+  <div class="card">
+    <div class="lock">&#128274;</div>
+    <h1>Needs Atlas</h1>
+    <div class="org">Zufall Health &middot; Food Aid Project</div>
+    <div id="authbox">
+      <input id="email" type="email" placeholder="Email" autocomplete="username">
+      <input id="password" type="password" placeholder="Password" autocomplete="current-password">
+      <button id="signin">Sign in</button>
+      <div class="err" id="err"></div>
+    </div>
+    <button id="enterDemo" style="display:none">Enter demo &rarr;</button>
+    <div class="mode" id="modeline"></div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="topbar">
+    <div class="brand">Needs Atlas<span class="dot">.</span></div>
+    <span class="badge" id="datamode">Demo data</span>
+    <div class="spacer"></div>
+    <label class="sel" for="county">County</label>
+    <select id="county"></select>
+    <button class="ghost" id="signout" style="display:none">Sign out</button>
+  </div>
+  <div class="kpis" id="kpis"></div>
+  <div class="grid2">
+    <div class="panel"><h3>Composite need score by county</h3><div class="cap">Higher = greater concentration of low-income, uninsured, and access-barrier residents.</div><div class="chartwrap"><canvas id="countyChart"></canvas></div></div>
+    <div class="panel"><h3 id="profTitle">Indicator profile</h3><div class="cap">Selected county vs. the 7-county average.</div><div class="chartwrap"><canvas id="profChart"></canvas></div></div>
+  </div>
+  <div class="panel" style="margin-bottom:16px">
+    <h3 id="heatTitle">Tract-level need heat map</h3>
+    <div class="cap">Each square is a census tract, shaded by need score.</div>
+    <div class="cells" id="cells"></div>
+    <div class="heatnote"><span>Lower</span><span class="ramp"></span><span>Higher need</span></div>
+    <iframe id="arcgis-embed" title="ArcGIS temporal heat map" style="display:none"></iframe>
+    <div class="embed-ph" id="arcgis-ph"><b>ArcGIS temporal heat map mounts here.</b> Set <span class="mono">ARCGIS_EMBED_URL</span> to your published time-enabled web map / dashboard to replace this placeholder with the live map and year slider.</div>
+  </div>
+  <div class="grid2">
+    <div class="panel"><h3 id="tableTitle">Highest-need tracts</h3><div class="cap">The numbers that go straight into a grant narrative.</div><div style="overflow-x:auto"><table id="tractTable"></table></div></div>
+    <div class="panel"><h3>Grant materials library</h3><div class="cap">Link a shared Drive/SharePoint folder of reference docs and generated profiles.</div><div class="embed-ph" style="margin-top:6px"><b>Intelligence phase:</b> matched open grants for this profile + an auto-drafted, cited need narrative.</div></div>
+  </div>
+  <footer id="foot"></footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="sample-data.js"></script>
+<script type="module">
+  // ── CONFIG ────────────────────────────────────────────────────────────
+  const FIREBASE_CONFIG = {
+    // apiKey: "…", authDomain: "…", projectId: "…", appId: "…"
+  };
+  const DATA_URL = "tracts_need.csv";     // built by scripts/build_need_index.py
+  const ARCGIS_EMBED_URL = "";            // your published ArcGIS map/dashboard URL
+  // ──────────────────────────────────────────────────────────────────────
+
+  const hasFirebase = Object.keys(FIREBASE_CONFIG).length > 0;
+  const $ = id => document.getElementById(id);
+  const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const fmt = n => n==null||n===''?'—':Number(n).toLocaleString();
+
+  function heat(s){
+    if(s==null) return cssv('--line');
+    const stops=[[10,[63,143,116]],[45,[228,178,74]],[100,[192,68,46]]];
+    s=Math.max(0,Math.min(100,+s));let a=stops[0],b=stops[2];
+    for(let i=0;i<2;i++){if(s>=stops[i][0]&&s<=stops[i+1][0]){a=stops[i];b=stops[i+1];break;}}
+    const t=(s-a[0])/((b[0]-a[0])||1),c=a[1].map((v,i)=>Math.round(v+(b[1][i]-v)*t));
+    return `rgb(${c[0]},${c[1]},${c[2]})`;
+  }
+
+  // Build {counties, tracts} from a tracts_need.csv, or fall back to sample.
+  function aggregate(tracts){
+    const byC={};
+    tracts.forEach(t=>{(byC[t.county_name]=byC[t.county_name]||[]).push(t);});
+    const counties=Object.entries(byC).map(([county,rs])=>{
+      const pop=rs.reduce((s,r)=>s+(+r.total_pop||0),0)||1;
+      const w=k=>Math.round(rs.reduce((s,r)=>s+(+r[k]||0)*(+r.total_pop||0),0)/pop*10)/10;
+      return {county,tracts:rs.length,population:pop,need_score:w('need_score'),
+        uninsured_pct:w('uninsured_pct'),under_200_fpl_pct:w('under_200_fpl_pct'),
+        lep_pct:w('lep_pct'),pct_65_plus:w('pct_65_plus'),pov_rate:w('pov_rate'),
+        median_hh_income:Math.round(rs.reduce((s,r)=>s+(+r.median_hh_income||0),0)/rs.length)};
+    });
+    return {counties,tracts};
+  }
+  function parseCSV(text){
+    const [head,...lines]=text.trim().split(/\r?\n/);
+    const cols=head.split(',');
+    return lines.map(l=>{const v=l.split(',');const o={};cols.forEach((c,i)=>o[c]=v[i]);
+      ['total_pop','median_hh_income','pov_rate','under_200_fpl_pct','uninsured_pct','lep_pct','pct_65_plus','need_score'].forEach(k=>o[k]=o[k]===''||o[k]==null?null:+o[k]);
+      return o;});
+  }
+
+  let D=null;
+  async function loadData(){
+    try{
+      const r=await fetch(DATA_URL,{cache:'no-store'});
+      if(r.ok){const t=await r.text();const tr=parseCSV(t);if(tr.length){$('datamode').textContent='Live data';$('datamode').classList.add('live');return aggregate(tr);}}
+    }catch(e){/* fall through to sample */}
+    $('datamode').textContent='Demo data';
+    return window.ATLAS_SAMPLE;
+  }
+
+  let countyChart,profChart;
+  function render(name){
+    const c=D.counties.find(x=>x.county===name);
+    const avg=k=>Math.round(D.counties.reduce((s,x)=>s+(+x[k]||0),0)/D.counties.length*10)/10;
+    const kpis=[['Population',fmt(c.population),''],['Need score',c.need_score,'0–100',true],
+      ['Uninsured',c.uninsured_pct+'%',''],['Under 200% FPL',c.under_200_fpl_pct+'%',''],
+      ['Limited English',c.lep_pct+'%',''],['Age 65+',c.pct_65_plus+'%',''],
+      ['Median income','$'+fmt(c.median_hh_income),'']];
+    $('kpis').innerHTML=kpis.map(k=>`<div class="kpi ${k[3]?'hot':''}"><div class="k">${k[0]}</div><div class="v">${k[1]}</div><div class="u">${k[2]}</div></div>`).join('');
+    const labels=D.counties.map(x=>x.county),vals=D.counties.map(x=>x.need_score);
+    const colors=D.counties.map(x=>x.county===name?heat(x.need_score):cssv('--line-strong'));
+    if(countyChart)countyChart.destroy();
+    countyChart=new Chart($('countyChart'),{type:'bar',data:{labels,datasets:[{data:vals,backgroundColor:colors,borderRadius:6}]},
+      options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:cssv('--line')},ticks:{color:cssv('--ink-soft')}},x:{grid:{display:false},ticks:{color:cssv('--ink-soft'),font:{size:11}}}}}});
+    $('profTitle').textContent=name+' County — indicator profile';
+    const inds=[['Poverty','pov_rate'],['Uninsured','uninsured_pct'],['<200% FPL','under_200_fpl_pct'],['Limited Eng.','lep_pct'],['Age 65+','pct_65_plus']];
+    if(profChart)profChart.destroy();
+    profChart=new Chart($('profChart'),{type:'bar',data:{labels:inds.map(i=>i[0]),datasets:[
+      {label:name,data:inds.map(i=>c[i[1]]),backgroundColor:cssv('--primary'),borderRadius:5},
+      {label:'7-county avg',data:inds.map(i=>avg(i[1])),backgroundColor:cssv('--heat-lo'),borderRadius:5}]},
+      options:{plugins:{legend:{labels:{color:cssv('--ink-soft'),font:{size:11},boxWidth:12}}},scales:{y:{beginAtZero:true,grid:{color:cssv('--line')},ticks:{color:cssv('--ink-soft')}},x:{grid:{display:false},ticks:{color:cssv('--ink-soft'),font:{size:10}}}}}});
+    const tr=D.tracts.filter(t=>t.county_name===name).sort((a,b)=>(b.need_score||0)-(a.need_score||0));
+    $('heatTitle').textContent=name+' County — '+tr.length+' census tracts by need';
+    $('cells').innerHTML=tr.map(t=>`<div class="cell" title="Tract ${t.GEOID} · need ${t.need_score} · uninsured ${t.uninsured_pct}%" style="background:${heat(t.need_score)}"></div>`).join('');
+    $('tableTitle').textContent='Highest-need tracts — '+name+' County';
+    $('tractTable').innerHTML='<tr><th>Tract (GEOID)</th><th>Need</th><th>Uninsured</th><th>&lt;200% FPL</th><th>Median income</th></tr>'+
+      tr.slice(0,8).map(t=>`<tr><td class="mono">${t.GEOID}</td><td><span class="score-pill" style="background:${heat(t.need_score)}">${t.need_score}</span></td><td>${t.uninsured_pct}%</td><td>${t.under_200_fpl_pct}%</td><td>$${fmt(t.median_hh_income)}</td></tr>`).join('');
+  }
+
+  function startApp(){
+    if(ARCGIS_EMBED_URL){$('arcgis-embed').src=ARCGIS_EMBED_URL;$('arcgis-embed').style.display='block';$('arcgis-ph').style.display='none';}
+    const sel=$('county');
+    sel.innerHTML=D.counties.map(c=>`<option value="${c.county}">${c.county} County</option>`).join('');
+    sel.addEventListener('change',e=>render(e.target.value));
+    $('foot').textContent='Needs Atlas · Food Aid Project, Inc. · '+($('datamode').textContent==='Live data'?'live ACS/PLACES/SVI, 2020 census tracts':'sample data — run the pipeline for live values');
+    $('gate').style.display='none';$('app').style.display='block';
+    render(D.counties[0].county);
+  }
+
+  (async ()=>{
+    D=await loadData();
+    if(hasFirebase){
+      $('modeline').textContent='Secure sign-in · Firebase Authentication';
+      const {initializeApp}=await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+      const {getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut}=await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+      const auth=getAuth(initializeApp(FIREBASE_CONFIG));
+      $('signin').addEventListener('click',async()=>{
+        $('err').textContent='';
+        try{await signInWithEmailAndPassword(auth,$('email').value,$('password').value);}
+        catch(e){$('err').textContent='Sign-in failed. Check your credentials.';}
+      });
+      $('signout').style.display='inline-block';
+      $('signout').addEventListener('click',()=>signOut(auth));
+      onAuthStateChanged(auth,u=>{if(u){startApp();}else{$('gate').style.display='flex';$('app').style.display='none';}});
+    }else{
+      // DEMO MODE — no Firebase configured.
+      $('authbox').style.display='none';$('enterDemo').style.display='block';
+      $('modeline').textContent='Demo mode — add FIREBASE_CONFIG to enable secure sign-in';
+      $('enterDemo').addEventListener('click',startApp);
+    }
+  })();
+</script>
+</body>
+</html>
