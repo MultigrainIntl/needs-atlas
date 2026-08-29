@@ -1,14 +1,1 @@
-{
-  "_comment": "Zufall Health service area — EDUCATED GUESS pending confirmation of the official 7 counties. NJ state FIPS = 34. Replace/confirm before final build.",
-  "state_fips": "34",
-  "state_name": "New Jersey",
-  "counties": [
-    { "name": "Morris",    "fips": "027" },
-    { "name": "Sussex",    "fips": "037" },
-    { "name": "Warren",    "fips": "041" },
-    { "name": "Hunterdon", "fips": "019" },
-    { "name": "Somerset",  "fips": "035" },
-    { "name": "Essex",     "fips": "013" },
-    { "name": "Union",     "fips": "039" }
-  ]
-}
+{"_comment":"Zufall Health service area - 7 counties CONFIRMED from the friend's 2026 needs assessments (Essex, Hunterdon, Middlesex, Morris, Somerset, Sussex, Warren). NJ state FIPS = 34.","state_fips":"34","state_name":"New Jersey","counties":[{"name":"Morris","fips":"027"},{"name":"Sussex","fips":"037"},{"name":"Warren","fips":"041"},{"name":"Hunterdon","fips":"019"},{"name":"Somerset","fips":"035"},{"name":"Essex","fips":"013"},{"name":"Middlesex","fips":"023"}]}
