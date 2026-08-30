@@ -31,6 +31,11 @@ for k in ("under_200_fpl_components", "uninsured_components",
     codes += VARS[k]
 codes = list(dict.fromkeys(codes))                 # de-dupe, keep order
 
+# SNAP is pulled as its own optional request so a hiccup on it never blocks the
+# core variables. Keep it out of the main code list.
+SNAP_CODES = ["B22003_001E", "B22003_002E"]
+codes = [c for c in codes if c not in SNAP_CODES]
+
 
 def chunks(seq, n):
     for i in range(0, len(seq), n):
@@ -60,21 +65,35 @@ def main():
     merged = {}   # GEOID -> {var: value, ...}
     state = CFG["state_fips"]
 
+    def absorb(payload, wanted, county):
+        for d in rows_to_dicts(payload):
+            geoid = d["state"] + d["county"] + d["tract"]
+            rec = merged.setdefault(geoid, {"GEOID": geoid, "county_name": county["name"]})
+            for c in wanted:
+                rec[c] = d.get(c)
+
     for county in CFG["counties"]:
         cfips = county["fips"]
-        # Census API allows ~50 variables/call; chunk at 45 to be safe.
+        # Census API allows ~50 variables/call; chunk at 45 to be safe. A failed
+        # chunk is skipped with a warning rather than aborting the whole pull.
         for chunk in chunks(codes, 45):
-            payload = fetch(chunk, state, cfips)
-            for d in rows_to_dicts(payload):
-                geoid = d["state"] + d["county"] + d["tract"]
-                rec = merged.setdefault(geoid, {"GEOID": geoid,
-                                                "county_name": county["name"]})
-                for c in chunk:
-                    rec[c] = d.get(c)
+            try:
+                absorb(fetch(chunk, state, cfips), chunk, county)
+            except Exception as e:
+                print(f"  WARN: variable chunk failed for {county['name']}: {e}", file=sys.stderr)
+        # SNAP (B22003) — optional; a failure here loses only SNAP, nothing else.
+        try:
+            absorb(fetch(SNAP_CODES, state, cfips), SNAP_CODES, county)
+        except Exception as e:
+            print(f"  WARN: SNAP (B22003) pull failed for {county['name']}: {e}", file=sys.stderr)
         print(f"  {county['name']:10s} ({cfips}) — tracts so far: "
               f"{sum(1 for g in merged if g[2:5] == cfips)}")
 
-    fieldnames = ["GEOID", "county_name"] + codes
+    if not merged:
+        print("No ACS rows retrieved — leaving existing data untouched.", file=sys.stderr)
+        sys.exit(1)
+
+    fieldnames = ["GEOID", "county_name"] + codes + SNAP_CODES
     with OUT.open("w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=fieldnames)
         w.writeheader()
