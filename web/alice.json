@@ -1,0 +1,47 @@
+{
+  "source": "United Way \u2014 United For ALICE, 2026 New Jersey Report (2024 data)",
+  "source_url": "https://www.unitedforalice.org",
+  "data_year": 2024,
+  "metric": "Share of households below the ALICE Threshold (in poverty OR Asset Limited, Income Constrained, Employed)",
+  "nj": {
+    "year": 2024,
+    "pct_below_alice": 39.4
+  },
+  "counties": {
+    "Essex": {
+      "year": 2024,
+      "households": 320791,
+      "pct_below_alice": 50.0
+    },
+    "Hunterdon": {
+      "year": 2024,
+      "households": 50860,
+      "pct_below_alice": 27.4
+    },
+    "Middlesex": {
+      "year": 2024,
+      "households": 310450,
+      "pct_below_alice": 38.0
+    },
+    "Morris": {
+      "year": 2024,
+      "households": 193869,
+      "pct_below_alice": 31.1
+    },
+    "Somerset": {
+      "year": 2024,
+      "households": 132802,
+      "pct_below_alice": 29.8
+    },
+    "Sussex": {
+      "year": 2024,
+      "households": 57741,
+      "pct_below_alice": 30.4
+    },
+    "Warren": {
+      "year": 2024,
+      "households": 45712,
+      "pct_below_alice": 36.6
+    }
+  }
+}

@@ -3,6 +3,12 @@
   "updates": [
     {
       "date": "2026-08-30",
+      "tag": "Data",
+      "title": "Economic hardship (ALICE) & provider access added",
+      "summary": "Two long-pending sources are now wired in: United For ALICE household hardship rates (an 'ALICE households' tile) and County Health Rankings provider-to-population ratios (a new Provider access panel), both compared with New Jersey and added to the county assessments."
+    },
+    {
+      "date": "2026-08-30",
       "tag": "Feature",
       "title": "FAQ page added",
       "summary": "A plain-English FAQ and a full at-a-glance list of everything the tool does — find it in the Menu."

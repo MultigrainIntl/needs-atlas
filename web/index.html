@@ -222,6 +222,11 @@
     <div class="chartwrap" style="height:300px"><canvas id="healthChart"></canvas></div>
     <div style="overflow-x:auto;margin-top:8px"><table id="healthTable"></table></div>
   </div>
+  <div class="panel" id="providersPanel" style="margin-bottom:16px;display:none">
+    <h3 id="providersTitle">Provider access — County Health Rankings</h3>
+    <div class="cap">Residents per provider (lower = better access), compared with New Jersey. <span class="mono" style="font-size:11px">▲ fewer providers than NJ · ▼ more</span></div>
+    <div style="overflow-x:auto"><table id="providersTable"></table></div>
+  </div>
   <div class="panel" style="margin-bottom:16px">
     <h3 id="mapTitle">Service-area need map — census tracts</h3>
     <div class="cap">Every census tract across the seven counties, shaded by need. Click any tract for its numbers.</div>
@@ -291,6 +296,7 @@
         <li><b>Food insecurity</b> — county and child food-insecurity rates from Feeding America's Map the Meal Gap.</li>
         <li><b>Community health burden</b> — adult prevalence of 17 chronic-disease, mental-health, and social-need measures from the CDC (PLACES), each compared to New Jersey.</li>
         <li><b>Statewide standing</b> — where each county ranks among all 21 New Jersey counties on those health measures.</li>
+        <li><b>Economic hardship &amp; provider access</b> — ALICE household rates (United For ALICE) and residents-per-provider ratios (County Health Rankings), each compared with New Jersey.</li>
         <li><b>Highest-need tracts</b> — the neighborhood-level table that drops straight into a grant narrative.</li>
         <li><b>Viewable &amp; downloadable assessments</b> — read each county's fully-cited needs-assessment in the app (the "Assessment" button), then download the Word version, formatted for grant submissions.</li>
         <li><b>Funding matches</b> — open federal grant opportunities from Grants.gov, ranked by fit to each county's needs, with a plain "why it fits" case and closing dates.</li>
@@ -299,7 +305,7 @@
       </ul>
 
       <h3>Where do the numbers come from?</h3>
-      <p>The U.S. Census Bureau (American Community Survey and QuickFacts), Feeding America's Map the Meal Gap, and the CDC's PLACES project — all official, public sources. Funding opportunities come from the federal Grants.gov catalog. Nothing is hand-entered or invented, and the About page lists every source with direct links.</p>
+      <p>The U.S. Census Bureau (American Community Survey and QuickFacts), Feeding America's Map the Meal Gap, the CDC's PLACES project, United For ALICE, and County Health Rankings — all official, public sources. Funding opportunities come from the federal Grants.gov catalog. Nothing is hand-entered or invented, and the About page lists every source with direct links.</p>
 
       <h3>How current is it?</h3>
       <p>An automated pipeline re-pulls the data and rebuilds the site on a fixed quarterly schedule; the funding opportunities refresh more often. The "Data &amp; updates" panel always shows the date of the most recent refresh.</p>
@@ -355,12 +361,16 @@
       <h3>Statewide standing</h3>
       <p>Because health need is relative, the community-health section also shows where a county ranks among <b>all 21 New Jersey counties</b> (using the CDC PLACES measures). That lets an application state plainly that a county is, say, among the highest-need in the state on food insecurity or housing instability — a stronger, more defensible framing than a comparison against only its neighbors.</p>
 
+      <h3>Economic hardship — United For ALICE</h3>
+      <p>Poverty statistics miss the many households that earn above the poverty line yet still can't afford the basics. <b><a href="https://www.unitedforalice.org" target="_blank" rel="noopener">United For ALICE</a></b> (a United Way project) measures them: ALICE stands for Asset Limited, Income Constrained, Employed. The dashboard's "ALICE households" figure is the share of a county's households below the ALICE threshold — in poverty, or working but unable to cover a basic survival budget — from United For ALICE's latest New Jersey report (2024 data). In Essex County, for example, roughly half of all households fall below that threshold.</p>
+
+      <h3>Provider access — County Health Rankings</h3>
+      <p>Access to care depends on whether providers are there to deliver it. The "Provider access" panel shows each county's ratio of residents to primary-care physicians, dentists, and mental-health providers, compared with New Jersey, from <b><a href="https://www.countyhealthrankings.org" target="_blank" rel="noopener">County Health Rankings &amp; Roadmaps</a></b> (University of Wisconsin Population Health Institute, 2025 release). These are the workforce measures HRSA and other funders look for in access-focused grant applications.</p>
+
       <h3>Sources we're still adding</h3>
-      <p>A few more indicators would round out the picture. They're being wired in next, and until each one is connected we <b>list it as pending rather than show a guessed number</b> — the same principle that governs the whole tool:</p>
+      <p>One more source would round out the picture. Until it's connected we <b>list it as pending rather than show a guessed number</b> — the same principle that governs the whole tool:</p>
       <ul>
-        <li>Households that work but can't afford the basics — <a href="https://www.unitedforalice.org" target="_blank" rel="noopener">United Way, United For ALICE</a></li>
-        <li>Primary-care, dental &amp; mental-health provider-to-population ratios — <a href="https://www.countyhealthrankings.org" target="_blank" rel="noopener">County Health Rankings &amp; Roadmaps</a></li>
-        <li>Local chronic-disease and maternal/infant detail beyond the CDC PLACES county estimates — NJ State Health Assessment Data (NJSHAD)</li>
+        <li>Prenatal care and infant mortality, including racial disparities — NJ State Health Assessment Data (NJSHAD)</li>
       </ul>
 
       <h3>How to check a number yourself</h3>
@@ -426,6 +436,8 @@
   const COUNTY_SHAPES_URL = "counties.geojson"; // county outlines for the map (built by scripts/build_geojson.py)
   const UPDATES_URL = "updates.json";     // the "What's new" feed
   const GRANTS_URL = "grants.json";       // matched funding opportunities (Grants.gov)
+  const PROVIDERS_URL = "providers.json"; // County Health Rankings provider-to-population ratios
+  const ALICE_URL = "alice.json";         // United For ALICE household rates
   const DOCS_BASE = "https://raw.githubusercontent.com/MultigrainIntl/needs-atlas/main/data/"; // generated assessments
   // ──────────────────────────────────────────────────────────────────────
 
@@ -521,11 +533,14 @@
     }catch(e){/* ignore */}
     let grants=null;
     try{ const r=await fetch(GRANTS_URL,{cache:'no-store'}); if(r.ok){const g=await r.json(); if(g&&g.opportunities) grants=g;} }catch(e){/* ignore */}
+    let providers=null, alice=null;
+    try{ const r=await fetch(PROVIDERS_URL,{cache:'no-store'}); if(r.ok) providers=await r.json(); }catch(e){/* ignore */}
+    try{ const r=await fetch(ALICE_URL,{cache:'no-store'}); if(r.ok) alice=await r.json(); }catch(e){/* ignore */}
     if(tracts){
       $('datamode').textContent='Live data';$('datamode').classList.add('live');
       // Prefer the authoritative county rollup; fall back to aggregating the tracts.
       const base = counties ? {counties, tracts} : aggregate(tracts);
-      base.generated=generated; base.places=places; base.statewide=statewide; base.grants=grants; return base;
+      base.generated=generated; base.places=places; base.statewide=statewide; base.grants=grants; base.providers=providers; base.alice=alice; return base;
     }
     $('datamode').textContent='Demo data';
     return window.ATLAS_SAMPLE;
@@ -541,8 +556,10 @@
     const c=D.counties.find(x=>x.county===name);
     const avg=k=>Math.round(D.counties.reduce((s,x)=>s+(+x[k]||0),0)/D.counties.length*10)/10;
     const pctv=v=>v==null?'—':v+'%';
+    const alicePct=(D.alice&&D.alice.counties&&D.alice.counties[name])?D.alice.counties[name].pct_below_alice:null;
     const kpis=[['Population',fmt(c.population),''],['Need index',c.need_score,'0–100 · vs 7 counties',true],
       ['Food insecurity',pctv(c.food_insecurity_pct),(c.child_food_insecurity_pct!=null?c.child_food_insecurity_pct+'% of children · Feeding America':'Feeding America')],
+      ['ALICE households',pctv(alicePct),'below ALICE threshold · United For ALICE'],
       ['Uninsured',pctv(c.uninsured_pct),''],['Under 200% FPL',pctv(c.under_200_fpl_pct),''],
       ['SNAP households',pctv(c.snap_pct),'Census ACS'],
       ['Limited English',pctv(c.lep_pct),''],['Age 65+',pctv(c.pct_65_plus),''],
@@ -573,6 +590,7 @@
       trReal.slice(0,8).map(t=>`<tr><td class="mono">${t.GEOID}</td><td><span class="score-pill" style="background:${needColor(t.need_score)}">${t.need_score}</span></td><td>${t.uninsured_pct}%</td><td>${t.under_200_fpl_pct}%</td><td>$${fmt(t.median_hh_income)}</td></tr>`).join('');
     const dl=$('dlbtn'); if(dl){dl.href=DOCS_BASE+name.toLowerCase()+'_needs_assessment.docx';dl.setAttribute('download',name+'_needs_assessment.docx');}
     renderHealth(name,c);   // CDC PLACES community health burden
+    renderProviders(name);  // County Health Rankings provider-to-population ratios
     renderFunding(name,c);  // Grants.gov opportunities matched to this county
     if($('assessmentView')&&getComputedStyle($('assessmentView')).display!=='none') renderAssessment(name);
     focusCounty(name);   // outline + zoom the map to the selected county
@@ -614,6 +632,25 @@
       return `<tr><td>${labels[m]||m}</td><td class="mono">${cv}%</td><td class="mono">${nv==null?'—':nv+'%'}</td><td>${flag}</td><td class="mono">${rk}</td></tr>`;
     }).join('');
     $('healthTable').innerHTML='<tr><th>Measure</th><th>'+name+'</th><th>New Jersey</th><th>vs NJ</th><th>NJ rank</th></tr>'+rowsHtml;
+  }
+
+  // ── Provider access (County Health Rankings ratios: county vs NJ) ──
+  function renderProviders(name){
+    const panel=$('providersPanel'); if(!panel) return;
+    const P=D.providers, p=P&&P.counties&&P.counties[name];
+    if(!P||!p){ panel.style.display='none'; return; }
+    panel.style.display='block';
+    $('providersTitle').textContent=name+' County — provider access';
+    const nj=P.nj||{}, parse=r=>r?parseInt(String(r).replace(/[^0-9]/g,'')):null;
+    const defs=[['Primary care physicians','pcp_ratio'],['Mental health providers','mh_ratio'],['Dentists','dent_ratio']];
+    $('providersTable').innerHTML='<tr><th>Provider</th><th>'+name+' (residents per provider)</th><th>New Jersey</th><th>vs NJ</th></tr>'+
+      defs.map(([lab,k])=>{
+        const cv=p[k], nv=nj[k], cn=parse(cv), nn=parse(nv);
+        let flag='—';
+        if(cn!=null&&nn!=null){ if(cn>nn) flag='<span style="color:var(--heat-hi);font-weight:600">▲ fewer</span>';
+          else if(cn<nn) flag='<span style="color:var(--primary);font-weight:600">▼ more</span>'; else flag='±'; }
+        return `<tr><td>${lab}</td><td class="mono">${cv||'—'}</td><td class="mono">${nv||'—'}</td><td>${flag}</td></tr>`;
+      }).join('');
   }
 
   // ── Funding matches (Grants.gov opportunities scored against county need) ──

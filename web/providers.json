@@ -1,0 +1,77 @@
+{
+  "source": "County Health Rankings & Roadmaps, 2025 release (Univ. of Wisconsin Population Health Institute)",
+  "source_url": "https://www.countyhealthrankings.org",
+  "release": "2025",
+  "data_value_type": "Provider-to-population ratio (residents per provider; lower = better access)",
+  "measures": {
+    "pcp": "Primary care physicians",
+    "mh": "Mental health providers",
+    "dent": "Dentists"
+  },
+  "nj": {
+    "pcp_ratio": "1279:1",
+    "pcp_rate": 78,
+    "mh_ratio": "320:1",
+    "mh_rate": 313,
+    "dent_ratio": "1157:1",
+    "dent_rate": 86
+  },
+  "counties": {
+    "Essex": {
+      "pcp_ratio": "1325:1",
+      "pcp_rate": 75,
+      "mh_ratio": "354:1",
+      "mh_rate": 282,
+      "dent_ratio": "1088:1",
+      "dent_rate": 92
+    },
+    "Hunterdon": {
+      "pcp_ratio": "909:1",
+      "pcp_rate": 110,
+      "mh_ratio": "332:1",
+      "mh_rate": 301,
+      "dent_ratio": "1191:1",
+      "dent_rate": 84
+    },
+    "Middlesex": {
+      "pcp_ratio": "1106:1",
+      "pcp_rate": 90,
+      "mh_ratio": "427:1",
+      "mh_rate": 234,
+      "dent_ratio": "1123:1",
+      "dent_rate": 89
+    },
+    "Morris": {
+      "pcp_ratio": "1073:1",
+      "pcp_rate": 93,
+      "mh_ratio": "281:1",
+      "mh_rate": 356,
+      "dent_ratio": "881:1",
+      "dent_rate": 113
+    },
+    "Somerset": {
+      "pcp_ratio": "907:1",
+      "pcp_rate": 110,
+      "mh_ratio": "307:1",
+      "mh_rate": 326,
+      "dent_ratio": "1017:1",
+      "dent_rate": 98
+    },
+    "Sussex": {
+      "pcp_ratio": "2205:1",
+      "pcp_rate": 45,
+      "mh_ratio": "400:1",
+      "mh_rate": 250,
+      "dent_ratio": "1432:1",
+      "dent_rate": 70
+    },
+    "Warren": {
+      "pcp_ratio": "1846:1",
+      "pcp_rate": 54,
+      "mh_ratio": "380:1",
+      "mh_rate": 263,
+      "dent_ratio": "1404:1",
+      "dent_rate": 71
+    }
+  }
+}
