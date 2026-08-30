@@ -50,6 +50,7 @@ jobs:
           cp data/tracts_need.csv web/tracts_need.csv || true
           cp data/counties.json   web/counties.json   || true
           cp config/grants.json   web/grants.json     || true
+          cp data/*_needs_assessment.md web/ || true
 
       - name: Commit outputs
         run: |
@@ -59,5 +60,6 @@ jobs:
           git add -f data/tracts_need.csv data/counties.json 2>/dev/null || true
           git add -f config/places.json config/food_insecurity.json config/grants.json 2>/dev/null || true
           git add -f web/tracts_need.csv web/counties.json web/grants.json web/tracts.geojson web/counties.geojson 2>/dev/null || true
+          git add -f web/*_needs_assessment.md 2>/dev/null || true
           git commit -m "data: build $(date -u +%Y-%m-%d)" || echo "no changes"
           git push
