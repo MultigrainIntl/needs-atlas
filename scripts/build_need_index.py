@@ -130,6 +130,24 @@ def main():
             "pct_black": wmean(rs, "pct_black_nh"),
         })
 
+    # Overlay authoritative county headline figures from Census QuickFacts
+    # (config/real_counties.json) — the same published county values the assessment
+    # documents cite, so the dashboard and the docs never disagree. This also avoids
+    # aggregating tract medians (e.g. median income), which is statistically invalid.
+    # Tract-only figures (200% FPL, SNAP, LEP) and the map keep the live tract pipeline.
+    RC = ROOT / "config" / "real_counties.json"
+    if RC.exists():
+        rc = {c["county"]: c for c in _json.loads(RC.read_text()).get("counties", [])}
+        _map = {"population": "population", "median_hh_income": "median_hh_income",
+                "poverty_pct": "poverty_pct", "uninsured_pct": "uninsured_under65_pct",
+                "pct_65_plus": "pct_65_plus", "pct_hispanic": "pct_hispanic",
+                "pct_black": "pct_black"}
+        for c in counties:
+            q = rc.get(c["county"], {})
+            for dst, src in _map.items():
+                if q.get(src) is not None:
+                    c[dst] = q[src]
+
     # Attach county food-insecurity estimates (Feeding America — Map the Meal Gap).
     # County-level only (no tract breakdown), so it joins the county rollup here.
     fi_meta = None
