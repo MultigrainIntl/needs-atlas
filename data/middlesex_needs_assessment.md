@@ -32,5 +32,5 @@ _Group-quarters tracts (dormitories/institutional) excluded so the ranking refle
 - Food-insecurity rate and SNAP participation — *Feeding America — Map the Meal Gap*
 
 ## References
-1. U.S. Census Bureau QuickFacts. Middlesex County, New Jersey and New Jersey. 2020-2024 American Community Survey 5-Year Estimates and 2025 Population Estimates. Accessed August 29, 2026.
-2. U.S. Census Bureau, American Community Survey 2020-2024 5-Year Estimates, census-tract tables B27001 (health insurance), C17002 (ratio of income to poverty), B17001 (poverty), C16002 (household language), retrieved via the Needs Atlas data pipeline and aggregated to the tract level. Accessed August 29, 2026.
+1. U.S. Census Bureau QuickFacts. Middlesex County, New Jersey and New Jersey. 2020-2024 American Community Survey 5-Year Estimates and 2025 Population Estimates. Accessed August 30, 2026.
+2. U.S. Census Bureau, American Community Survey 2020-2024 5-Year Estimates, census-tract tables B27001 (health insurance), C17002 (ratio of income to poverty), B17001 (poverty), C16002 (household language), retrieved via the Needs Atlas data pipeline and aggregated to the tract level. Accessed August 30, 2026.
