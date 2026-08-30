@@ -4,6 +4,12 @@
     {
       "date": "2026-08-30",
       "tag": "Feature",
+      "title": "FAQ page added",
+      "summary": "A plain-English FAQ and a full at-a-glance list of everything the tool does — find it in the Menu."
+    },
+    {
+      "date": "2026-08-30",
+      "tag": "Feature",
       "title": "Funding matches — grant opportunities, ranked",
       "summary": "A new Funding matches view pulls open federal opportunities from Grants.gov and ranks them for each county by fit to its documented needs, with the evidence to make the case. Find it in the Menu."
     },

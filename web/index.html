@@ -202,6 +202,7 @@
         <button class="menu-item" id="menuFunding">Funding matches</button>
         <button class="menu-item" id="menuUpdates">What's new</button>
         <button class="menu-item" id="menuAbout">About</button>
+        <button class="menu-item" id="menuFaq">FAQ</button>
         <button class="menu-item admin hide" id="menuApprovals">Account approvals</button>
         <div class="menu-sep"></div>
         <button class="menu-item danger hide" id="menuSignout">Sign out</button>
@@ -263,6 +264,45 @@
       <h2>Account approvals</h2>
       <p class="lead">People who've requested an account are listed below. Approve to let them in, or deny to block them. You are the only account that sees this panel.</p>
       <div id="adminList" style="margin-top:14px"></div>
+    </div>
+  </div>
+
+  <div id="faqView" style="display:none">
+    <div class="panel about">
+      <h2>FAQ &amp; what this tool does</h2>
+      <p class="lead">Needs Atlas turns official public data into a defensible picture of health and economic need across Zufall Health's seven-county service area — and points to the funding to act on it.</p>
+
+      <h3>Everything it does, at a glance</h3>
+      <ul>
+        <li><b>Interactive need map</b> — all 682 census tracts across the seven counties, shaded by a composite Need Score, with the selected county outlined. Click any tract for its numbers.</li>
+        <li><b>County dashboard</b> — population, poverty, uninsured, under-200%-poverty, SNAP, limited-English, and age-65+ rates, plus a 0–100 county Need Index and a bar chart ranking all seven counties.</li>
+        <li><b>Food insecurity</b> — county and child food-insecurity rates from Feeding America's Map the Meal Gap.</li>
+        <li><b>Community health burden</b> — adult prevalence of 17 chronic-disease, mental-health, and social-need measures from the CDC (PLACES), each compared to New Jersey.</li>
+        <li><b>Statewide standing</b> — where each county ranks among all 21 New Jersey counties on those health measures.</li>
+        <li><b>Highest-need tracts</b> — the neighborhood-level table that drops straight into a grant narrative.</li>
+        <li><b>Downloadable assessments</b> — a formatted Word needs-assessment for each county, fully cited, generated from the same data.</li>
+        <li><b>Funding matches</b> — open federal grant opportunities from Grants.gov, ranked by fit to each county's needs, with a plain "why it fits" case and closing dates.</li>
+        <li><b>What's new</b> — a running log of changes as the tool evolves.</li>
+        <li><b>Secure accounts</b> — sign-in with administrator-approved access for new users.</li>
+      </ul>
+
+      <h3>Where do the numbers come from?</h3>
+      <p>The U.S. Census Bureau (American Community Survey and QuickFacts), Feeding America's Map the Meal Gap, and the CDC's PLACES project — all official, public sources. Funding opportunities come from the federal Grants.gov catalog. Nothing is hand-entered or invented, and the About page lists every source with direct links.</p>
+
+      <h3>How current is it?</h3>
+      <p>An automated pipeline re-pulls the data and rebuilds the site on a fixed quarterly schedule; the funding opportunities refresh more often. The "Data &amp; updates" panel always shows the date of the most recent refresh.</p>
+
+      <h3>Can I trust the numbers?</h3>
+      <p>Yes — and you can check them yourself. Every figure traces to a specific public table you can open (the About page shows exactly how to verify each one), and the dashboard and the downloadable documents read from the identical data, so they never disagree.</p>
+
+      <h3>What are "Funding matches"?</h3>
+      <p>For the selected county, the tool pulls open federal grant opportunities and ranks them by how well they fit that county's documented needs — pairing each with the specific local statistics that make the case. It surfaces opportunities worth reviewing; it does <b>not</b> determine eligibility, so always confirm details on Grants.gov before applying.</p>
+
+      <h3>Who is it for?</h3>
+      <p>Built by <a href="https://foodaidproject.org" target="_blank" rel="noopener">Food Aid Project, Inc.</a> in partnership with Zufall Health, for the grant writers and program staff who need defensible numbers and a shortlist of fundable opportunities in minutes rather than days.</p>
+
+      <h3>What it doesn't do</h3>
+      <p>The figures are survey- and model-based <em>estimates</em>, best read as strong signals rather than exact counts, and the Need Score ranks need <em>within</em> these counties. It's a decision-support tool — not a substitute for professional grant writing or clinical judgment.</p>
     </div>
   </div>
 
@@ -709,10 +749,10 @@
 
   // ── View switching ──────────────────────────────────────────────────────
   function showView(v){
-    const views={dash:'dashView',funding:'fundingView',about:'aboutView',updates:'updatesView',admin:'adminView'};
+    const views={dash:'dashView',funding:'fundingView',about:'aboutView',faq:'faqView',updates:'updatesView',admin:'adminView'};
     Object.values(views).forEach(id=>{const el=$(id); if(el) el.style.display='none';});
     const el=$(views[v]||'dashView'); if(el) el.style.display='block';
-    const items={dash:'menuDash',funding:'menuFunding',updates:'menuUpdates',about:'menuAbout',admin:'menuApprovals'};
+    const items={dash:'menuDash',funding:'menuFunding',updates:'menuUpdates',about:'menuAbout',faq:'menuFaq',admin:'menuApprovals'};
     Object.values(items).forEach(id=>{const b=$(id); if(b) b.classList.remove('active');});
     const act=$(items[v]); if(act) act.classList.add('active');
     closeMenu();
@@ -861,6 +901,7 @@
     $('menuFunding') && $('menuFunding').addEventListener('click',()=>showView('funding'));
     $('menuUpdates') && $('menuUpdates').addEventListener('click',()=>showView('updates'));
     $('menuAbout') && $('menuAbout').addEventListener('click',()=>showView('about'));
+    $('menuFaq') && $('menuFaq').addEventListener('click',()=>showView('faq'));
     $('menuApprovals') && $('menuApprovals').addEventListener('click',()=>showView('admin'));
     const ml=$('methodLink'); if(ml) ml.addEventListener('click',e=>{e.preventDefault();showView('about');});
     $('gate').style.display='none';$('app').style.display='block';
