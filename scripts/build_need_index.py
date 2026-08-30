@@ -14,9 +14,10 @@ VARS = json.loads((ROOT / "config" / "acs_variables.json").read_text())
 RAW = ROOT / "data" / "acs_raw.csv"
 OUT = ROOT / "data" / "tracts_need.csv"
 
-# The five indicators that make up the composite Need Score (higher = more need).
+# The indicators that make up the composite tract Need Score (higher = more need).
+# All are census-tract ACS rates, min-max-normalized then averaged.
 NEED_INDICATORS = ["under_200_fpl_pct", "uninsured_pct",
-                   "pov_rate", "pct_65_plus", "lep_pct"]
+                   "pov_rate", "pct_65_plus", "lep_pct", "snap_pct"]
 
 
 def num(v):
@@ -59,6 +60,7 @@ def derive(row):
                            num(row.get("B01001_001E"))),
         "lep_pct": pct(sum_codes(row, VARS["lep_household_components"]),
                        num(row.get("C16002_001E"))),
+        "snap_pct": pct(num(row.get("B22003_002E")), num(row.get("B22003_001E"))),
         "pct_hispanic": pct(num(row.get("B03002_012E")), num(row.get("B03002_001E"))),
         "pct_black_nh": pct(num(row.get("B03002_004E")), num(row.get("B03002_001E"))),
         "pct_white_nh": pct(num(row.get("B03002_003E")), num(row.get("B03002_001E"))),
@@ -122,12 +124,31 @@ def main():
             "under_200_fpl_pct": wmean(rs, "under_200_fpl_pct"),
             "uninsured_pct": wmean(rs, "uninsured_pct"),
             "lep_pct": wmean(rs, "lep_pct"),
+            "snap_pct": wmean(rs, "snap_pct"),
             "pct_65_plus": wmean(rs, "pct_65_plus"),
             "pct_hispanic": wmean(rs, "pct_hispanic"),
             "pct_black": wmean(rs, "pct_black_nh"),
         })
-    # County need index: min-max of poverty + uninsured across the counties, x100.
-    for key in ("poverty_pct", "uninsured_pct"):
+
+    # Attach county food-insecurity estimates (Feeding America — Map the Meal Gap).
+    # County-level only (no tract breakdown), so it joins the county rollup here.
+    fi_meta = None
+    FI = ROOT / "config" / "food_insecurity.json"
+    if FI.exists():
+        fj = _json.loads(FI.read_text())
+        fi_meta = {"source": fj.get("source"), "source_url": fj.get("source_url"),
+                   "data_year": fj.get("data_year")}
+        fic = fj.get("counties", {})
+        for c in counties:
+            d = fic.get(c["county"], {})
+            c["food_insecurity_pct"] = d.get("food_insecurity_pct")
+            c["child_food_insecurity_pct"] = d.get("child_food_insecurity_pct")
+            c["food_insecure_people"] = d.get("food_insecure_people")
+
+    # County Need Index: min-max of poverty + uninsured + food insecurity across the
+    # seven counties, averaged x100 (relative ranking; 100 = highest, 0 = lowest).
+    index_keys = ("poverty_pct", "uninsured_pct", "food_insecurity_pct")
+    for key in index_keys:
         vals = [c[key] for c in counties if c.get(key) is not None]
         lo, hi = (min(vals), max(vals)) if vals else (0, 1); span = (hi - lo) or 1.0
         for c in counties:
@@ -136,7 +157,8 @@ def main():
         n = c.pop("_n"); c["need_index"] = round(100 * sum(n) / len(n), 1)
     (OUT.parent / "counties.json").write_text(_json.dumps(
         {"generated": __import__("datetime").date.today().isoformat(),
-         "source": "ACS 5-year via Needs Atlas pipeline", "counties": counties}, indent=2))
+         "source": "ACS 5-year via Needs Atlas pipeline",
+         "food_insecurity_source": fi_meta, "counties": counties}, indent=2))
     print(f"Wrote county rollup ({len(counties)} counties) -> data/counties.json")
 
     scored = [r["need_score"] for r in rows if r["need_score"] is not None]

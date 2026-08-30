@@ -10,9 +10,11 @@ census-tract concentration analysis — the thing county averages hide: how many
 neighborhoods carry above-average need, how much of the county's population lives
 in them, and where the sharpest need sits.
 
+County + tract figures come from Census ACS; the county food-insecurity figure
+comes from Feeding America's Map the Meal Gap (config/food_insecurity.json).
 Indicators that require external sources not yet wired in (United Way ALICE,
-provider-to-population ratios, chronic-disease prevalence, food insecurity) are
-listed honestly as pending — never estimated or fabricated.
+provider-to-population ratios, chronic-disease prevalence) are listed honestly
+as pending — never estimated or fabricated.
 
     python scripts/generate_assessment.py Middlesex
 """
@@ -27,17 +29,25 @@ TRACTS = ROOT / "data" / "tracts_need.csv"
 ROLLUP = ROOT / "data" / "counties.json"
 TODAY = datetime.date.today().strftime("%B %d, %Y")
 
+_FI_PATH = ROOT / "config" / "food_insecurity.json"
+FI = json.loads(_FI_PATH.read_text()) if _FI_PATH.exists() else {"counties": {}}
+FIC = FI.get("counties", {})
+
 CITES = {
     "qf": ("U.S. Census Bureau QuickFacts. {county} County, New Jersey and New Jersey. "
            "2020-2024 American Community Survey 5-Year Estimates and 2025 Population "
            "Estimates. Accessed " + TODAY + "."),
     "acs": ("U.S. Census Bureau, American Community Survey 2020-2024 5-Year Estimates, "
             "census-tract tables B27001 (health insurance), C17002 (ratio of income to "
-            "poverty), B17001 (poverty), C16002 (household language), retrieved via the "
-            "Needs Atlas data pipeline and aggregated to the tract level. Accessed "
-            + TODAY + "."),
+            "poverty), B17001 (poverty), C16002 (household language), B22003 (SNAP receipt), "
+            "retrieved via the Needs Atlas data pipeline and aggregated to the tract level. "
+            "Accessed " + TODAY + "."),
+    "feeding": ("Feeding America. Map the Meal Gap — {year} county food-insecurity estimates. "
+                "Retrieved from map.feedingamerica.org. Accessed " + TODAY + ".").format(
+                    year=FI.get("data_year", "")),
 }
 
+# External sources not yet wired in — listed honestly as pending, never fabricated.
 PENDING_ALL = [
     ("alice", "ALICE (Asset Limited, Income Constrained, Employed) household rate, county and municipal",
      "United Way United For ALICE — New Jersey"),
@@ -45,7 +55,6 @@ PENDING_ALL = [
      "New Jersey State Health Assessment Data (NJSHAD)"),
     ("chr", "Primary-care, dental, and mental-health provider-to-population ratios; severe housing problems",
      "County Health Rankings & Roadmaps (Univ. of Wisconsin)"),
-    ("feeding", "Food-insecurity rate and SNAP participation", "Feeding America — Map the Meal Gap"),
 ]
 
 CITE_RE = re.compile(r"\[\[cite:([a-z_]+)\]\]")
@@ -195,6 +204,20 @@ def build(c, tracts, ref, ranks):
         f"dental, and mental-health provider-to-population ratios — are pending source connection "
         f"(see below) and are expected to reinforce this access gap."))
 
+    fi = FIC.get(c["county"])
+    if fi and fi.get("food_insecurity_pct") is not None:
+        ppl = fi.get("food_insecure_people")
+        ppl_clause = f" — about {ppl:,} people —" if ppl else ""
+        child = fi.get("child_food_insecurity_pct")
+        child_clause = (f", and {child}% of the county's children face food insecurity"
+                        if child is not None else "")
+        secs.append((
+            "Food insecurity",
+            f"An estimated {fi['food_insecurity_pct']}% of {c['county']} County residents"
+            f"{ppl_clause} live in food-insecure households{child_clause}.[[cite:feeding]] Food "
+            f"insecurity compounds the barriers documented here: it tracks closely with low income "
+            f"and uninsurance and drives demand for the wraparound support Zufall's sites provide."))
+
     secs.append((
         "Demographics and language access",
         f"{c['county']} County is home to {c['population']:,} residents. {c['pct_hispanic']}% "
@@ -249,9 +272,10 @@ def to_docx(c, secs, order, pending, conc, path):
     r = doc.add_paragraph().add_run(f"{c['county']} County Needs Assessment — {datetime.date.today():%B %Y}")
     r.bold = True; r.font.size = Pt(16)
     note = ("County and statewide figures below are published U.S. Census Bureau values; the "
-            "census-tract concentration analysis is drawn from ACS 5-year tract tables. "
-            "ALICE, provider-ratio, chronic-disease, and food-insecurity indicators are pending "
-            "source connection and are listed at the end — not estimated.")
+            "census-tract concentration analysis is drawn from ACS 5-year tract tables; the "
+            "food-insecurity figure is from Feeding America's Map the Meal Gap. "
+            "ALICE, provider-ratio, and chronic-disease indicators are pending source "
+            "connection and are listed at the end — not estimated.")
     b = doc.add_paragraph().add_run(note)
     b.italic = True; b.font.size = Pt(8.5); b.font.color.rgb = RGBColor(0x1E, 0x6B, 0x57)
     for title, runs in secs:
@@ -294,8 +318,9 @@ def to_docx(c, secs, order, pending, conc, path):
 def to_md(c, secs, order, pending, conc):
     out = [f"# {c['county']} County Needs Assessment — {datetime.date.today():%B %Y}", "",
            "_County/state figures are published Census values; the tract concentration analysis "
-           "is from ACS 5-year tract tables. ALICE / provider / chronic-disease / food-insecurity "
-           "indicators pending (listed below) — not estimated._\n"]
+           "is from ACS 5-year tract tables; food insecurity is from Feeding America's Map the "
+           "Meal Gap. ALICE / provider / chronic-disease indicators pending (listed below) — "
+           "not estimated._\n"]
     for title, runs in secs:
         out.append(f"## {title}")
         out.append("".join(t if k == "t" else f"[{t}]" for k, t in runs) + "\n")
