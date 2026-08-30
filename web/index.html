@@ -277,8 +277,8 @@
     try{ const r=await fetch(GEOJSON_URL,{cache:'no-store'}); if(r.ok) gj=await r.json(); }catch(e){/* ignore */}
     if(!gj || !gj.features || !gj.features.length){ $('map').style.display='none'; return; }
     atlasMap=L.map('map',{scrollWheelZoom:false,zoomControl:true}).setView([40.75,-74.5],9);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-      {attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:18,subdomains:'abcd'}).addTo(atlasMap);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      {attribution:'&copy; OpenStreetMap contributors',maxZoom:18,subdomains:'abc'}).addTo(atlasMap);
     const layer=L.geoJSON(gj,{
       style:f=>({fillColor:heat(f.properties.need_score),weight:.6,color:'#ffffff',fillOpacity:.72}),
       onEachFeature:(f,lyr)=>{
