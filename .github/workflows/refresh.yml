@@ -22,12 +22,13 @@ jobs:
       - name: Install python-docx (for assessments)
         run: pip install python-docx
 
-      - name: Pull ACS + build need index + county rollup (needs CENSUS_API_KEY)
+      - name: Pull ACS + PLACES + build need index + county rollup (needs CENSUS_API_KEY)
         continue-on-error: true      # tract pull needs a Census API key; county assessments below don't
         env:
           CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
         run: |
           python scripts/pull_acs.py
+          python scripts/pull_places.py || echo "PLACES pull failed; using committed config/places.json"
           python scripts/build_need_index.py
 
       - name: Build tract map geometry for the web map (needs geopandas)
@@ -35,12 +36,6 @@ jobs:
         run: |
           pip install geopandas
           python scripts/build_geojson.py
-
-      - name: Pull PLACES (optional)
-        continue-on-error: true
-        env:
-          SOCRATA_APP_TOKEN: ${{ secrets.SOCRATA_APP_TOKEN }}
-        run: python scripts/pull_places.py
 
       - name: Generate all county assessments
         working-directory: scripts
@@ -57,6 +52,7 @@ jobs:
           git config user.email "atlas-bot@users.noreply.github.com"
           git add -f data/*.docx data/*.md 2>/dev/null || true
           git add -f data/tracts_need.csv data/counties.json 2>/dev/null || true
+          git add -f config/places.json config/food_insecurity.json 2>/dev/null || true
           git add -f web/tracts_need.csv web/counties.json web/tracts.geojson web/counties.geojson 2>/dev/null || true
           git commit -m "data: build $(date -u +%Y-%m-%d)" || echo "no changes"
           git push
