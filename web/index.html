@@ -40,6 +40,16 @@
   select,button.ghost{font-family:"Public Sans";font-size:14px;font-weight:600;color:var(--ink);background:var(--paper);border:1px solid var(--line-strong);border-radius:9px;padding:9px 12px;cursor:pointer}
   button.ghost.admin{border-color:var(--primary);color:var(--primary)}
   label.sel{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint)}
+  .menu-wrap{position:relative;display:inline-block}
+  #menuBtn{min-width:86px}
+  .menu-panel{display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--paper);border:1px solid var(--line-strong);border-radius:11px;box-shadow:var(--shadow);padding:6px;min-width:190px;z-index:30;flex-direction:column;gap:2px}
+  .menu-panel.open{display:flex}
+  .menu-item{font-family:"Public Sans";font-size:14px;font-weight:600;text-align:left;color:var(--ink);background:none;border:0;border-radius:8px;padding:9px 12px;cursor:pointer;width:100%}
+  .menu-item:hover{background:var(--paper-2)}
+  .menu-item.active{color:var(--primary);background:var(--primary-soft)}
+  .menu-item.danger{color:var(--heat-hi)}
+  .menu-sep{height:1px;background:var(--line);margin:4px 2px}
+  .hide{display:none !important}
   .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:22px 0}
   .kpi{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:var(--shadow)}
   .kpi .k{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-faint)}
@@ -175,10 +185,17 @@
     <label class="sel" for="county">County</label>
     <select id="county"></select>
     <a class="dl" id="dlbtn" href="#" download>&#8595; Assessment (Word)</a>
-    <button class="ghost" id="updatesBtn">What's new</button>
-    <button class="ghost admin" id="approvalsBtn" style="display:none">Approvals</button>
-    <button class="ghost" id="aboutBtn">About</button>
-    <button class="ghost" id="signout" style="display:none">Sign out</button>
+    <div class="menu-wrap">
+      <button class="ghost" id="menuBtn" aria-haspopup="true" aria-expanded="false">Menu &#9662;</button>
+      <div class="menu-panel" id="menuPanel">
+        <button class="menu-item" id="menuDash">Dashboard</button>
+        <button class="menu-item" id="menuUpdates">What's new</button>
+        <button class="menu-item" id="menuAbout">About</button>
+        <button class="menu-item admin hide" id="menuApprovals">Account approvals</button>
+        <div class="menu-sep"></div>
+        <button class="menu-item danger hide" id="menuSignout">Sign out</button>
+      </div>
+    </div>
   </div>
   <div id="dashView">
   <div class="kpis" id="kpis"></div>
@@ -547,13 +564,16 @@
     const views={dash:'dashView',about:'aboutView',updates:'updatesView',admin:'adminView'};
     Object.values(views).forEach(id=>{const el=$(id); if(el) el.style.display='none';});
     const el=$(views[v]||'dashView'); if(el) el.style.display='block';
-    const ab=$('aboutBtn'); if(ab) ab.textContent = v==='about' ? '← Dashboard' : 'About';
-    const ub=$('updatesBtn'); if(ub) ub.textContent = v==='updates' ? '← Dashboard' : "What's new";
+    const items={dash:'menuDash',updates:'menuUpdates',about:'menuAbout',admin:'menuApprovals'};
+    Object.values(items).forEach(id=>{const b=$(id); if(b) b.classList.remove('active');});
+    const act=$(items[v]); if(act) act.classList.add('active');
+    closeMenu();
     window.scrollTo(0,0);
     if(v==='dash' && atlasMap) setTimeout(()=>atlasMap.invalidateSize(),60);
     if(v==='updates') renderUpdates();
     if(v==='admin') renderApprovals();
   }
+  function closeMenu(){ const p=$('menuPanel'); if(p) p.classList.remove('open'); const b=$('menuBtn'); if(b) b.setAttribute('aria-expanded','false'); }
 
   // ── Firebase / auth state (assigned in the async bootstrap below) ─────────
   let auth=null, db=null, FB={}, isAdmin=false, appStarted=false, gateSubmitted=false;
@@ -611,7 +631,7 @@
 
   function showGate(mode){ $('app').style.display='none'; $('gate').style.display='flex'; gateMode(mode); }
   function enterApp(){
-    if(isAdmin){ const b=$('approvalsBtn'); if(b) b.style.display='inline-block'; }
+    if(isAdmin){ const b=$('menuApprovals'); if(b) b.classList.remove('hide'); }
     startApp();
   }
 
@@ -687,9 +707,12 @@
     const rs=$('rampswatches'); if(rs) rs.innerHTML=CLASS_COLORS.map((c,i)=>`<span class="swatch" title="${CLASS_LABELS[i]} of tracts by need" style="background:${c}"></span>`).join('');
     const src=($('datamode').textContent==='Live data'?'live U.S. Census ACS 2019–2023 5-year estimates, census-tract level':'sample data — run the pipeline for live values');
     $('foot').textContent='Needs Atlas · Food Aid Project, Inc. · '+src+(D.generated?' · Data updated '+D.generated:'');
-    $('aboutBtn').addEventListener('click',()=>showView($('aboutView').style.display==='none'?'about':'dash'));
-    $('updatesBtn').addEventListener('click',()=>showView($('updatesView').style.display==='none'?'updates':'dash'));
-    const ap=$('approvalsBtn'); if(ap) ap.addEventListener('click',()=>showView($('adminView').style.display==='none'?'admin':'dash'));
+    const mb=$('menuBtn'); if(mb) mb.addEventListener('click',e=>{e.stopPropagation();const p=$('menuPanel');const open=p.classList.toggle('open');mb.setAttribute('aria-expanded',open?'true':'false');});
+    document.addEventListener('click',e=>{ if(!e.target.closest('.menu-wrap')) closeMenu(); });
+    $('menuDash') && $('menuDash').addEventListener('click',()=>showView('dash'));
+    $('menuUpdates') && $('menuUpdates').addEventListener('click',()=>showView('updates'));
+    $('menuAbout') && $('menuAbout').addEventListener('click',()=>showView('about'));
+    $('menuApprovals') && $('menuApprovals').addEventListener('click',()=>showView('admin'));
     const ml=$('methodLink'); if(ml) ml.addEventListener('click',e=>{e.preventDefault();showView('about');});
     $('gate').style.display='none';$('app').style.display='block';
     render(D.counties[0].county);
@@ -734,8 +757,7 @@
         try{await authMod.signInWithEmailAndPassword(auth,$('email').value,$('password').value);}
         catch(e){$('err').textContent='Sign-in failed. Check your credentials.';}
       });
-      $('signout').style.display='inline-block';
-      $('signout').addEventListener('click',()=>authMod.signOut(auth));
+      const so=$('menuSignout'); if(so){ so.classList.remove('hide'); so.addEventListener('click',()=>authMod.signOut(auth)); }
       $('pendSignout') && $('pendSignout').addEventListener('click',()=>authMod.signOut(auth));
 
       authMod.onAuthStateChanged(auth,u=>{
