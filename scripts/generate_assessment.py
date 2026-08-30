@@ -33,6 +33,12 @@ _FI_PATH = ROOT / "config" / "food_insecurity.json"
 FI = json.loads(_FI_PATH.read_text()) if _FI_PATH.exists() else {"counties": {}}
 FIC = FI.get("counties", {})
 
+_PL_PATH = ROOT / "config" / "places.json"
+PL = json.loads(_PL_PATH.read_text()) if _PL_PATH.exists() else {}
+PLC = PL.get("counties", {})
+PLNJ = PL.get("nj", {})
+PLLAB = PL.get("measures", {})
+
 CITES = {
     "qf": ("U.S. Census Bureau QuickFacts. {county} County, New Jersey and New Jersey. "
            "2020-2024 American Community Survey 5-Year Estimates and 2025 Population "
@@ -45,13 +51,17 @@ CITES = {
     "feeding": ("Feeding America. Map the Meal Gap — {year} county food-insecurity estimates. "
                 "Retrieved from map.feedingamerica.org. Accessed " + TODAY + ".").format(
                     year=FI.get("data_year", "")),
+    "places": ("Centers for Disease Control and Prevention. PLACES: Local Data for Better Health, "
+               "County Data, " + str(PL.get("release", "")) + " release — model-based small-area "
+               "estimates (crude prevalence) from the Behavioral Risk Factor Surveillance System. "
+               "Retrieved from cdc.gov/places. Accessed " + TODAY + "."),
 }
 
 # External sources not yet wired in — listed honestly as pending, never fabricated.
 PENDING_ALL = [
     ("alice", "ALICE (Asset Limited, Income Constrained, Employed) household rate, county and municipal",
      "United Way United For ALICE — New Jersey"),
-    ("njshad", "Chronic-disease prevalence, prenatal care, and infant mortality (including racial disparity)",
+    ("njshad", "Prenatal care, infant mortality (including racial disparity), and neighborhood-level chronic-disease detail",
      "New Jersey State Health Assessment Data (NJSHAD)"),
     ("chr", "Primary-care, dental, and mental-health provider-to-population ratios; severe housing problems",
      "County Health Rankings & Roadmaps (Univ. of Wisconsin)"),
@@ -69,6 +79,17 @@ def num(r, k):
 
 def rel(cv, sv, hi="above", lo="below", eq="comparable to"):
     return eq if abs(cv - sv) < max(0.4, 0.03 * sv) else (hi if cv > sv else lo)
+
+
+def oxford(items):
+    items = list(items)
+    if not items:
+        return ""
+    if len(items) == 1:
+        return items[0]
+    if len(items) == 2:
+        return f"{items[0]} and {items[1]}"
+    return ", ".join(items[:-1]) + ", and " + items[-1]
 
 
 # ---------------------------------------------------------------------------
@@ -204,6 +225,35 @@ def build(c, tracts, ref, ranks):
         f"dental, and mental-health provider-to-population ratios — are pending source connection "
         f"(see below) and are expected to reinforce this access gap."))
 
+    h = PLC.get(c["county"])
+    if h and h.get("DIABETES") is not None:
+        elevated = []
+        for m in ("DIABETES", "OBESITY", "BPHIGH", "HIGHCHOL", "CHD", "STROKE",
+                  "CASTHMA", "COPD", "CANCER", "ARTHRITIS", "DEPRESSION"):
+            cv, nv = h.get(m), PLNJ.get(m)
+            if cv is not None and nv is not None and cv > nv:
+                elevated.append(PLLAB.get(m, m).lower())
+        if elevated:
+            elev_clause = (f"{c['county']} exceeds the statewide rate on {len(elevated)} of the "
+                           f"eleven tracked chronic conditions, including {oxford(elevated[:3])}. ")
+        else:
+            elev_clause = ("The county tracks at or below the statewide average across the tracked "
+                           "chronic conditions. ")
+        secs.append((
+            "Chronic disease and community health burden",
+            f"Model-based CDC estimates put adult diabetes in {c['county']} County at "
+            f"{h['DIABETES']}% (New Jersey: {PLNJ['DIABETES']}%), obesity at {h['OBESITY']}% "
+            f"(NJ: {PLNJ['OBESITY']}%), and high blood pressure at {h['BPHIGH']}% "
+            f"(NJ: {PLNJ['BPHIGH']}%).[[cite:places]] {elev_clause}"
+            f"{h['GHLTH']}% of adults report fair or poor overall health (NJ: {PLNJ['GHLTH']}%) and "
+            f"{h['MHLTH']}% report frequent mental distress (NJ: {PLNJ['MHLTH']}%). On health-related "
+            f"social needs, {h['LACKTRPT']}% of adults report a lack of reliable transportation and "
+            f"{h['HOUSINSECU']}% report housing insecurity (NJ: {PLNJ['LACKTRPT']}% and "
+            f"{PLNJ['HOUSINSECU']}%). These conditions define the day-to-day clinical demand a "
+            f"community health center must meet — and, paired with the coverage and language "
+            f"barriers documented above, the case for sustained primary, dental, and "
+            f"behavioral-health capacity."))
+
     fi = FIC.get(c["county"])
     if fi and fi.get("food_insecurity_pct") is not None:
         ppl = fi.get("food_insecure_people")
@@ -273,9 +323,10 @@ def to_docx(c, secs, order, pending, conc, path):
     r.bold = True; r.font.size = Pt(16)
     note = ("County and statewide figures below are published U.S. Census Bureau values; the "
             "census-tract concentration analysis is drawn from ACS 5-year tract tables; the "
-            "food-insecurity figure is from Feeding America's Map the Meal Gap. "
-            "ALICE, provider-ratio, and chronic-disease indicators are pending source "
-            "connection and are listed at the end — not estimated.")
+            "food-insecurity figure is from Feeding America's Map the Meal Gap; chronic-disease "
+            "and community-health figures are from the CDC's PLACES project. "
+            "ALICE and provider-ratio indicators are pending source connection and are listed "
+            "at the end — not estimated.")
     b = doc.add_paragraph().add_run(note)
     b.italic = True; b.font.size = Pt(8.5); b.font.color.rgb = RGBColor(0x1E, 0x6B, 0x57)
     for title, runs in secs:
@@ -319,8 +370,8 @@ def to_md(c, secs, order, pending, conc):
     out = [f"# {c['county']} County Needs Assessment — {datetime.date.today():%B %Y}", "",
            "_County/state figures are published Census values; the tract concentration analysis "
            "is from ACS 5-year tract tables; food insecurity is from Feeding America's Map the "
-           "Meal Gap. ALICE / provider / chronic-disease indicators pending (listed below) — "
-           "not estimated._\n"]
+           "Meal Gap; chronic disease/community health is from CDC PLACES. ALICE / provider-ratio "
+           "indicators pending (listed below) — not estimated._\n"]
     for title, runs in secs:
         out.append(f"## {title}")
         out.append("".join(t if k == "t" else f"[{t}]" for k, t in runs) + "\n")

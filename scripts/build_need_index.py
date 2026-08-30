@@ -163,6 +163,21 @@ def main():
             c["child_food_insecurity_pct"] = d.get("child_food_insecurity_pct")
             c["food_insecure_people"] = d.get("food_insecure_people")
 
+    # Attach CDC PLACES chronic-disease + access/SDOH estimates (county-level,
+    # model-based from BRFSS). Each county gets a "health" map of measureid->%,
+    # and the top-level "places" block carries labels, order and the NJ comparison.
+    places_meta = None
+    PL = ROOT / "config" / "places.json"
+    if PL.exists():
+        pj = _json.loads(PL.read_text())
+        places_meta = {"source": pj.get("source"), "source_url": pj.get("source_url"),
+                       "release": pj.get("release"), "data_value_type": pj.get("data_value_type"),
+                       "measures": pj.get("measures"), "measure_order": pj.get("measure_order"),
+                       "nj": pj.get("nj")}
+        pcs = pj.get("counties", {})
+        for c in counties:
+            c["health"] = pcs.get(c["county"])
+
     # County Need Index: min-max of poverty + uninsured + food insecurity across the
     # seven counties, averaged x100 (relative ranking; 100 = highest, 0 = lowest).
     index_keys = ("poverty_pct", "uninsured_pct", "food_insecurity_pct")
@@ -176,7 +191,8 @@ def main():
     (OUT.parent / "counties.json").write_text(_json.dumps(
         {"generated": __import__("datetime").date.today().isoformat(),
          "source": "ACS 5-year via Needs Atlas pipeline",
-         "food_insecurity_source": fi_meta, "counties": counties}, indent=2))
+         "food_insecurity_source": fi_meta, "places": places_meta,
+         "counties": counties}, indent=2))
     print(f"Wrote county rollup ({len(counties)} counties) -> data/counties.json")
 
     scored = [r["need_score"] for r in rows if r["need_score"] is not None]
