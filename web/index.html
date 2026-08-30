@@ -151,12 +151,13 @@
     <div class="panel about">
       <h2>About Needs Atlas</h2>
       <p class="lead">Needs Atlas turns official U.S. Census data into a plain, comparable picture of health and economic need across Zufall Health's seven-county service area — so a grant writer can find the hardest-hit neighborhoods and cite defensible numbers in minutes.</p>
+      <p>Needs Atlas is built by <a href="https://foodaidproject.org" target="_blank" rel="noopener">Food Aid Project, Inc.</a>, whose mission is <b>Food and Economic Security through Decision Support</b>. This tool is that mission in practice: it takes public data that is technically open but hard to actually use, and turns it into decisions that grant-makers, health centers, and food-security programs can act on.</p>
 
       <h3>What you're looking at</h3>
       <p>Every figure on this site describes real places: the seven New Jersey counties Zufall serves (Essex, Hunterdon, Middlesex, Morris, Somerset, Sussex, and Warren) and the 682 census tracts inside them. A "census tract" is a small, neighborhood-sized area of a few thousand people that the Census Bureau uses for reporting. For each tract and county we show the share of residents who are uninsured, living on a low income, over 65, or in a household with limited English — the conditions that drive demand for a community health center.</p>
 
       <h3>Where the data comes from</h3>
-      <p>Every number is pulled directly from the <b>U.S. Census Bureau's American Community Survey (ACS)</b> — the government's official, ongoing survey of American households. We use the <b>2019–2023 five-year estimates</b> (the most reliable version for small areas), pulled straight from the Census Bureau's public data API. Nothing is hand-entered, invented by us, or bought from a third party. The map's tract boundaries come from the Census Bureau's own TIGER/Line cartographic files.</p>
+      <p>Every number on the dashboard is pulled directly from the <b>U.S. Census Bureau's American Community Survey (ACS)</b> — the government's official, ongoing survey of American households. We use the <b>2019–2023 five-year estimates</b> (the most reliable version for small areas), pulled straight from the Census Bureau's public data API. Nothing is hand-entered, invented by us, or bought from a third party. The map's tract boundaries come from the Census Bureau's own TIGER/Line cartographic files, and the downloadable county assessments add county- and state-level headline figures from <a href="https://www.census.gov/quickfacts" target="_blank" rel="noopener">Census QuickFacts</a>.</p>
       <p>The data is <b>not</b> distributed as PDFs — it lives in interactive tables and an open API, so we link straight to the source. These are the exact Census tables behind each indicator; each link opens the live table on the Census Bureau's own site:</p>
       <ul>
         <li>Uninsured rate — <a href="https://data.census.gov/table/ACSDT5Y2023.B27001" target="_blank" rel="noopener">Table B27001</a> · Health Insurance Coverage by Sex by Age</li>
@@ -168,6 +169,15 @@
         <li>Total population — <a href="https://data.census.gov/table/ACSDT5Y2023.B01003" target="_blank" rel="noopener">Table B01003</a></li>
       </ul>
       <p>Browse everything at <a href="https://data.census.gov" target="_blank" rel="noopener">data.census.gov</a>, see the full list of variables we pull in the <a href="https://api.census.gov/data/2023/acs/acs5/variables.html" target="_blank" rel="noopener">ACS API definitions</a>, or find the map boundaries under the Census Bureau's <a href="https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html" target="_blank" rel="noopener">Cartographic Boundary Files</a>.</p>
+
+      <h3>Sources we're adding</h3>
+      <p>Census ACS is the backbone, but a full food- and economic-security picture draws on a few other official datasets. These are being wired in next. Until each one is connected, we <b>list it as pending rather than show a guessed number</b> — the same principle that governs the whole tool. When they're live, each will carry a source link exactly like the Census tables above:</p>
+      <ul>
+        <li>Food insecurity &amp; SNAP participation — <a href="https://map.feedingamerica.org" target="_blank" rel="noopener">Feeding America, Map the Meal Gap</a></li>
+        <li>Households that work but can't afford the basics — <a href="https://www.unitedforalice.org" target="_blank" rel="noopener">United Way, United For ALICE</a></li>
+        <li>Primary-care, dental &amp; mental-health provider-to-population ratios — <a href="https://www.countyhealthrankings.org" target="_blank" rel="noopener">County Health Rankings &amp; Roadmaps</a></li>
+        <li>Chronic-disease prevalence and preventive care — <a href="https://www.cdc.gov/places/" target="_blank" rel="noopener">CDC PLACES</a> and NJ State Health Assessment Data</li>
+      </ul>
 
       <h3>How to check a number yourself</h3>
       <p>You never have to take our word for it. To verify, say, the uninsured rate we show for Essex County:</p>
@@ -197,7 +207,9 @@
       <h3>Honest limitations</h3>
       <p>ACS figures are survey <em>estimates</em>, not a full count, so small tracts carry real margins of error — treat a single tract's number as a signal, not a precise measurement, and lean on county figures for the most stable comparisons. The Need Score ranks need <em>within</em> these seven counties, so even a "low" score here still describes a community with real needs. And because the five-year window (2019–2023) is the newest reliable ACS vintage, it can lag very recent local changes.</p>
 
-      <p class="cap" style="margin-top:20px">Needs Atlas is a project of Food Aid Project, Inc., built to support grant work at Zufall Health.</p>
+      <h3>Who builds this</h3>
+      <p>Needs Atlas is built and maintained by <a href="https://foodaidproject.org" target="_blank" rel="noopener">Food Aid Project, Inc.</a>, a nonprofit whose mission is <b>Food and Economic Security through Decision Support</b> — helping the organizations that serve low-income communities make better decisions with better information. Needs Atlas is one of those decision-support tools, developed in partnership with Zufall Health to strengthen its grant work across northern and central New Jersey.</p>
+      <p class="cap" style="margin-top:18px">Food Aid Project, Inc. · <a href="https://foodaidproject.org" target="_blank" rel="noopener">foodaidproject.org</a></p>
     </div>
   </div>
 
