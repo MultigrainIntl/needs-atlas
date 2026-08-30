@@ -20,11 +20,11 @@ Sussex County is home to 148,063 residents. 14.2% identify as Hispanic or Latino
 ## Highest-need census tracts (ACS 5-year)
 | Census tract (GEOID) | Uninsured | Below 200% FPL | Lim.-Eng. HH | Need score |
 | --- | --- | --- | --- | --- |
-| 34037373700 | 3% | 34% | 4% | 20 |
-| 34037372900 | 9% | 22% | 2% | 16 |
-| 34037371200 | 5% | 32% | 3% | 15 |
-| 34037372700 | 1% | 22% | 9% | 13 |
-| 34037372100 | 6% | 19% | 1% | 13 |
+| 34037373700 | 3% | 34% | 4% | 19 |
+| 34037372900 | 9% | 22% | 2% | 15 |
+| 34037371200 | 5% | 32% | 3% | 14 |
+| 34037373800 | 3% | 26% | 1% | 12 |
+| 34037372100 | 6% | 19% | 1% | 12 |
 
 _Group-quarters tracts (dormitories/institutional) excluded so the ranking reflects residential neighborhoods._
 

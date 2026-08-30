@@ -20,11 +20,11 @@ Essex County is home to 896,379 residents. 27.4% identify as Hispanic or Latino 
 ## Highest-need census tracts (ACS 5-year)
 | Census tract (GEOID) | Uninsured | Below 200% FPL | Lim.-Eng. HH | Need score |
 | --- | --- | --- | --- | --- |
-| 34013007000 | 56% | 70% | 55% | 51 |
-| 34013007800 | 57% | 44% | 50% | 46 |
-| 34013007600 | 49% | 54% | 53% | 46 |
-| 34013007501 | 41% | 64% | 42% | 43 |
-| 34013006900 | 45% | 41% | 50% | 43 |
+| 34013007000 | 56% | 70% | 55% | 44 |
+| 34013007501 | 41% | 64% | 42% | 41 |
+| 34013007600 | 49% | 54% | 53% | 39 |
+| 34013007800 | 57% | 44% | 50% | 39 |
+| 34013005400 | 6% | 83% | 2% | 38 |
 
 _Group-quarters tracts (dormitories/institutional) excluded so the ranking reflects residential neighborhoods._
 

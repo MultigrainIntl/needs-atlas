@@ -6,7 +6,7 @@ _County/state figures are published Census values; the tract concentration analy
 The communities Zufall Health serves within Middlesex County, New Jersey include areas of concentrated poverty and constrained access to care. Middlesex County's median household income is $111,549, above the statewide median of $103,556, and 8.3% of residents live in poverty, below the New Jersey rate of 9.2%.[1] County averages, however, flatten the neighborhoods where need concentrates — which a census-tract view brings into focus.
 
 ## Where the need concentrates: a census-tract view
-Middlesex County contains 192 census tracts. Measured against the seven-county service-area average, 59 of those tracts carry an above-average uninsured rate and 54 carry an above-average share of residents below 200% of the federal poverty level.[2] 23% of the county's residents — roughly 195,988 people — live in tracts where at least one in four residents falls below 200% of the federal poverty level. The sharpest need sits in and around Census Tract 52 (GEOID 34023005200): there, 29% of residents are uninsured and 78% live below 200% of the federal poverty level, and 16% of households are limited-English-speaking — a concentration that county-level averages hide entirely. Across the seven counties Zufall serves, Middlesex carries the second-highest composite need. This is precisely the sub-county geography a grant application must document, and it is where Zufall's sites and outreach can be targeted for greatest effect.
+Middlesex County contains 192 census tracts. Measured against the seven-county service-area average, 59 of those tracts carry an above-average uninsured rate and 54 carry an above-average share of residents below 200% of the federal poverty level.[2] 23% of the county's residents — roughly 195,988 people — live in tracts where at least one in four residents falls below 200% of the federal poverty level. The sharpest need sits in and around Census Tract 48 (GEOID 34023004800): there, 37% of residents are uninsured and 56% live below 200% of the federal poverty level, and 37% of households are limited-English-speaking — a concentration that county-level averages hide entirely. Across the seven counties Zufall serves, Middlesex carries the second-highest composite need. This is precisely the sub-county geography a grant application must document, and it is where Zufall's sites and outreach can be targeted for greatest effect.
 
 ## Barriers to care: insurance and providers
 Access to coverage is a clear barrier. 8.6% of Middlesex County residents under age 65 are uninsured, below the statewide rate of 9.1%.[1] Provider-supply measures — primary-care, dental, and mental-health provider-to-population ratios — are pending source connection (see below) and are expected to reinforce this access gap.
@@ -20,11 +20,11 @@ Middlesex County is home to 883,335 residents. 25.2% identify as Hispanic or Lat
 ## Highest-need census tracts (ACS 5-year)
 | Census tract (GEOID) | Uninsured | Below 200% FPL | Lim.-Eng. HH | Need score |
 | --- | --- | --- | --- | --- |
-| 34023005200 | 29% | 78% | 16% | 40 |
-| 34023004800 | 37% | 56% | 37% | 39 |
-| 34023004600 | 31% | 62% | 29% | 37 |
-| 34023005300 | 29% | 57% | 35% | 37 |
-| 34023005800 | 30% | 56% | 23% | 36 |
+| 34023004800 | 37% | 56% | 37% | 38 |
+| 34023005200 | 29% | 78% | 16% | 37 |
+| 34023004900 | 18% | 42% | 39% | 36 |
+| 34023004600 | 31% | 62% | 29% | 35 |
+| 34023005800 | 30% | 56% | 23% | 34 |
 
 _Group-quarters tracts (dormitories/institutional) excluded so the ranking reflects residential neighborhoods._
 

@@ -20,11 +20,11 @@ Hunterdon County is home to 131,781 residents. 10.2% identify as Hispanic or Lat
 ## Highest-need census tracts (ACS 5-year)
 | Census tract (GEOID) | Uninsured | Below 200% FPL | Lim.-Eng. HH | Need score |
 | --- | --- | --- | --- | --- |
-| 34019011400 | 12% | 24% | 19% | 20 |
-| 34019011100 | 2% | 20% | 0% | 13 |
-| 34019010802 | 4% | 20% | 1% | 12 |
-| 34019011900 | 1% | 14% | 3% | 12 |
+| 34019011400 | 12% | 24% | 19% | 18 |
+| 34019011100 | 2% | 20% | 0% | 12 |
 | 34019010300 | 6% | 17% | 2% | 11 |
+| 34019011900 | 1% | 14% | 3% | 11 |
+| 34019010802 | 4% | 20% | 1% | 10 |
 
 _Group-quarters tracts (dormitories/institutional) excluded so the ranking reflects residential neighborhoods._
 

@@ -20,11 +20,11 @@ Warren County is home to 112,953 residents. 15.5% identify as Hispanic or Latino
 ## Highest-need census tracts (ACS 5-year)
 | Census tract (GEOID) | Uninsured | Below 200% FPL | Lim.-Eng. HH | Need score |
 | --- | --- | --- | --- | --- |
-| 34041030900 | 7% | 53% | 3% | 25 |
-| 34041031601 | 3% | 21% | 0% | 17 |
-| 34041031402 | 16% | 24% | 8% | 16 |
-| 34041030600 | 6% | 27% | 2% | 15 |
-| 34041030800 | 2% | 32% | 1% | 14 |
+| 34041030900 | 7% | 53% | 3% | 28 |
+| 34041030600 | 6% | 27% | 2% | 16 |
+| 34041030700 | 9% | 30% | 0% | 15 |
+| 34041031601 | 3% | 21% | 0% | 15 |
+| 34041030800 | 2% | 32% | 1% | 15 |
 
 _Group-quarters tracts (dormitories/institutional) excluded so the ranking reflects residential neighborhoods._
 

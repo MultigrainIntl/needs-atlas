@@ -20,11 +20,11 @@ Somerset County is home to 356,486 residents. 18.9% identify as Hispanic or Lati
 ## Highest-need census tracts (ACS 5-year)
 | Census tract (GEOID) | Uninsured | Below 200% FPL | Lim.-Eng. HH | Need score |
 | --- | --- | --- | --- | --- |
-| 34035051700 | 27% | 48% | 18% | 28 |
-| 34035052002 | 20% | 34% | 21% | 26 |
-| 34035051100 | 23% | 33% | 20% | 24 |
-| 34035051800 | 26% | 31% | 16% | 22 |
-| 34035053300 | 21% | 32% | 11% | 21 |
+| 34035051700 | 27% | 48% | 18% | 26 |
+| 34035052002 | 20% | 34% | 21% | 23 |
+| 34035051100 | 23% | 33% | 20% | 22 |
+| 34035051800 | 26% | 31% | 16% | 19 |
+| 34035053300 | 21% | 32% | 11% | 19 |
 
 _Group-quarters tracts (dormitories/institutional) excluded so the ranking reflects residential neighborhoods._
 

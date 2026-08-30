@@ -20,11 +20,11 @@ Morris County is home to 524,251 residents. 17.1% identify as Hispanic or Latino
 ## Highest-need census tracts (ACS 5-year)
 | Census tract (GEOID) | Uninsured | Below 200% FPL | Lim.-Eng. HH | Need score |
 | --- | --- | --- | --- | --- |
-| 34027041705 | 2% | 28% | 37% | 33 |
-| 34027045000 | 25% | 39% | 29% | 31 |
-| 34027044800 | 30% | 56% | 18% | 30 |
-| 34027044900 | 20% | 32% | 23% | 24 |
-| 34027043802 | 18% | 30% | 23% | 22 |
+| 34027041705 | 2% | 28% | 37% | 32 |
+| 34027045000 | 25% | 39% | 29% | 28 |
+| 34027044800 | 30% | 56% | 18% | 26 |
+| 34027044900 | 20% | 32% | 23% | 22 |
+| 34027043802 | 18% | 30% | 23% | 21 |
 
 _Group-quarters tracts (dormitories/institutional) excluded so the ranking reflects residential neighborhoods._
 
