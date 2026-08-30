@@ -6,7 +6,7 @@ _County/state figures are published Census values; tract concentration from ACS 
 The communities Zufall Health serves within Sussex County, New Jersey include areas of concentrated poverty and constrained access to care. Sussex County's median household income is $116,186, above the statewide median of $103,556, and 5.2% of residents live in poverty, below the New Jersey rate of 9.2%.[1] Poverty alone understates the strain: 30.4% of Sussex County households fall below the ALICE threshold — unable to afford basic necessities despite, in most cases, being employed (New Jersey: 39.4%).[2] County averages, however, flatten the neighborhoods where need concentrates — which a census-tract view brings into focus.
 
 ## Where the need concentrates: a census-tract view
-Sussex County contains 42 census tracts. Measured against the seven-county service-area average, 2 of those tracts carry an above-average uninsured rate and 8 carry an above-average share of residents below 200% of the federal poverty level.[3] 7% of the county's residents — roughly 10,340 people — live in tracts where at least one in four residents falls below 200% of the federal poverty level. The sharpest need sits in and around Census Tract 3737 (GEOID 34037373700): there, 3% of residents are uninsured and 34% live below 200% of the federal poverty level, and 4% of households are limited-English-speaking — a concentration that county-level averages hide entirely. Across the seven counties Zufall serves, Sussex carries the fifth-highest composite need. This is precisely the sub-county geography a grant application must document, and it is where Zufall's sites and outreach can be targeted for greatest effect.
+Sussex County contains 42 census tracts. Measured against the seven-county service-area average, 2 of those tracts carry an above-average uninsured rate and 8 carry an above-average share of residents below 200% of the federal poverty level.[3] 7% of the county's residents — roughly 10,340 people — live in tracts where at least one in four residents falls below 200% of the federal poverty level. The sharpest need sits in Newton (Census Tract 3737, GEOID 34037373700): there, 3% of residents are uninsured and 34% live below 200% of the federal poverty level, and 4% of households are limited-English-speaking — a concentration that county-level averages hide entirely. Across the seven counties Zufall serves, Sussex carries the fifth-highest composite need. This is precisely the sub-county geography a grant application must document, and it is where Zufall's sites and outreach can be targeted for greatest effect.
 
 ## Barriers to care: insurance and providers
 Access to coverage is a clear barrier. 5.1% of Sussex County residents under age 65 are uninsured, below the statewide rate of 9.1%.[1] Provider supply reinforces the gap: Sussex County has roughly one primary-care physician per 2205 residents, one dentist per 1432, and one mental-health provider per 400 — against statewide figures of 1279, 1157, and 320 respectively.[4]
@@ -21,13 +21,13 @@ An estimated 9.5% of Sussex County residents — about 13,860 people — live in
 Sussex County is home to 148,063 residents. 14.2% identify as Hispanic or Latino and 4.0% as Black or African American, compared with 24.0% and 15.8% statewide.[1] Language access is a substantial need: 12.2% of residents age 5 and over speak a language other than English at home, below the New Jersey figure of 33.1%.[1] Adults age 65 and over make up 21.1% of the population (New Jersey: 18.5%).[1]
 
 ## Highest-need census tracts (ACS 5-year)
-| Census tract (GEOID) | Uninsured | Below 200% FPL | Lim.-Eng. HH | Need score |
-| --- | --- | --- | --- | --- |
-| 34037373700 | 3% | 34% | 4% | 20 |
-| 34037372900 | 9% | 22% | 2% | 16 |
-| 34037371200 | 5% | 32% | 3% | 15 |
-| 34037372700 | 1% | 22% | 9% | 13 |
-| 34037372100 | 6% | 19% | 1% | 13 |
+| Municipality | Census tract (GEOID) | Uninsured | Below 200% FPL | Lim.-Eng. HH | Need score |
+| --- | --- | --- | --- | --- | --- |
+| Newton | 3737  (34037373700) | 3% | 34% | 4% | 19 |
+| Franklin | 3729  (34037372900) | 9% | 22% | 2% | 15 |
+| Sussex | 3712  (34037371200) | 5% | 32% | 3% | 14 |
+| Newton | 3738  (34037373800) | 3% | 26% | 1% | 12 |
+| Hampton | 3721  (34037372100) | 6% | 19% | 1% | 12 |
 
 _Group-quarters tracts (dormitories/institutional) excluded so the ranking reflects residential neighborhoods._
 

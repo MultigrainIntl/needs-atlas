@@ -446,6 +446,8 @@
   const $ = id => document.getElementById(id);
   const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
   const fmt = n => n==null||n===''?'—':Number(n).toLocaleString();
+  // Census tract number, e.g. GEOID …007000 -> "70.00", …007501 -> "75.01"
+  const tractNo = g => (parseInt((''+g).slice(-6),10)/100).toFixed(2);
 
   // Exclude likely group-quarters / non-residential tracts (dorms, institutions) from the
   // "highest-need tracts" ranking — mirrors scripts/generate_assessment.py so the site and docs agree.
@@ -591,8 +593,8 @@
     $('cells').innerHTML=tr.map(t=>`<div class="cell" title="Tract ${t.GEOID} · need ${t.need_score} · uninsured ${t.uninsured_pct}%" style="background:${needColor(t.need_score)}"></div>`).join('');
     $('tableTitle').textContent='Highest-need tracts — '+name+' County';
     const trReal=tr.filter(t=>!isArtifact(t));   // residential neighborhoods only
-    $('tractTable').innerHTML='<tr><th>Tract (GEOID)</th><th>Need</th><th>Uninsured</th><th>&lt;200% FPL</th><th>Median income</th></tr>'+
-      trReal.slice(0,8).map(t=>`<tr><td class="mono">${t.GEOID}</td><td><span class="score-pill" style="background:${needColor(t.need_score)}">${t.need_score}</span></td><td>${t.uninsured_pct}%</td><td>${t.under_200_fpl_pct}%</td><td>$${fmt(t.median_hh_income)}</td></tr>`).join('');
+    $('tractTable').innerHTML='<tr><th>Location</th><th>Tract (GEOID)</th><th>Need</th><th>Uninsured</th><th>&lt;200% FPL</th><th>Median income</th></tr>'+
+      trReal.slice(0,8).map(t=>`<tr><td>${t.municipality?`<b>${t.municipality}</b>`:'<span class="ink-soft">—</span>'}</td><td class="mono" title="Census tract ${tractNo(t.GEOID)} · GEOID ${t.GEOID}">${t.municipality?'tract ':''}${tractNo(t.GEOID)}<br><span style="font-size:11px;color:var(--ink-soft)">${t.GEOID}</span></td><td><span class="score-pill" style="background:${needColor(t.need_score)}">${t.need_score}</span></td><td>${t.uninsured_pct}%</td><td>${t.under_200_fpl_pct}%</td><td>$${fmt(t.median_hh_income)}</td></tr>`).join('');
     const dl=$('dlbtn'); if(dl){dl.href=DOCS_BASE+name.toLowerCase()+'_needs_assessment.docx';dl.setAttribute('download',name+'_needs_assessment.docx');}
     renderHealth(name,c);   // CDC PLACES community health burden
     renderProviders(name);  // County Health Rankings provider-to-population ratios
@@ -774,11 +776,13 @@
     atlasMap=L.map('map',{scrollWheelZoom:false,zoomControl:true}).setView([40.75,-74.5],9);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       {attribution:'&copy; OpenStreetMap contributors',maxZoom:18,subdomains:'abc'}).addTo(atlasMap);
+    const muni=Object.fromEntries((D.tracts||[]).map(t=>[t.GEOID,t.municipality]));
     tractLayer=L.geoJSON(gj,{
       style:f=>({fillColor:needColor(f.properties.need_score),weight:.5,color:'#ffffff',fillOpacity:.82}),
       onEachFeature:(f,lyr)=>{
         const p=f.properties, pc=v=>v==null?'—':(+v).toFixed(0)+'%';
-        lyr.bindPopup(`<b>${p.county_name||p.county||''} County</b><br>Census tract ${(''+p.GEOID).slice(-6)}<br>`+
+        const town=muni[p.GEOID];
+        lyr.bindPopup(`<b>${town?town+' · ':''}${p.county_name||p.county||''} County</b><br>Census tract ${tractNo(p.GEOID)}<br>`+
           `Need score: <b>${p.need_score==null?'—':(+p.need_score).toFixed(0)}</b><br>`+
           `Uninsured: ${pc(p.uninsured_pct)} · Below 200% FPL: ${pc(p.under_200_fpl_pct)}<br>`+
           `Population: ${p.total_pop==null?'—':(+p.total_pop).toLocaleString()}`);

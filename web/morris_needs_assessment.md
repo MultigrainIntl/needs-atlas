@@ -6,7 +6,7 @@ _County/state figures are published Census values; tract concentration from ACS 
 The communities Zufall Health serves within Morris County, New Jersey include areas of concentrated poverty and constrained access to care. Morris County's median household income is $137,326, above the statewide median of $103,556, and 4.7% of residents live in poverty, below the New Jersey rate of 9.2%.[1] Poverty alone understates the strain: 31.1% of Morris County households fall below the ALICE threshold — unable to afford basic necessities despite, in most cases, being employed (New Jersey: 39.4%).[2] County averages, however, flatten the neighborhoods where need concentrates — which a census-tract view brings into focus.
 
 ## Where the need concentrates: a census-tract view
-Morris County contains 110 census tracts. Measured against the seven-county service-area average, 13 of those tracts carry an above-average uninsured rate and 19 carry an above-average share of residents below 200% of the federal poverty level.[3] 10% of the county's residents — roughly 51,322 people — live in tracts where at least one in four residents falls below 200% of the federal poverty level. The sharpest need sits in and around Census Tract 417.05 (GEOID 34027041705): there, 2% of residents are uninsured and 28% live below 200% of the federal poverty level, and 37% of households are limited-English-speaking — a concentration that county-level averages hide entirely. Across the seven counties Zufall serves, Morris carries the sixth-highest composite need. This is precisely the sub-county geography a grant application must document, and it is where Zufall's sites and outreach can be targeted for greatest effect.
+Morris County contains 110 census tracts. Measured against the seven-county service-area average, 13 of those tracts carry an above-average uninsured rate and 19 carry an above-average share of residents below 200% of the federal poverty level.[3] 10% of the county's residents — roughly 51,322 people — live in tracts where at least one in four residents falls below 200% of the federal poverty level. The sharpest need sits in Parsippany-Troy Hills (Census Tract 417.05, GEOID 34027041705): there, 2% of residents are uninsured and 28% live below 200% of the federal poverty level, and 37% of households are limited-English-speaking — a concentration that county-level averages hide entirely. Across the seven counties Zufall serves, Morris carries the sixth-highest composite need. This is precisely the sub-county geography a grant application must document, and it is where Zufall's sites and outreach can be targeted for greatest effect.
 
 ## Barriers to care: insurance and providers
 Access to coverage is a clear barrier. 5.8% of Morris County residents under age 65 are uninsured, below the statewide rate of 9.1%.[1] Provider supply reinforces the gap: Morris County has roughly one primary-care physician per 1073 residents, one dentist per 881, and one mental-health provider per 281 — against statewide figures of 1279, 1157, and 320 respectively.[4]
@@ -21,13 +21,13 @@ An estimated 9.2% of Morris County residents — about 47,530 people — live in
 Morris County is home to 524,251 residents. 17.1% identify as Hispanic or Latino and 4.9% as Black or African American, compared with 24.0% and 15.8% statewide.[1] Language access is a substantial need: 26.6% of residents age 5 and over speak a language other than English at home, below the New Jersey figure of 33.1%.[1] Adults age 65 and over make up 20.0% of the population (New Jersey: 18.5%).[1]
 
 ## Highest-need census tracts (ACS 5-year)
-| Census tract (GEOID) | Uninsured | Below 200% FPL | Lim.-Eng. HH | Need score |
-| --- | --- | --- | --- | --- |
-| 34027041705 | 2% | 28% | 37% | 33 |
-| 34027045000 | 25% | 39% | 29% | 31 |
-| 34027044800 | 30% | 56% | 18% | 30 |
-| 34027044900 | 20% | 32% | 23% | 24 |
-| 34027043802 | 18% | 30% | 23% | 22 |
+| Municipality | Census tract (GEOID) | Uninsured | Below 200% FPL | Lim.-Eng. HH | Need score |
+| --- | --- | --- | --- | --- | --- |
+| Parsippany-Troy Hills | 417.05  (34027041705) | 2% | 28% | 37% | 32 |
+| Dover | 450  (34027045000) | 25% | 39% | 29% | 28 |
+| Dover | 448  (34027044800) | 30% | 56% | 18% | 26 |
+| Dover | 449  (34027044900) | 20% | 32% | 23% | 22 |
+| Morristown | 438.02  (34027043802) | 18% | 30% | 23% | 21 |
 
 _Group-quarters tracts (dormitories/institutional) excluded so the ranking reflects residential neighborhoods._
 

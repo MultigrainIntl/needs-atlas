@@ -3,6 +3,12 @@
   "updates": [
     {
       "date": "2026-08-30",
+      "tag": "Access",
+      "title": "Census tracts now show their town",
+      "summary": "Every high-need census tract is now labeled with the municipality it falls in — the highest-need table, the map, and the county assessments read “Newark · tract 70.00” instead of a bare Census ID, so the numbers name a real place in a grant narrative."
+    },
+    {
+      "date": "2026-08-30",
       "tag": "Data",
       "title": "Economic hardship, provider access & birth outcomes added",
       "summary": "Long-pending sources wired in: United For ALICE household hardship rates (an 'ALICE households' tile), County Health Rankings provider-to-population ratios (a new Provider access panel), and low-birthweight rates — all compared with New Jersey and added to the county assessments."

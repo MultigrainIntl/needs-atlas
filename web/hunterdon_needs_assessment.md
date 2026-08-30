@@ -6,7 +6,7 @@ _County/state figures are published Census values; tract concentration from ACS 
 The communities Zufall Health serves within Hunterdon County, New Jersey include areas of concentrated poverty and constrained access to care. Hunterdon County's median household income is $141,715, above the statewide median of $103,556, and 4.5% of residents live in poverty, below the New Jersey rate of 9.2%.[1] Poverty alone understates the strain: 27.4% of Hunterdon County households fall below the ALICE threshold — unable to afford basic necessities despite, in most cases, being employed (New Jersey: 39.4%).[2] County averages, however, flatten the neighborhoods where need concentrates — which a census-tract view brings into focus.
 
 ## Where the need concentrates: a census-tract view
-Hunterdon County contains 30 census tracts. Measured against the seven-county service-area average, 2 of those tracts carry an above-average uninsured rate and 3 carry an above-average share of residents below 200% of the federal poverty level.[3] No census tract in the county reaches the threshold of a quarter or more residents below 200% of the poverty level — need here is lower and more evenly distributed than in Zufall's higher-need counties. The sharpest need sits in and around Census Tract 114 (GEOID 34019011400): there, 12% of residents are uninsured and 24% live below 200% of the federal poverty level, and 19% of households are limited-English-speaking — a concentration that county-level averages hide entirely. Across the seven counties Zufall serves, Hunterdon carries the lowest composite need. This is precisely the sub-county geography a grant application must document, and it is where Zufall's sites and outreach can be targeted for greatest effect.
+Hunterdon County contains 30 census tracts. Measured against the seven-county service-area average, 2 of those tracts carry an above-average uninsured rate and 3 carry an above-average share of residents below 200% of the federal poverty level.[3] No census tract in the county reaches the threshold of a quarter or more residents below 200% of the poverty level — need here is lower and more evenly distributed than in Zufall's higher-need counties. The sharpest need sits in Flemington (Census Tract 114, GEOID 34019011400): there, 12% of residents are uninsured and 24% live below 200% of the federal poverty level, and 19% of households are limited-English-speaking — a concentration that county-level averages hide entirely. Across the seven counties Zufall serves, Hunterdon carries the lowest composite need. This is precisely the sub-county geography a grant application must document, and it is where Zufall's sites and outreach can be targeted for greatest effect.
 
 ## Barriers to care: insurance and providers
 Access to coverage is a clear barrier. 4.7% of Hunterdon County residents under age 65 are uninsured, below the statewide rate of 9.1%.[1] Provider supply reinforces the gap: Hunterdon County has roughly one primary-care physician per 909 residents, one dentist per 1191, and one mental-health provider per 332 — against statewide figures of 1279, 1157, and 320 respectively.[4]
@@ -21,13 +21,13 @@ An estimated 7.2% of Hunterdon County residents — about 9,380 people — live 
 Hunterdon County is home to 131,781 residents. 10.2% identify as Hispanic or Latino and 3.8% as Black or African American, compared with 24.0% and 15.8% statewide.[1] Language access is a substantial need: 14.2% of residents age 5 and over speak a language other than English at home, below the New Jersey figure of 33.1%.[1] Adults age 65 and over make up 23.4% of the population (New Jersey: 18.5%).[1]
 
 ## Highest-need census tracts (ACS 5-year)
-| Census tract (GEOID) | Uninsured | Below 200% FPL | Lim.-Eng. HH | Need score |
-| --- | --- | --- | --- | --- |
-| 34019011400 | 12% | 24% | 19% | 20 |
-| 34019011100 | 2% | 20% | 0% | 13 |
-| 34019010802 | 4% | 20% | 1% | 12 |
-| 34019011900 | 1% | 14% | 3% | 12 |
-| 34019010300 | 6% | 17% | 2% | 11 |
+| Municipality | Census tract (GEOID) | Uninsured | Below 200% FPL | Lim.-Eng. HH | Need score |
+| --- | --- | --- | --- | --- | --- |
+| Flemington | 114  (34019011400) | 12% | 24% | 19% | 18 |
+| Readington | 111  (34019011100) | 2% | 20% | 0% | 12 |
+| Hampton | 103  (34019010300) | 6% | 17% | 2% | 11 |
+| Lambertville | 119  (34019011900) | 1% | 14% | 3% | 11 |
+| Lebanon | 108.02  (34019010802) | 4% | 20% | 1% | 10 |
 
 _Group-quarters tracts (dormitories/institutional) excluded so the ranking reflects residential neighborhoods._
 
