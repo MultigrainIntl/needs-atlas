@@ -57,6 +57,6 @@ jobs:
           git config user.email "atlas-bot@users.noreply.github.com"
           git add -f data/*.docx data/*.md 2>/dev/null || true
           git add -f data/tracts_need.csv data/counties.json 2>/dev/null || true
-          git add -f web/tracts_need.csv web/counties.json web/tracts.geojson 2>/dev/null || true
+          git add -f web/tracts_need.csv web/counties.json web/tracts.geojson web/counties.geojson 2>/dev/null || true
           git commit -m "data: build $(date -u +%Y-%m-%d)" || echo "no changes"
           git push
