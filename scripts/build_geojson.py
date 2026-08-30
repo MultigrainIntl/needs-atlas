@@ -47,12 +47,21 @@ def main():
     kb = OUT.stat().st_size / 1024
     print(f"Wrote {len(gdf)} tracts -> {OUT} ({kb:.0f} KB)")
 
-    # 5. County outlines for the web map — dissolve tracts by county. Best-effort:
-    #    the county boundary rarely changes, so a failure here never blocks the map.
+    # 5. County outlines for the web map — dissolve tracts by county. The per-tract
+    #    simplify above nudges shared edges out of alignment, so a plain dissolve
+    #    leaves thin internal gaps that render as stray boundary lines; a small
+    #    buffer-out / union / buffer-in closes them into one clean outer ring.
+    #    Best-effort: the county boundary rarely changes, so a failure never blocks the map.
     try:
         if "county_name" in gdf.columns:
-            cty = gdf.dissolve(by="county_name", as_index=False)[["county_name", "geometry"]]
-            cty["geometry"] = cty.geometry.simplify(0.0006, preserve_topology=True)
+            from shapely.ops import unary_union
+            eps = 0.0009   # ~90 m, larger than the 0.0004 simplify tolerance
+            rows = []
+            for name, grp in gdf.groupby("county_name"):
+                geom = unary_union([g.buffer(eps, join_style="mitre") for g in grp.geometry])
+                geom = geom.buffer(-eps, join_style="mitre").simplify(0.0004, preserve_topology=True)
+                rows.append({"county_name": name, "geometry": geom})
+            cty = gpd.GeoDataFrame(rows, crs=gdf.crs)
             COUT = ROOT / "web" / "counties.geojson"
             cty.to_file(COUT, driver="GeoJSON", coordinate_precision=5)
             print(f"Wrote {len(cty)} county outlines -> {COUT}")
