@@ -47,6 +47,18 @@ def main():
     kb = OUT.stat().st_size / 1024
     print(f"Wrote {len(gdf)} tracts -> {OUT} ({kb:.0f} KB)")
 
+    # 5. County outlines for the web map — dissolve tracts by county. Best-effort:
+    #    the county boundary rarely changes, so a failure here never blocks the map.
+    try:
+        if "county_name" in gdf.columns:
+            cty = gdf.dissolve(by="county_name", as_index=False)[["county_name", "geometry"]]
+            cty["geometry"] = cty.geometry.simplify(0.0006, preserve_topology=True)
+            COUT = ROOT / "web" / "counties.geojson"
+            cty.to_file(COUT, driver="GeoJSON", coordinate_precision=5)
+            print(f"Wrote {len(cty)} county outlines -> {COUT}")
+    except Exception as e:
+        print(f"county-outline step skipped: {e}")
+
 
 if __name__ == "__main__":
     main()
