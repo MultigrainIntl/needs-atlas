@@ -83,6 +83,9 @@
   tr.tract-extra{display:none}
   #tractWrap.tract-open{max-height:460px;overflow-y:auto}
   #tractWrap.tract-open tr.tract-extra{display:table-row}
+  /* keep the column headers pinned while the tract list scrolls (box-shadow, not
+     border-bottom, because border-collapse drops a sticky cell's border) */
+  #tractTable th{position:sticky;top:0;z-index:2;background:var(--paper);box-shadow:inset 0 -1px 0 var(--line)}
   .tract-toggle{margin-top:12px;background:none;border:1px solid var(--line-strong);color:var(--ink-soft);font:inherit;font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:8px;cursor:pointer}
   .tract-toggle:hover{border-color:var(--primary);color:var(--primary)}
   footer{margin-top:28px;padding-top:18px;border-top:1px solid var(--line);font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-faint)}
