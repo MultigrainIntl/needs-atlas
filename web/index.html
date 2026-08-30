@@ -157,7 +157,7 @@
       <p>Every figure on this site describes real places: the seven New Jersey counties Zufall serves (Essex, Hunterdon, Middlesex, Morris, Somerset, Sussex, and Warren) and the 682 census tracts inside them. A "census tract" is a small, neighborhood-sized area of a few thousand people that the Census Bureau uses for reporting. For each tract and county we show the share of residents who are uninsured, living on a low income, over 65, or in a household with limited English — the conditions that drive demand for a community health center.</p>
 
       <h3>Where the data comes from</h3>
-      <p>Every number on the dashboard is pulled directly from the <b>U.S. Census Bureau's American Community Survey (ACS)</b> — the government's official, ongoing survey of American households. We use the <b>2019–2023 five-year estimates</b> (the most reliable version for small areas), pulled straight from the Census Bureau's public data API. Nothing is hand-entered, invented by us, or bought from a third party. The map's tract boundaries come from the Census Bureau's own TIGER/Line cartographic files, and the downloadable county assessments add county- and state-level headline figures from <a href="https://www.census.gov/quickfacts" target="_blank" rel="noopener">Census QuickFacts</a>.</p>
+      <p>Nearly every number on the dashboard is pulled directly from the <b>U.S. Census Bureau's American Community Survey (ACS)</b> — the government's official, ongoing survey of American households (the one exception, food insecurity, is described just below). We use the <b>2019–2023 five-year estimates</b> (the most reliable version for small areas), pulled straight from the Census Bureau's public data API. Nothing is hand-entered, invented by us, or bought from a third party. The map's tract boundaries come from the Census Bureau's own TIGER/Line cartographic files, and the downloadable county assessments add county- and state-level headline figures from <a href="https://www.census.gov/quickfacts" target="_blank" rel="noopener">Census QuickFacts</a>.</p>
       <p>The data is <b>not</b> distributed as PDFs — it lives in interactive tables and an open API, so we link straight to the source. These are the exact Census tables behind each indicator; each link opens the live table on the Census Bureau's own site:</p>
       <ul>
         <li>Uninsured rate — <a href="https://data.census.gov/table/ACSDT5Y2023.B27001" target="_blank" rel="noopener">Table B27001</a> · Health Insurance Coverage by Sex by Age</li>
@@ -167,13 +167,16 @@
         <li>Age 65 and over — <a href="https://data.census.gov/table/ACSDT5Y2023.B01001" target="_blank" rel="noopener">Table B01001</a> · Sex by Age</li>
         <li>Median household income — <a href="https://data.census.gov/table/ACSDT5Y2023.B19013" target="_blank" rel="noopener">Table B19013</a></li>
         <li>Total population — <a href="https://data.census.gov/table/ACSDT5Y2023.B01003" target="_blank" rel="noopener">Table B01003</a></li>
+        <li>SNAP / food-stamp receipt — <a href="https://data.census.gov/table/ACSDT5Y2023.B22003" target="_blank" rel="noopener">Table B22003</a> · Receipt of Food Stamps/SNAP</li>
       </ul>
       <p>Browse everything at <a href="https://data.census.gov" target="_blank" rel="noopener">data.census.gov</a>, see the full list of variables we pull in the <a href="https://api.census.gov/data/2023/acs/acs5/variables.html" target="_blank" rel="noopener">ACS API definitions</a>, or find the map boundaries under the Census Bureau's <a href="https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html" target="_blank" rel="noopener">Cartographic Boundary Files</a>.</p>
 
-      <h3>Sources we're adding</h3>
-      <p>Census ACS is the backbone, but a full food- and economic-security picture draws on a few other official datasets. These are being wired in next. Until each one is connected, we <b>list it as pending rather than show a guessed number</b> — the same principle that governs the whole tool. When they're live, each will carry a source link exactly like the Census tables above:</p>
+      <h3>Food insecurity — Feeding America</h3>
+      <p>One headline figure comes from a single non-Census source: <b><a href="https://map.feedingamerica.org" target="_blank" rel="noopener">Feeding America's Map the Meal Gap</a></b>, the standard county estimate of how many residents — and how many children — live in food-insecure households. We use their latest release (2024 estimates). Because Map the Meal Gap is modeled at the county level, food insecurity is shown as a county figure (there is no neighborhood breakdown), and you can look up any county yourself on their interactive map.</p>
+
+      <h3>Sources we're still adding</h3>
+      <p>A few more indicators would round out the picture. They're being wired in next, and until each one is connected we <b>list it as pending rather than show a guessed number</b> — the same principle that governs the whole tool:</p>
       <ul>
-        <li>Food insecurity &amp; SNAP participation — <a href="https://map.feedingamerica.org" target="_blank" rel="noopener">Feeding America, Map the Meal Gap</a></li>
         <li>Households that work but can't afford the basics — <a href="https://www.unitedforalice.org" target="_blank" rel="noopener">United Way, United For ALICE</a></li>
         <li>Primary-care, dental &amp; mental-health provider-to-population ratios — <a href="https://www.countyhealthrankings.org" target="_blank" rel="noopener">County Health Rankings &amp; Roadmaps</a></li>
         <li>Chronic-disease prevalence and preventive care — <a href="https://www.cdc.gov/places/" target="_blank" rel="noopener">CDC PLACES</a> and NJ State Health Assessment Data</li>
@@ -189,8 +192,8 @@
       </ol>
 
       <h3>How the Need Score is calculated</h3>
-      <p>The tract <b>Need Score (0–100)</b> is a simple, transparent blend of five need indicators: the uninsured rate, the share under 200% of the poverty line, the poverty rate, the share age 65+, and the share of limited-English households. For each indicator we place every tract on a 0-to-1 scale, where the tract with the highest value in the seven counties scores 1 and the lowest scores 0 (this is called min–max normalization). We then average the five and multiply by 100. A tract scoring 80 doesn't mean "80% of anything" — it means that, blending these five needs, it sits near the top of the service area.</p>
-      <p>The <b>county Need Index</b> in the bar chart is built the same way but from two headline indicators — the poverty rate and the uninsured rate — compared across the seven counties. That's why the highest-need county scores 100 and the lowest scores 0: the index is <em>relative</em>, ranking counties against each other rather than against an absolute standard.</p>
+      <p>The tract <b>Need Score (0–100)</b> is a simple, transparent blend of six census-tract need indicators: the uninsured rate, the share under 200% of the poverty line, the poverty rate, the SNAP/food-stamp participation rate, the share age 65+, and the share of limited-English households. For each indicator we place every tract on a 0-to-1 scale, where the tract with the highest value in the seven counties scores 1 and the lowest scores 0 (this is called min–max normalization). We then average the six and multiply by 100. A tract scoring 80 doesn't mean "80% of anything" — it means that, blending these six needs, it sits near the top of the service area.</p>
+      <p>The <b>county Need Index</b> in the bar chart is built the same way but from three county headline indicators — the poverty rate, the uninsured rate, and the Feeding America food-insecurity rate — compared across the seven counties. That's why the highest-need county scores 100 and the lowest scores 0: the index is <em>relative</em>, ranking counties against each other rather than against an absolute standard. (Food insecurity is a county estimate, so it shapes the county ranking but not the individual tract scores.)</p>
 
       <h3>How it stays current</h3>
       <p>An automated pipeline re-pulls the Census data and rebuilds every number and the map on a fixed schedule — the first of January, April, July, and October each year. (The ACS survey itself only updates once a year, so a quarterly check is more than enough to stay current.) The "Data &amp; updates" panel always shows the date of the most recent successful refresh and when the next one is due. No manual work is required for the numbers to stay fresh.</p>
@@ -306,6 +309,8 @@
       need_score:c.need_index,                    // authoritative composite (matches the docs)
       uninsured_pct:c.uninsured_pct, under_200_fpl_pct:c.under_200_fpl_pct,
       lep_pct:c.lep_pct, pct_65_plus:c.pct_65_plus, pov_rate:c.poverty_pct,
+      snap_pct:c.snap_pct, food_insecurity_pct:c.food_insecurity_pct,
+      child_food_insecurity_pct:c.child_food_insecurity_pct,
       pct_hispanic:c.pct_hispanic, pct_black:c.pct_black,
       median_hh_income:c.median_hh_income
     }));
@@ -337,14 +342,17 @@
   function render(name){
     const c=D.counties.find(x=>x.county===name);
     const avg=k=>Math.round(D.counties.reduce((s,x)=>s+(+x[k]||0),0)/D.counties.length*10)/10;
+    const pctv=v=>v==null?'—':v+'%';
     const kpis=[['Population',fmt(c.population),''],['Need index',c.need_score,'0–100 · vs 7 counties',true],
-      ['Uninsured',c.uninsured_pct+'%',''],['Under 200% FPL',c.under_200_fpl_pct+'%',''],
-      ['Limited English',c.lep_pct+'%',''],['Age 65+',c.pct_65_plus+'%',''],
+      ['Food insecurity',pctv(c.food_insecurity_pct),'Feeding America'],
+      ['Uninsured',pctv(c.uninsured_pct),''],['Under 200% FPL',pctv(c.under_200_fpl_pct),''],
+      ['SNAP households',pctv(c.snap_pct),'Census ACS'],
+      ['Limited English',pctv(c.lep_pct),''],['Age 65+',pctv(c.pct_65_plus),''],
       ['Census tracts',fmt(c.tracts),'']];
     $('kpis').innerHTML=kpis.map(k=>`<div class="kpi ${k[3]?'hot':''}"><div class="k">${k[0]}</div><div class="v">${k[1]}</div><div class="u">${k[2]}</div></div>`).join('');
     const labels=D.counties.map(x=>x.county),vals=D.counties.map(x=>x.need_score);
     const colors=D.counties.map(x=>x.county===name?heat(x.need_score):cssv('--line-strong'));
-    const inds=[['Poverty','pov_rate'],['Uninsured','uninsured_pct'],['<200% FPL','under_200_fpl_pct'],['Limited Eng.','lep_pct'],['Age 65+','pct_65_plus']];
+    const inds=[['Poverty','pov_rate'],['Uninsured','uninsured_pct'],['<200% FPL','under_200_fpl_pct'],['Food insec.','food_insecurity_pct'],['SNAP','snap_pct'],['Limited Eng.','lep_pct'],['Age 65+','pct_65_plus']];
     $('profTitle').textContent=name+' County — indicator profile';
     // Charts are progressive enhancement: if Chart.js is unavailable, the tables below still render.
     if(typeof Chart!=='undefined'){
