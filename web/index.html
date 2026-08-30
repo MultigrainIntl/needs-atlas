@@ -54,6 +54,19 @@
   td.mono{font-family:"IBM Plex Mono",monospace;font-size:12.5px}
   .score-pill{display:inline-block;min-width:38px;text-align:center;padding:2px 8px;border-radius:20px;font-weight:600;font-size:12.5px;color:#fff}
   footer{margin-top:28px;padding-top:18px;border-top:1px solid var(--line);font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-faint)}
+  #map{width:100%;height:460px;border-radius:10px;margin-top:14px;border:1px solid var(--line);background:var(--paper-2)}
+  .leaflet-container{font-family:"Public Sans",sans-serif;background:var(--paper-2)}
+  .leaflet-popup-content{font-size:12.5px;line-height:1.5}
+  .leaflet-popup-content b{font-family:"Bricolage Grotesque",sans-serif}
+  .maplegend{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--ink-faint);margin-top:12px;flex-wrap:wrap}
+  .subhead{margin-top:22px}
+  a.dl{font-family:"Public Sans";font-size:13.5px;font-weight:600;color:var(--primary);text-decoration:none;border:1px solid var(--line-strong);border-radius:9px;padding:8px 12px;white-space:nowrap}
+  a.dl:hover{background:var(--primary-soft)}
+  .updrows{margin-top:10px;font-size:13.5px}
+  .updrow{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--line)}
+  .updrow .l{color:var(--ink-soft)}.updrow .r{font-weight:600;text-align:right}
+  .stat{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11.5px;font-weight:600;color:#fff}
+  .stat.ok{background:var(--primary)}.stat.bad{background:var(--heat-hi)}.stat.run{background:var(--heat-lo)}.stat.na{background:var(--line-strong);color:var(--ink-soft)}
 </style>
 </head>
 <body>
@@ -95,28 +108,35 @@
     <div class="spacer"></div>
     <label class="sel" for="county">County</label>
     <select id="county"></select>
+    <a class="dl" id="dlbtn" href="#" download>&#8595; Assessment (Word)</a>
     <button class="ghost" id="signout" style="display:none">Sign out</button>
   </div>
   <div class="kpis" id="kpis"></div>
   <div class="grid2">
-    <div class="panel"><h3>Composite need score by county</h3><div class="cap">Higher = greater concentration of low-income, uninsured, and access-barrier residents.</div><div class="chartwrap"><canvas id="countyChart"></canvas></div></div>
+    <div class="panel"><h3>Composite need score by county</h3><div class="cap">Ranked 0–100 across the seven counties: 100 = highest need, 0 = lowest. Higher = greater concentration of low-income, uninsured, and access-barrier residents.</div><div class="chartwrap"><canvas id="countyChart"></canvas></div></div>
     <div class="panel"><h3 id="profTitle">Indicator profile</h3><div class="cap">Selected county vs. the 7-county average.</div><div class="chartwrap"><canvas id="profChart"></canvas></div></div>
   </div>
   <div class="panel" style="margin-bottom:16px">
-    <h3 id="heatTitle">Tract-level need heat map</h3>
-    <div class="cap">Each square is a census tract, shaded by need score.</div>
+    <h3 id="mapTitle">Service-area need map — census tracts</h3>
+    <div class="cap">Every census tract across the seven counties, shaded by need. Click any tract for its numbers.</div>
+    <div id="map"></div>
+    <div class="maplegend"><span>Lower need</span><span class="ramp"></span><span>Higher need</span><span id="mapnote" style="margin-left:auto"></span></div>
+    <div class="subhead"><h3 id="heatTitle" style="font-size:.95rem">Compact tract grid</h3><div class="cap" style="margin-bottom:8px">Each square is one census tract in the selected county, shaded by need.</div></div>
     <div class="cells" id="cells"></div>
-    <div class="heatnote"><span>Lower</span><span class="ramp"></span><span>Higher need</span></div>
-    <iframe id="arcgis-embed" title="ArcGIS temporal heat map" style="display:none"></iframe>
-    <div class="embed-ph" id="arcgis-ph"><b>ArcGIS temporal heat map mounts here.</b> Set <span class="mono">ARCGIS_EMBED_URL</span> to your published time-enabled web map / dashboard to replace this placeholder with the live map and year slider.</div>
   </div>
   <div class="grid2">
     <div class="panel"><h3 id="tableTitle">Highest-need tracts</h3><div class="cap">The numbers that go straight into a grant narrative.</div><div style="overflow-x:auto"><table id="tractTable"></table></div></div>
-    <div class="panel"><h3>Grant materials library</h3><div class="cap">Link a shared Drive/SharePoint folder of reference docs and generated profiles.</div><div class="embed-ph" style="margin-top:6px"><b>Intelligence phase:</b> matched open grants for this profile + an auto-drafted, cited need narrative.</div></div>
+    <div class="panel"><h3>Data &amp; updates</h3><div class="cap">When the numbers refresh, and whether the last refresh worked.</div>
+      <div id="updbox" class="updrows"></div>
+      <a class="dl" id="updbtn" href="https://github.com/MultigrainIntl/needs-atlas/actions/workflows/refresh.yml" target="_blank" rel="noopener" style="margin-top:14px;display:inline-block">&#8635; Run an update now</a>
+      <div class="cap" style="margin-top:8px;font-size:11.5px">Opens GitHub — sign in and click the grey <b>Run workflow</b> button. Updates otherwise run on their own each quarter.</div>
+    </div>
   </div>
   <footer id="foot"></footer>
 </div>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="sample-data.js"></script>
 <script type="module">
@@ -131,7 +151,8 @@
   };
   const DATA_URL = "tracts_need.csv";     // built by scripts/build_need_index.py
   const COUNTIES_URL = "counties.json";   // authoritative county rollup (matches the assessment docs)
-  const ARCGIS_EMBED_URL = "";            // your published ArcGIS map/dashboard URL
+  const GEOJSON_URL = "tracts.geojson";   // tract polygons for the map (built by scripts/build_geojson.py)
+  const DOCS_BASE = "https://raw.githubusercontent.com/MultigrainIntl/needs-atlas/main/data/"; // generated assessments
   // ──────────────────────────────────────────────────────────────────────
 
   const hasFirebase = Object.keys(FIREBASE_CONFIG).length > 0;
@@ -198,14 +219,16 @@
       const r=await fetch(DATA_URL,{cache:'no-store'});
       if(r.ok){const tr=parseCSV(await r.text());if(tr.length)tracts=tr;}
     }catch(e){/* ignore */}
+    let generated=null;
     try{
       const r=await fetch(COUNTIES_URL,{cache:'no-store'});
-      if(r.ok){const j=await r.json();if(j&&j.counties&&j.counties.length)counties=normCounties(j);}
+      if(r.ok){const j=await r.json();if(j&&j.counties&&j.counties.length){counties=normCounties(j);generated=j.generated;}}
     }catch(e){/* ignore */}
     if(tracts){
       $('datamode').textContent='Live data';$('datamode').classList.add('live');
       // Prefer the authoritative county rollup; fall back to aggregating the tracts.
-      return counties ? {counties, tracts} : aggregate(tracts);
+      const base = counties ? {counties, tracts} : aggregate(tracts);
+      base.generated=generated; return base;
     }
     $('datamode').textContent='Demo data';
     return window.ATLAS_SAMPLE;
@@ -227,8 +250,9 @@
     // Charts are progressive enhancement: if Chart.js is unavailable, the tables below still render.
     if(typeof Chart!=='undefined'){
       if(countyChart)countyChart.destroy();
-      countyChart=new Chart($('countyChart'),{type:'bar',data:{labels,datasets:[{data:vals,backgroundColor:colors,borderRadius:6}]},
-        options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:cssv('--line')},ticks:{color:cssv('--ink-soft')}},x:{grid:{display:false},ticks:{color:cssv('--ink-soft'),font:{size:11}}}}}});
+      countyChart=new Chart($('countyChart'),{type:'bar',data:{labels,datasets:[{data:vals,backgroundColor:colors,borderRadius:6,minBarLength:3}]},
+        options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:105,grid:{color:cssv('--line')},ticks:{color:cssv('--ink-soft')}},x:{grid:{display:false},ticks:{color:cssv('--ink-soft'),font:{size:11}}}}},
+        plugins:[{afterDatasetsDraw(ch){const x=ch.ctx;ch.getDatasetMeta(0).data.forEach((b,i)=>{const v=ch.data.datasets[0].data[i];x.save();x.fillStyle=cssv('--ink-soft');x.font='600 11px "Public Sans"';x.textAlign='center';x.fillText(Math.round(v),b.x,b.y-5);x.restore();});}}]});
       if(profChart)profChart.destroy();
       profChart=new Chart($('profChart'),{type:'bar',data:{labels:inds.map(i=>i[0]),datasets:[
         {label:name,data:inds.map(i=>c[i[1]]),backgroundColor:cssv('--primary'),borderRadius:5},
@@ -242,16 +266,70 @@
     const trReal=tr.filter(t=>!isArtifact(t));   // residential neighborhoods only
     $('tractTable').innerHTML='<tr><th>Tract (GEOID)</th><th>Need</th><th>Uninsured</th><th>&lt;200% FPL</th><th>Median income</th></tr>'+
       trReal.slice(0,8).map(t=>`<tr><td class="mono">${t.GEOID}</td><td><span class="score-pill" style="background:${heat(t.need_score)}">${t.need_score}</span></td><td>${t.uninsured_pct}%</td><td>${t.under_200_fpl_pct}%</td><td>$${fmt(t.median_hh_income)}</td></tr>`).join('');
+    const dl=$('dlbtn'); if(dl){dl.href=DOCS_BASE+name.toLowerCase()+'_needs_assessment.docx';dl.setAttribute('download',name+'_needs_assessment.docx');}
+  }
+
+  // ── Interactive tract map (Leaflet + tracts.geojson) ────────────────────
+  let atlasMap=null;
+  async function initMap(){
+    if(atlasMap || typeof L==='undefined') return;   // once, and only if Leaflet loaded
+    let gj=null;
+    try{ const r=await fetch(GEOJSON_URL,{cache:'no-store'}); if(r.ok) gj=await r.json(); }catch(e){/* ignore */}
+    if(!gj || !gj.features || !gj.features.length){ $('map').style.display='none'; return; }
+    atlasMap=L.map('map',{scrollWheelZoom:false,zoomControl:true}).setView([40.75,-74.5],9);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+      {attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:18,subdomains:'abcd'}).addTo(atlasMap);
+    const layer=L.geoJSON(gj,{
+      style:f=>({fillColor:heat(f.properties.need_score),weight:.6,color:'#ffffff',fillOpacity:.72}),
+      onEachFeature:(f,lyr)=>{
+        const p=f.properties, pc=v=>v==null?'—':(+v).toFixed(0)+'%';
+        lyr.bindPopup(`<b>${p.county||''} County</b><br>Census tract ${(''+p.GEOID).slice(-6)}<br>`+
+          `Need score: <b>${p.need_score==null?'—':(+p.need_score).toFixed(0)}</b><br>`+
+          `Uninsured: ${pc(p.uninsured_pct)} · Below 200% FPL: ${pc(p.under_200_fpl_pct)}<br>`+
+          `Population: ${p.total_pop==null?'—':(+p.total_pop).toLocaleString()}`);
+        lyr.on({mouseover:e=>e.target.setStyle({weight:2,color:'#16211D'}),
+                mouseout:e=>layer.resetStyle(e.target)});
+      }});
+    layer.addTo(atlasMap);
+    atlasMap.fitBounds(layer.getBounds(),{padding:[12,12]});
+    $('mapnote').textContent=gj.features.length+' census tracts';
+  }
+
+  // ── Update status: next scheduled run, last run success/fail, manual trigger ──
+  function nextQuarter(){
+    const now=new Date(), months=[0,3,6,9];
+    for(let y=now.getUTCFullYear();;y++) for(const m of months){ const d=new Date(Date.UTC(y,m,1,8,0,0)); if(d>now) return d; }
+  }
+  const fmtDate=d=>d.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});
+  async function updateStatus(){
+    const box=$('updbox'); if(!box) return;
+    const nq=nextQuarter(), days=Math.ceil((nq-new Date())/86400000);
+    const rows=[['Data current as of', D.generated?fmtDate(new Date(D.generated+'T00:00:00')):'—'],
+                ['Next scheduled update', fmtDate(nq)+' · in '+days+' day'+(days===1?'':'s')]];
+    box.innerHTML=rows.map(r=>`<div class="updrow"><span class="l">${r[0]}</span><span class="r">${r[1]}</span></div>`).join('')+
+      '<div class="updrow"><span class="l">Last update run</span><span class="r" id="lastrun"><span class="stat na">checking…</span></span></div>';
+    try{
+      const r=await fetch('https://api.github.com/repos/MultigrainIntl/needs-atlas/actions/workflows/refresh.yml/runs?per_page=1');
+      const j=await r.json(); const run=j.workflow_runs&&j.workflow_runs[0]; const el=$('lastrun');
+      if(run&&el){ let cls='na',lab='unknown';
+        if(run.status!=='completed'){cls='run';lab='running…';}
+        else if(run.conclusion==='success'){cls='ok';lab='succeeded';}
+        else{cls='bad';lab='failed';}
+        el.innerHTML=`<span class="stat ${cls}">${lab}</span> ${fmtDate(new Date(run.created_at))}`;
+      } else if(el){ el.innerHTML='<span class="stat na">unavailable</span>'; }
+    }catch(e){ const el=$('lastrun'); if(el) el.innerHTML='<span class="stat na">unavailable</span>'; }
   }
 
   function startApp(){
-    if(ARCGIS_EMBED_URL){$('arcgis-embed').src=ARCGIS_EMBED_URL;$('arcgis-embed').style.display='block';$('arcgis-ph').style.display='none';}
     const sel=$('county');
     sel.innerHTML=D.counties.map(c=>`<option value="${c.county}">${c.county} County</option>`).join('');
     sel.addEventListener('change',e=>render(e.target.value));
-    $('foot').textContent='Needs Atlas · Food Aid Project, Inc. · '+($('datamode').textContent==='Live data'?'live U.S. Census ACS 2020–2024 5-year estimates, census-tract level':'sample data — run the pipeline for live values');
+    const src=($('datamode').textContent==='Live data'?'live U.S. Census ACS 2020–2024 5-year estimates, census-tract level':'sample data — run the pipeline for live values');
+    $('foot').textContent='Needs Atlas · Food Aid Project, Inc. · '+src+(D.generated?' · Data updated '+D.generated:'');
     $('gate').style.display='none';$('app').style.display='block';
     render(D.counties[0].county);
+    initMap();
+    updateStatus();
   }
 
   (async ()=>{
