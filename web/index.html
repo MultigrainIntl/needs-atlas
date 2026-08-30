@@ -371,7 +371,7 @@
       style:f=>({fillColor:needColor(f.properties.need_score),weight:.5,color:'#ffffff',fillOpacity:.82}),
       onEachFeature:(f,lyr)=>{
         const p=f.properties, pc=v=>v==null?'—':(+v).toFixed(0)+'%';
-        lyr.bindPopup(`<b>${p.county||''} County</b><br>Census tract ${(''+p.GEOID).slice(-6)}<br>`+
+        lyr.bindPopup(`<b>${p.county_name||p.county||''} County</b><br>Census tract ${(''+p.GEOID).slice(-6)}<br>`+
           `Need score: <b>${p.need_score==null?'—':(+p.need_score).toFixed(0)}</b><br>`+
           `Uninsured: ${pc(p.uninsured_pct)} · Below 200% FPL: ${pc(p.under_200_fpl_pct)}<br>`+
           `Population: ${p.total_pop==null?'—':(+p.total_pop).toLocaleString()}`);
