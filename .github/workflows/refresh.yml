@@ -39,7 +39,7 @@ jobs:
 
       - name: Pull Grants.gov funding opportunities (optional)
         continue-on-error: true
-        run: python scripts/pull_grants.py
+        run: python scripts/pull_grants.py county
 
       - name: Generate all county assessments
         working-directory: scripts

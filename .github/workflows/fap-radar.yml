@@ -1,0 +1,34 @@
+name: FAP funding radar
+
+# Refreshes Food Aid Project's own funding radar (config/fap_grants.json) from the
+# Grants.gov API each week and publishes it to the web app. Committing web/fap_grants.json
+# triggers the Firebase deploy workflow, so the radar page + weekly digest stay current.
+on:
+  schedule:
+    - cron: "0 8 * * 1"     # Mondays 08:00 UTC
+  workflow_dispatch: {}       # manual "Run workflow" button
+
+jobs:
+  radar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Pull Food Aid Project funding opportunities
+        run: python scripts/pull_grants.py fap
+
+      - name: Publish to the web app
+        run: cp config/fap_grants.json web/fap_grants.json || true
+
+      - name: Commit
+        run: |
+          git config user.name  "atlas-bot"
+          git config user.email "atlas-bot@users.noreply.github.com"
+          git add -f config/fap_grants.json web/fap_grants.json 2>/dev/null || true
+          git commit -m "fap-radar: refresh $(date -u +%Y-%m-%d)" || echo "no changes"
+          git push
