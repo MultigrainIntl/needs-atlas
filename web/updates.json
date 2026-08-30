@@ -3,6 +3,18 @@
   "updates": [
     {
       "date": "2026-08-30",
+      "tag": "Feature",
+      "title": "Funding matches — grant opportunities, ranked",
+      "summary": "A new Funding matches view pulls open federal opportunities from Grants.gov and ranks them for each county by fit to its documented needs, with the evidence to make the case. Find it in the Menu."
+    },
+    {
+      "date": "2026-08-30",
+      "tag": "Data",
+      "title": "Statewide standing added",
+      "summary": "The community-health section now shows where each county ranks among all 21 New Jersey counties, so applications can cite statewide standing rather than only a seven-county comparison."
+    },
+    {
+      "date": "2026-08-30",
       "tag": "Data",
       "title": "Chronic disease & health burden added",
       "summary": "Community health measures from the CDC's PLACES project — diabetes, obesity, high blood pressure, heart disease, mental distress, and health-related social needs like transportation and housing — now appear on the dashboard (county vs. New Jersey) and in the downloadable county assessments."

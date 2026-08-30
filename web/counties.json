@@ -105,6 +105,26 @@
         "LACKTRPT": 10.6,
         "FOODINSECU": 21.2,
         "HOUSINSECU": 18.2
+      },
+      "nj_rank": {
+        "burden": 7,
+        "DIABETES": 4,
+        "OBESITY": 14,
+        "BPHIGH": 17,
+        "HIGHCHOL": 16,
+        "CHD": 12,
+        "STROKE": 5,
+        "CASTHMA": 2,
+        "COPD": 9,
+        "CANCER": 20,
+        "ARTHRITIS": 18,
+        "DEPRESSION": 12,
+        "GHLTH": 3,
+        "MHLTH": 5,
+        "ACCESS2": 5,
+        "LACKTRPT": 2,
+        "FOODINSECU": 3,
+        "HOUSINSECU": 2
       }
     },
     {
@@ -142,6 +162,26 @@
         "LACKTRPT": 4.6,
         "FOODINSECU": 7.7,
         "HOUSINSECU": 7
+      },
+      "nj_rank": {
+        "burden": 18,
+        "DIABETES": 20,
+        "OBESITY": 17,
+        "BPHIGH": 16,
+        "HIGHCHOL": 10,
+        "CHD": 8,
+        "STROKE": 16,
+        "CASTHMA": 15,
+        "COPD": 15,
+        "CANCER": 3,
+        "ARTHRITIS": 8,
+        "DEPRESSION": 7,
+        "GHLTH": 19,
+        "MHLTH": 19,
+        "ACCESS2": 21,
+        "LACKTRPT": 21,
+        "FOODINSECU": 21,
+        "HOUSINSECU": 21
       }
     },
     {
@@ -179,6 +219,26 @@
         "LACKTRPT": 7,
         "FOODINSECU": 13.7,
         "HOUSINSECU": 11.5
+      },
+      "nj_rank": {
+        "burden": 15,
+        "DIABETES": 7,
+        "OBESITY": 10,
+        "BPHIGH": 12,
+        "HIGHCHOL": 15,
+        "CHD": 18,
+        "STROKE": 17,
+        "CASTHMA": 18,
+        "COPD": 17,
+        "CANCER": 18,
+        "ARTHRITIS": 16,
+        "DEPRESSION": 21,
+        "GHLTH": 12,
+        "MHLTH": 16,
+        "ACCESS2": 10,
+        "LACKTRPT": 10,
+        "FOODINSECU": 10,
+        "HOUSINSECU": 10
       }
     },
     {
@@ -216,6 +276,26 @@
         "LACKTRPT": 5.1,
         "FOODINSECU": 8.4,
         "HOUSINSECU": 7.6
+      },
+      "nj_rank": {
+        "burden": 21,
+        "DIABETES": 21,
+        "OBESITY": 21,
+        "BPHIGH": 19,
+        "HIGHCHOL": 6,
+        "CHD": 19,
+        "STROKE": 20,
+        "CASTHMA": 19,
+        "COPD": 19,
+        "CANCER": 8,
+        "ARTHRITIS": 13,
+        "DEPRESSION": 14,
+        "GHLTH": 21,
+        "MHLTH": 20,
+        "ACCESS2": 19,
+        "LACKTRPT": 20,
+        "FOODINSECU": 20,
+        "HOUSINSECU": 20
       }
     },
     {
@@ -253,6 +333,26 @@
         "LACKTRPT": 5.5,
         "FOODINSECU": 10.3,
         "HOUSINSECU": 8.7
+      },
+      "nj_rank": {
+        "burden": 20,
+        "DIABETES": 15,
+        "OBESITY": 18,
+        "BPHIGH": 20,
+        "HIGHCHOL": 12,
+        "CHD": 20,
+        "STROKE": 21,
+        "CASTHMA": 21,
+        "COPD": 21,
+        "CANCER": 13,
+        "ARTHRITIS": 15,
+        "DEPRESSION": 20,
+        "GHLTH": 20,
+        "MHLTH": 21,
+        "ACCESS2": 14,
+        "LACKTRPT": 18,
+        "FOODINSECU": 16,
+        "HOUSINSECU": 17
       }
     },
     {
@@ -290,6 +390,26 @@
         "LACKTRPT": 5.6,
         "FOODINSECU": 9.7,
         "HOUSINSECU": 9
+      },
+      "nj_rank": {
+        "burden": 13,
+        "DIABETES": 19,
+        "OBESITY": 16,
+        "BPHIGH": 11,
+        "HIGHCHOL": 11,
+        "CHD": 9,
+        "STROKE": 14,
+        "CASTHMA": 8,
+        "COPD": 10,
+        "CANCER": 5,
+        "ARTHRITIS": 11,
+        "DEPRESSION": 3,
+        "GHLTH": 16,
+        "MHLTH": 12,
+        "ACCESS2": 17,
+        "LACKTRPT": 17,
+        "FOODINSECU": 18,
+        "HOUSINSECU": 16
       }
     },
     {
@@ -327,7 +447,32 @@
         "LACKTRPT": 6.3,
         "FOODINSECU": 11.4,
         "HOUSINSECU": 10.1
+      },
+      "nj_rank": {
+        "burden": 9,
+        "DIABETES": 16,
+        "OBESITY": 4,
+        "BPHIGH": 7,
+        "HIGHCHOL": 7,
+        "CHD": 6,
+        "STROKE": 9,
+        "CASTHMA": 9,
+        "COPD": 6,
+        "CANCER": 4,
+        "ARTHRITIS": 4,
+        "DEPRESSION": 4,
+        "GHLTH": 13,
+        "MHLTH": 8,
+        "ACCESS2": 13,
+        "LACKTRPT": 14,
+        "FOODINSECU": 13,
+        "HOUSINSECU": 13
       }
     }
-  ]
+  ],
+  "statewide": {
+    "of": 21,
+    "source": "CDC PLACES 2025 — ranked among all 21 New Jersey counties",
+    "note": "Rank 1 = highest need in NJ. 'burden' = overall standing across all 17 health/social measures."
+  }
 }

@@ -1,0 +1,132 @@
+{
+  "source": "Grants.gov Search2 API — open federal funding opportunities",
+  "source_url": "https://www.grants.gov",
+  "pulled": "2026-08-30",
+  "note": "Open federal opportunities surfaced by keyword and matched to each county's need indicators. Always verify eligibility and full details on grants.gov before applying.",
+  "opportunities": [
+    {
+      "number": "HHS-2026-ACF-OFVPS-EV-0052",
+      "title": "Specialized Services for Abused Parents and Their Children (Demonstration Projects)",
+      "agency": "Administration for Children and Families — OFVPS",
+      "close": "2026-09-08",
+      "cfda": "93.592",
+      "themes": [
+        "maternal-child"
+      ],
+      "url": "https://www.grants.gov/search-results-detail/362404"
+    },
+    {
+      "number": "USDA-RD-HCFP-HPG-2026",
+      "title": "Rural Housing Preservation Grant",
+      "agency": "Rural Housing Service (USDA)",
+      "close": "2026-09-08",
+      "cfda": "10.433",
+      "themes": [
+        "housing",
+        "rural"
+      ],
+      "url": "https://www.grants.gov/search-results-detail/363400"
+    },
+    {
+      "number": "HRSA-27-099",
+      "title": "Fiscal Year 2027 Expanding Nutrition Services",
+      "agency": "Health Resources & Services Administration (HRSA)",
+      "close": "2026-09-09",
+      "cfda": "93.224",
+      "themes": [
+        "food",
+        "access"
+      ],
+      "url": "https://www.grants.gov/search-results-detail/362823"
+    },
+    {
+      "number": "LHC-2600-DC-0032",
+      "title": "Lead-Safe and Healthy Homes Financing Demonstration",
+      "agency": "Dept. of Housing & Urban Development (HUD)",
+      "close": "2026-09-14",
+      "cfda": "14.922",
+      "themes": [
+        "housing"
+      ],
+      "url": "https://www.grants.gov/search-results-detail/362370"
+    },
+    {
+      "number": "O-BJA-2026-172700",
+      "title": "BJA FY 2026 Second Chance Act Family-Based Substance Use Disorder Treatment Program",
+      "agency": "Bureau of Justice Assistance",
+      "close": "2026-09-24",
+      "cfda": "16.812",
+      "themes": [
+        "behavioral-health"
+      ],
+      "url": "https://www.grants.gov/search-results-detail/363638"
+    },
+    {
+      "number": "O-BJA-2026-172702",
+      "title": "BJA FY 2026 Comprehensive Opioid, Stimulant, and Substance Use Site-Based Program",
+      "agency": "Bureau of Justice Assistance",
+      "close": "2026-09-24",
+      "cfda": "16.838",
+      "themes": [
+        "behavioral-health"
+      ],
+      "url": "https://www.grants.gov/search-results-detail/363636"
+    },
+    {
+      "number": "O-BJA-2026-172676",
+      "title": "BJA FY 2026 Public Safety and Mental Health Initiative",
+      "agency": "Bureau of Justice Assistance",
+      "close": "2026-09-25",
+      "cfda": "16.745",
+      "themes": [
+        "behavioral-health"
+      ],
+      "url": "https://www.grants.gov/search-results-detail/363602"
+    },
+    {
+      "number": "USDA-AMS-TM-CCG-G-26-0001",
+      "title": "Cold Chain Grants for Emergency Food Assistance",
+      "agency": "Agricultural Marketing Service (USDA)",
+      "close": "2026-10-01",
+      "cfda": "10.197",
+      "themes": [
+        "food"
+      ],
+      "url": "https://www.grants.gov/search-results-detail/363631"
+    },
+    {
+      "number": "AC-08-20-2026",
+      "title": "Fiscal Year (FY) 2027 AmeriCorps Seniors RSVP Competition",
+      "agency": "AmeriCorps",
+      "close": "2026-10-20",
+      "cfda": "94.002",
+      "themes": [
+        "aging"
+      ],
+      "url": "https://www.grants.gov/search-results-detail/363482"
+    },
+    {
+      "number": "PA-FPH-27-001",
+      "title": "Title X Family Planning Services Grants",
+      "agency": "Office of the Assistant Secretary for Health (OASH)",
+      "close": "2027-01-11",
+      "cfda": "93.217",
+      "themes": [
+        "maternal-child",
+        "access"
+      ],
+      "url": "https://www.grants.gov/search-results-detail/361754"
+    },
+    {
+      "number": "HHS-2026-ACF-ORR-ZU-0019",
+      "title": "Home Study and Post-Release Services for Unaccompanied Children",
+      "agency": "Administration for Children and Families — ORR",
+      "close": "2027-10-01",
+      "cfda": "93.676",
+      "themes": [
+        "maternal-child"
+      ],
+      "url": "https://www.grants.gov/search-results-detail/361822"
+    }
+  ]
+}

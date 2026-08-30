@@ -50,6 +50,16 @@
   .menu-item.danger{color:var(--heat-hi)}
   .menu-sep{height:1px;background:var(--line);margin:4px 2px}
   .hide{display:none !important}
+  .grant{border:1px solid var(--line);border-radius:11px;padding:14px 16px;margin-bottom:10px;background:var(--paper)}
+  .grant-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+  .grant-title{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:1.02rem;color:var(--primary);text-decoration:none;line-height:1.25}
+  .grant-title:hover{text-decoration:underline}
+  .grant-fit{flex:none;font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:20px;font-weight:600;white-space:nowrap}
+  .grant-fit.hi{background:var(--primary);color:#fff}.grant-fit.mid{background:var(--primary-soft);color:var(--primary)}.grant-fit.lo{background:var(--paper-2);color:var(--ink-faint)}
+  .grant-meta{font-size:12px;color:var(--ink-soft);margin:6px 0}
+  .grant-why{font-size:13px;color:var(--ink);line-height:1.5}
+  .statewide-note{font-size:13px;color:var(--ink);margin:2px 0 12px;padding:9px 13px;background:var(--paper-2);border:1px solid var(--line);border-radius:9px}
+  .rank-hi{color:var(--heat-hi);font-weight:600}
   .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:22px 0}
   .kpi{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:var(--shadow)}
   .kpi .k{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-faint)}
@@ -189,6 +199,7 @@
       <button class="ghost" id="menuBtn" aria-haspopup="true" aria-expanded="false">Menu &#9662;</button>
       <div class="menu-panel" id="menuPanel">
         <button class="menu-item" id="menuDash">Dashboard</button>
+        <button class="menu-item" id="menuFunding">Funding matches</button>
         <button class="menu-item" id="menuUpdates">What's new</button>
         <button class="menu-item" id="menuAbout">About</button>
         <button class="menu-item admin hide" id="menuApprovals">Account approvals</button>
@@ -206,6 +217,7 @@
   <div class="panel" id="healthPanel" style="margin-bottom:16px;display:none">
     <h3 id="healthTitle">Community health burden — CDC PLACES</h3>
     <div class="cap">Adult prevalence in the selected county vs. New Jersey, from the CDC's model-based small-area estimates (PLACES). Higher = greater burden. <span class="mono" style="font-size:11px">▲ above NJ · ▼ below NJ</span></div>
+    <div class="statewide-note" id="healthStatewide"></div>
     <div class="chartwrap" style="height:300px"><canvas id="healthChart"></canvas></div>
     <div style="overflow-x:auto;margin-top:8px"><table id="healthTable"></table></div>
   </div>
@@ -232,6 +244,16 @@
       <h2>What's new</h2>
       <p class="lead">A running log of changes to Needs Atlas as the tool evolves — new data sources, accuracy fixes, and features. Newest first.</p>
       <div class="timeline" id="updList"></div>
+    </div>
+  </div>
+
+  <!-- Funding matches -->
+  <div id="fundingView" style="display:none">
+    <div class="panel about">
+      <h2 id="fundingTitle">Matched funding opportunities</h2>
+      <p class="lead">Open federal grant opportunities from Grants.gov, ranked by how well they fit this county's documented needs — each with the evidence to make the case. Refreshed by the pipeline; always confirm eligibility and deadlines on grants.gov before applying.</p>
+      <div id="fundingList" style="margin-top:14px"></div>
+      <p class="cap" style="margin-top:14px">Source: <a href="https://www.grants.gov" target="_blank" rel="noopener">Grants.gov</a> Search2 API. "Why it fits" is drawn from this county's Census, Feeding America, and CDC PLACES indicators. Matching surfaces opportunities worth reviewing — it is not a determination of eligibility.</p>
     </div>
   </div>
 
@@ -274,6 +296,12 @@
       <h3>Chronic disease &amp; health burden — CDC PLACES</h3>
       <p>The "community health burden" section draws on the <b><a href="https://www.cdc.gov/places/" target="_blank" rel="noopener">CDC's PLACES project</a></b> — the standard source of small-area health estimates. For each county we show the adult prevalence of chronic conditions (diabetes, obesity, high blood pressure, high cholesterol, coronary heart disease, stroke, asthma, COPD, cancer, arthritis, and depression), overall health status (fair-or-poor health, frequent mental distress), and health-related social needs (uninsured adults, lack of transportation, food insecurity, and housing insecurity), each compared to New Jersey. The NJ figure is a population-weighted average across all 21 counties. We use the latest county release (2025) and show crude prevalence — the actual share of local adults affected.</p>
       <p>An important honesty note: PLACES values are <b>model-based estimates</b>, not a direct count. The CDC builds them by combining its national health survey (BRFSS) with local demographics, which is what makes neighborhood-level health data possible at all — but they are best read as reliable indicators of relative burden rather than exact local tallies. These health measures are shown <em>alongside</em> the need score for context; the county Need Index itself stays a transparent blend of poverty, uninsured rate, and food insecurity.</p>
+
+      <h3>Finding funding — matched opportunities</h3>
+      <p>The "Funding matches" view turns the need data into a funding to-do list. It pulls <b>open federal grant opportunities</b> from the U.S. government's official <a href="https://www.grants.gov" target="_blank" rel="noopener">Grants.gov</a> catalog and ranks them for the selected county by how well they fit that county's documented needs — pairing each opportunity with the exact local statistics that make the case. A county with elevated food insecurity surfaces nutrition and food-assistance grants first; one with high behavioral-health burden surfaces mental-health and substance-use programs. Each match shows the closing date and a plain "why it fits" line drawn from the county's Census, Feeding America, and CDC PLACES numbers. It surfaces opportunities worth reviewing — it does <b>not</b> determine eligibility, so always confirm the details on Grants.gov before applying.</p>
+
+      <h3>Statewide standing</h3>
+      <p>Because health need is relative, the community-health section also shows where a county ranks among <b>all 21 New Jersey counties</b> (using the CDC PLACES measures). That lets an application state plainly that a county is, say, among the highest-need in the state on food insecurity or housing instability — a stronger, more defensible framing than a comparison against only its neighbors.</p>
 
       <h3>Sources we're still adding</h3>
       <p>A few more indicators would round out the picture. They're being wired in next, and until each one is connected we <b>list it as pending rather than show a guessed number</b> — the same principle that governs the whole tool:</p>
@@ -345,6 +373,7 @@
   const GEOJSON_URL = "tracts.geojson";   // tract polygons for the map (built by scripts/build_geojson.py)
   const COUNTY_SHAPES_URL = "counties.geojson"; // county outlines for the map (built by scripts/build_geojson.py)
   const UPDATES_URL = "updates.json";     // the "What's new" feed
+  const GRANTS_URL = "grants.json";       // matched funding opportunities (Grants.gov)
   const DOCS_BASE = "https://raw.githubusercontent.com/MultigrainIntl/needs-atlas/main/data/"; // generated assessments
   // ──────────────────────────────────────────────────────────────────────
 
@@ -421,6 +450,7 @@
       child_food_insecurity_pct:c.child_food_insecurity_pct,
       pct_hispanic:c.pct_hispanic, pct_black:c.pct_black,
       health:c.health,                            // CDC PLACES chronic-disease/access map
+      nj_rank:c.nj_rank,                          // statewide rank among 21 NJ counties
       median_hh_income:c.median_hh_income
     }));
   }
@@ -432,16 +462,18 @@
       const r=await fetch(DATA_URL,{cache:'no-store'});
       if(r.ok){const tr=parseCSV(await r.text());if(tr.length)tracts=tr;}
     }catch(e){/* ignore */}
-    let generated=null, places=null;
+    let generated=null, places=null, statewide=null;
     try{
       const r=await fetch(COUNTIES_URL,{cache:'no-store'});
-      if(r.ok){const j=await r.json();if(j&&j.counties&&j.counties.length){counties=normCounties(j);generated=j.generated;places=j.places||null;}}
+      if(r.ok){const j=await r.json();if(j&&j.counties&&j.counties.length){counties=normCounties(j);generated=j.generated;places=j.places||null;statewide=j.statewide||null;}}
     }catch(e){/* ignore */}
+    let grants=null;
+    try{ const r=await fetch(GRANTS_URL,{cache:'no-store'}); if(r.ok){const g=await r.json(); if(g&&g.opportunities) grants=g;} }catch(e){/* ignore */}
     if(tracts){
       $('datamode').textContent='Live data';$('datamode').classList.add('live');
       // Prefer the authoritative county rollup; fall back to aggregating the tracts.
       const base = counties ? {counties, tracts} : aggregate(tracts);
-      base.generated=generated; base.places=places; return base;
+      base.generated=generated; base.places=places; base.statewide=statewide; base.grants=grants; return base;
     }
     $('datamode').textContent='Demo data';
     return window.ATLAS_SAMPLE;
@@ -488,6 +520,7 @@
       trReal.slice(0,8).map(t=>`<tr><td class="mono">${t.GEOID}</td><td><span class="score-pill" style="background:${needColor(t.need_score)}">${t.need_score}</span></td><td>${t.uninsured_pct}%</td><td>${t.under_200_fpl_pct}%</td><td>$${fmt(t.median_hh_income)}</td></tr>`).join('');
     const dl=$('dlbtn'); if(dl){dl.href=DOCS_BASE+name.toLowerCase()+'_needs_assessment.docx';dl.setAttribute('download',name+'_needs_assessment.docx');}
     renderHealth(name,c);   // CDC PLACES community health burden
+    renderFunding(name,c);  // Grants.gov opportunities matched to this county
     focusCounty(name);   // outline + zoom the map to the selected county
   }
 
@@ -499,6 +532,16 @@
     panel.style.display='block';
     $('healthTitle').textContent=name+' County — community health burden';
     const nj=P.nj||{}, order=P.measure_order||Object.keys(P.measures||{}), labels=P.measures||{};
+    const nr=c.nj_rank, sw=D.statewide, swEl=$('healthStatewide');
+    if(swEl){
+      if(nr&&sw){
+        const worst=Object.keys(nr).filter(k=>k!=='burden'&&nr[k]!=null&&nr[k]<=5).sort((a,b)=>nr[a]-nr[b]).slice(0,4)
+          .map(k=>`${(labels[k]||k).toLowerCase()} (#${nr[k]})`);
+        swEl.style.display='block';
+        swEl.innerHTML=`<b>Statewide standing:</b> ${name} ranks <b>#${nr.burden} of ${sw.of}</b> New Jersey counties on overall health burden`+
+          (worst.length?`, and among the highest-need statewide on ${worst.join(', ')}`:'')+`. <span style="color:var(--ink-faint)">(1 = highest need in NJ)</span>`;
+      } else swEl.style.display='none';
+    }
     const ck=HEALTH_CHART.filter(m=>h[m]!=null);
     if(typeof Chart!=='undefined'){
       if(healthChart)healthChart.destroy();
@@ -513,9 +556,70 @@
       let flag='—';
       if(d!=null){ if(d>0) flag=`<span style="color:var(--heat-hi);font-weight:600">▲ +${d}</span>`;
         else if(d<0) flag=`<span style="color:var(--primary);font-weight:600">▼ ${d}</span>`; else flag='±0'; }
-      return `<tr><td>${labels[m]||m}</td><td class="mono">${cv}%</td><td class="mono">${nv==null?'—':nv+'%'}</td><td>${flag}</td></tr>`;
+      const rk = (nr&&nr[m]!=null) ? `<span class="${nr[m]<=5?'rank-hi':''}">#${nr[m]}/${sw?sw.of:21}</span>` : '—';
+      return `<tr><td>${labels[m]||m}</td><td class="mono">${cv}%</td><td class="mono">${nv==null?'—':nv+'%'}</td><td>${flag}</td><td class="mono">${rk}</td></tr>`;
     }).join('');
-    $('healthTable').innerHTML='<tr><th>Measure</th><th>'+name+'</th><th>New Jersey</th><th>vs NJ</th></tr>'+rowsHtml;
+    $('healthTable').innerHTML='<tr><th>Measure</th><th>'+name+'</th><th>New Jersey</th><th>vs NJ</th><th>NJ rank</th></tr>'+rowsHtml;
+  }
+
+  // ── Funding matches (Grants.gov opportunities scored against county need) ──
+  const THEME_LABEL={food:'Food security',"chronic-disease":'Chronic disease',"behavioral-health":'Behavioral health',
+    access:'Access to care',housing:'Housing',aging:'Older adults',"maternal-child":'Maternal & child',
+    equity:'Equity / language',rural:'Rural',general:'Community health center'};
+  function elevatedThemes(c){
+    const nj=(D.places&&D.places.nj)||{}, h=c.health||{};
+    const gt=(m,ref)=>h[m]!=null&&ref!=null&&h[m]>ref;
+    return {
+      food: gt('FOODINSECU',nj.FOODINSECU) || (c.food_insecurity_pct!=null&&c.food_insecurity_pct>14),
+      "chronic-disease": ['DIABETES','OBESITY','BPHIGH','CHD','STROKE','HIGHCHOL'].some(m=>gt(m,nj[m])),
+      "behavioral-health": gt('DEPRESSION',nj.DEPRESSION)||gt('MHLTH',nj.MHLTH),
+      access: gt('ACCESS2',nj.ACCESS2) || (c.uninsured_pct!=null&&c.uninsured_pct>8),
+      housing: gt('HOUSINSECU',nj.HOUSINSECU),
+      aging: c.pct_65_plus!=null&&c.pct_65_plus>17,
+      "maternal-child": (c.child_food_insecurity_pct!=null&&c.child_food_insecurity_pct>14)||(c.poverty_pct!=null&&c.poverty_pct>10),
+      equity: (c.lep_pct!=null&&c.lep_pct>15)||(c.pct_hispanic!=null&&c.pct_hispanic>25)||(c.pct_black!=null&&c.pct_black>20),
+      rural: false
+    };
+  }
+  function themeEvidence(t,c){
+    const nj=(D.places&&D.places.nj)||{}, h=c.health||{}, L=(D.places&&D.places.measures)||{};
+    switch(t){
+      case 'food': return h.FOODINSECU!=null?`food insecurity ${h.FOODINSECU}% vs ${nj.FOODINSECU}% NJ`:`food insecurity ${c.food_insecurity_pct}%`;
+      case 'chronic-disease': {const m=['DIABETES','OBESITY','BPHIGH','CHD'].find(x=>h[x]!=null&&nj[x]!=null&&h[x]>nj[x]); return m?`${(L[m]||m).toLowerCase()} ${h[m]}% vs ${nj[m]}% NJ`:'elevated chronic disease';}
+      case 'behavioral-health': return (h.DEPRESSION>nj.DEPRESSION)?`depression ${h.DEPRESSION}% vs ${nj.DEPRESSION}% NJ`:`frequent mental distress ${h.MHLTH}% vs ${nj.MHLTH}% NJ`;
+      case 'access': return c.uninsured_pct!=null?`uninsured ${c.uninsured_pct}%`:`uninsured adults ${h.ACCESS2}% vs ${nj.ACCESS2}% NJ`;
+      case 'housing': return `housing insecurity ${h.HOUSINSECU}% vs ${nj.HOUSINSECU}% NJ`;
+      case 'aging': return `${c.pct_65_plus}% age 65+`;
+      case 'maternal-child': return c.child_food_insecurity_pct!=null?`${c.child_food_insecurity_pct}% child food insecurity`:`poverty ${c.poverty_pct}%`;
+      case 'equity': return c.lep_pct!=null?`${c.lep_pct}% limited-English households`:`${c.pct_hispanic}% Hispanic`;
+      default: return null;
+    }
+  }
+  function renderFunding(name,c){
+    const box=$('fundingList'); if(!box) return;
+    if(!D.grants||!D.grants.opportunities){ box.innerHTML='<p class="cap">The funding feed isn\'t available right now.</p>'; return; }
+    $('fundingTitle').textContent=name+' County — matched funding opportunities';
+    const elev=elevatedThemes(c);
+    const scored=D.grants.opportunities.map(o=>{
+      let score=0; const matched=[];
+      (o.themes||[]).forEach(t=>{ if(t==='general'){score+=0.4;} else if(elev[t]){score+=1; matched.push(t);} });
+      return {o,score,matched};
+    }).sort((a,b)=> b.score-a.score || (new Date(a.o.close)-new Date(b.o.close)));
+    const today=new Date();
+    box.innerHTML=scored.map(({o,matched})=>{
+      const days=Math.ceil((new Date(o.close+'T00:00:00')-today)/86400000);
+      const urg=days<=30?'var(--heat-hi)':(days<=60?'var(--heat-lo)':'var(--ink-faint)');
+      const fitCls=matched.length>=2?'hi':(matched.length===1?'mid':'lo');
+      const fit=matched.length>=2?'Strong match':(matched.length===1?'Good match':'General');
+      const why=matched.length
+        ? `<b>Why it fits ${name}:</b> `+matched.map(t=>`${THEME_LABEL[t]} (${themeEvidence(t,c)})`).filter(Boolean).join('; ')+'.'
+        : 'Core community-health-center program — broadly relevant to an FQHC.';
+      return `<div class="grant"><div class="grant-top">`+
+        `<a href="${o.url}" target="_blank" rel="noopener" class="grant-title">${o.title}</a>`+
+        `<span class="grant-fit ${fitCls}">${fit}</span></div>`+
+        `<div class="grant-meta">${o.agency} · Closes <b style="color:${urg}">${fmtDate(new Date(o.close+'T00:00:00'))}</b> (${days} day${days===1?'':'s'}) · CFDA ${o.cfda||'—'} · ${o.number}</div>`+
+        `<div class="grant-why">${why}</div></div>`;
+    }).join('');
   }
 
   // ── Interactive tract map (Leaflet + tracts.geojson) ────────────────────
@@ -605,10 +709,10 @@
 
   // ── View switching ──────────────────────────────────────────────────────
   function showView(v){
-    const views={dash:'dashView',about:'aboutView',updates:'updatesView',admin:'adminView'};
+    const views={dash:'dashView',funding:'fundingView',about:'aboutView',updates:'updatesView',admin:'adminView'};
     Object.values(views).forEach(id=>{const el=$(id); if(el) el.style.display='none';});
     const el=$(views[v]||'dashView'); if(el) el.style.display='block';
-    const items={dash:'menuDash',updates:'menuUpdates',about:'menuAbout',admin:'menuApprovals'};
+    const items={dash:'menuDash',funding:'menuFunding',updates:'menuUpdates',about:'menuAbout',admin:'menuApprovals'};
     Object.values(items).forEach(id=>{const b=$(id); if(b) b.classList.remove('active');});
     const act=$(items[v]); if(act) act.classList.add('active');
     closeMenu();
@@ -754,6 +858,7 @@
     const mb=$('menuBtn'); if(mb) mb.addEventListener('click',e=>{e.stopPropagation();const p=$('menuPanel');const open=p.classList.toggle('open');mb.setAttribute('aria-expanded',open?'true':'false');});
     document.addEventListener('click',e=>{ if(!e.target.closest('.menu-wrap')) closeMenu(); });
     $('menuDash') && $('menuDash').addEventListener('click',()=>showView('dash'));
+    $('menuFunding') && $('menuFunding').addEventListener('click',()=>showView('funding'));
     $('menuUpdates') && $('menuUpdates').addEventListener('click',()=>showView('updates'));
     $('menuAbout') && $('menuAbout').addEventListener('click',()=>showView('about'));
     $('menuApprovals') && $('menuApprovals').addEventListener('click',()=>showView('admin'));
