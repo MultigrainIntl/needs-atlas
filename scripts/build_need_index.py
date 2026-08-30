@@ -199,6 +199,15 @@ def main():
         alc = alj.get("counties", {})
         for c in counties:
             c["alice_pct"] = (alc.get(c["county"], {}) or {}).get("pct_below_alice")
+    maternal_meta = None
+    MT = ROOT / "config" / "maternal.json"
+    if MT.exists():
+        mtj = _json.loads(MT.read_text())
+        maternal_meta = {"source": mtj.get("source"), "source_url": mtj.get("source_url"),
+                         "release": mtj.get("release"), "nj": mtj.get("nj")}
+        mtc = mtj.get("counties", {})
+        for c in counties:
+            c["low_birthweight_pct"] = (mtc.get(c["county"], {}) or {}).get("low_birthweight_pct")
 
     # County Need Index: min-max of poverty + uninsured + food insecurity across the
     # seven counties, averaged x100 (relative ranking; 100 = highest, 0 = lowest).
@@ -214,7 +223,7 @@ def main():
         {"generated": __import__("datetime").date.today().isoformat(),
          "source": "ACS 5-year via Needs Atlas pipeline",
          "food_insecurity_source": fi_meta, "places": places_meta,
-         "providers": providers_meta, "alice": alice_meta,
+         "providers": providers_meta, "alice": alice_meta, "maternal": maternal_meta,
          "counties": counties}, indent=2))
     print(f"Wrote county rollup ({len(counties)} counties) -> data/counties.json")
 

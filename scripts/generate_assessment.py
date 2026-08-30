@@ -49,6 +49,11 @@ AL = json.loads(_AL_PATH.read_text()) if _AL_PATH.exists() else {}
 ALC = AL.get("counties", {})
 ALNJ = AL.get("nj", {})
 
+_MT_PATH = ROOT / "config" / "maternal.json"
+MT = json.loads(_MT_PATH.read_text()) if _MT_PATH.exists() else {}
+MTC = MT.get("counties", {})
+MTNJ = MT.get("nj", {})
+
 CITES = {
     "qf": ("U.S. Census Bureau QuickFacts. {county} County, New Jersey and New Jersey. "
            "2020-2024 American Community Survey 5-Year Estimates and 2025 Population "
@@ -261,6 +266,9 @@ def build(c, tracts, ref, ranks):
         else:
             elev_clause = ("The county tracks at or below the statewide average across the tracked "
                            "chronic conditions. ")
+        mlbw = (MTC.get(c["county"]) or {}).get("low_birthweight_pct")
+        lbw_txt = (f" Birth outcomes reflect the same pressures: {mlbw}% of live births in {c['county']} "
+                   f"County are low birthweight (New Jersey: {MTNJ.get('low_birthweight_pct')}%).[[cite:chr]]") if mlbw is not None else ""
         secs.append((
             "Chronic disease and community health burden",
             f"Model-based CDC estimates put adult diabetes in {c['county']} County at "
@@ -274,7 +282,7 @@ def build(c, tracts, ref, ranks):
             f"{PLNJ['HOUSINSECU']}%). These conditions define the day-to-day clinical demand a "
             f"community health center must meet — and, paired with the coverage and language "
             f"barriers documented above, the case for sustained primary, dental, and "
-            f"behavioral-health capacity."))
+            f"behavioral-health capacity." + lbw_txt))
 
     fi = FIC.get(c["county"])
     if fi and fi.get("food_insecurity_pct") is not None:
