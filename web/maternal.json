@@ -1,0 +1,32 @@
+{
+  "source": "County Health Rankings & Roadmaps, 2025 release (Univ. of Wisconsin Population Health Institute)",
+  "source_url": "https://www.countyhealthrankings.org",
+  "release": "2025",
+  "metric": "Low birthweight \u2014 share of live births under 2,500 grams",
+  "nj": {
+    "low_birthweight_pct": 8
+  },
+  "counties": {
+    "Essex": {
+      "low_birthweight_pct": 9
+    },
+    "Hunterdon": {
+      "low_birthweight_pct": 6
+    },
+    "Middlesex": {
+      "low_birthweight_pct": 8
+    },
+    "Morris": {
+      "low_birthweight_pct": 6
+    },
+    "Somerset": {
+      "low_birthweight_pct": 7
+    },
+    "Sussex": {
+      "low_birthweight_pct": 6
+    },
+    "Warren": {
+      "low_birthweight_pct": 7
+    }
+  }
+}
