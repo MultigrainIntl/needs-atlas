@@ -14,7 +14,9 @@
     "B03002_004E": "black_nh",
     "B03002_006E": "asian_nh",
     "B03002_012E": "hispanic",
-    "C16002_001E": "lep_universe"
+    "C16002_001E": "lep_universe",
+    "B22003_001E": "snap_universe",
+    "B22003_002E": "snap_received"
   },
 
   "_derived_note": "The lists below are summed in build_need_index.py to form numerators.",

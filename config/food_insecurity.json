@@ -1,0 +1,16 @@
+{
+  "_comment": "County food-insecurity estimates from Feeding America's Map the Meal Gap. This is a COUNTY-level modeled estimate — there is no census-tract breakdown — so it is joined at the county level in build_need_index.py. Values retrieved from the public Map the Meal Gap data feed (map.feedingamerica.org). Update data_year + values when Feeding America publishes a newer release.",
+  "source": "Feeding America, Map the Meal Gap — 2024 county food-insecurity estimates",
+  "source_url": "https://map.feedingamerica.org",
+  "data_year": 2024,
+  "retrieved": "2026-08-30",
+  "counties": {
+    "Essex":     {"food_insecurity_pct": 15.3, "food_insecure_people": 132460, "child_food_insecurity_pct": 21.6, "food_insecure_children": 44090, "cost_per_meal": 4.54, "annual_budget_shortfall": 114200000},
+    "Hunterdon": {"food_insecurity_pct": 7.2,  "food_insecure_people": 9380,   "child_food_insecurity_pct": 6.6,  "food_insecure_children": 1630,  "cost_per_meal": 4.10, "annual_budget_shortfall": 7301000},
+    "Middlesex": {"food_insecurity_pct": 12.3, "food_insecure_people": 106870, "child_food_insecurity_pct": 15.4, "food_insecure_children": 28770, "cost_per_meal": 3.93, "annual_budget_shortfall": 79796000},
+    "Morris":    {"food_insecurity_pct": 9.2,  "food_insecure_people": 47530,  "child_food_insecurity_pct": 8.6,  "food_insecure_children": 9120,  "cost_per_meal": 4.43, "annual_budget_shortfall": 39955000},
+    "Somerset":  {"food_insecurity_pct": 8.8,  "food_insecure_people": 30630,  "child_food_insecurity_pct": 9.5,  "food_insecure_children": 7030,  "cost_per_meal": 4.31, "annual_budget_shortfall": 25040000},
+    "Sussex":    {"food_insecurity_pct": 9.5,  "food_insecure_people": 13860,  "child_food_insecurity_pct": 9.5,  "food_insecure_children": 2690,  "cost_per_meal": 4.19, "annual_budget_shortfall": 11026000},
+    "Warren":    {"food_insecurity_pct": 11.0, "food_insecure_people": 12160,  "child_food_insecurity_pct": 13.1, "food_insecure_children": 2800,  "cost_per_meal": 4.02, "annual_budget_shortfall": 9291000}
+  }
+}
