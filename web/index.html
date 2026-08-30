@@ -22,16 +22,23 @@
   #gate h1{font-size:1.8rem;letter-spacing:-.02em}
   #gate .org{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--primary);letter-spacing:.08em;text-transform:uppercase;margin:8px 0 20px}
   #gate input{width:100%;font-family:"Public Sans";font-size:14px;padding:11px 13px;border:1px solid var(--line-strong);border-radius:9px;margin-bottom:10px;background:var(--paper-2);color:var(--ink)}
-  #gate button{font-family:"Public Sans";font-weight:600;font-size:15px;background:var(--primary);color:#fff;border:0;border-radius:10px;padding:12px 22px;cursor:pointer;width:100%}
-  #gate button:hover{background:var(--primary-deep)}
+  #gate button.primary{font-family:"Public Sans";font-weight:600;font-size:15px;background:var(--primary);color:#fff;border:0;border-radius:10px;padding:12px 22px;cursor:pointer;width:100%}
+  #gate button.primary:hover{background:var(--primary-deep)}
+  #gate button.primary:disabled{opacity:.5;cursor:not-allowed}
   #gate .err{color:var(--heat-hi);font-size:13px;min-height:18px;margin-top:8px}
+  #gate .note{font-size:12.5px;color:var(--ink-soft);margin-top:6px;line-height:1.5}
   #gate .mode{font-size:11.5px;color:var(--ink-faint);margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+  .gate-link{display:inline-block;margin-top:14px;font-size:13px;color:var(--primary);cursor:pointer;font-weight:600;background:none;border:0;font-family:"Public Sans"}
+  .gate-link:hover{text-decoration:underline}
+  #ts-container{margin:4px 0 12px;display:flex;justify-content:center;min-height:0}
+  .pend-icon{font-size:34px;margin-bottom:6px}
   #app{display:none;max-width:1160px;margin:0 auto;padding:0 20px 60px}
   .topbar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:18px 0;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--ground);z-index:10}
   .brand{font-family:"Bricolage Grotesque";font-weight:800;font-size:1.25rem}.brand .dot{color:var(--primary)}
   .spacer{flex:1}.badge{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;background:var(--heat-hi);color:#fff;padding:4px 9px;border-radius:6px}
   .badge.live{background:var(--primary)}
   select,button.ghost{font-family:"Public Sans";font-size:14px;font-weight:600;color:var(--ink);background:var(--paper);border:1px solid var(--line-strong);border-radius:9px;padding:9px 12px;cursor:pointer}
+  button.ghost.admin{border-color:var(--primary);color:var(--primary)}
   label.sel{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint)}
   .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:22px 0}
   .kpi{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:var(--shadow)}
@@ -79,36 +86,83 @@
   .about a{color:var(--primary);font-weight:600;text-decoration:none;border-bottom:1px solid var(--primary-soft)}
   .about a:hover{border-bottom-color:var(--primary)}
   .about code,.about .mono{font-family:"IBM Plex Mono",monospace;font-size:.9em;background:var(--paper-2);padding:1px 5px;border-radius:4px}
+  /* ── What's new timeline ── */
+  .timeline{margin-top:14px;max-width:78ch}
+  .tl-item{position:relative;padding:6px 0 22px 24px;border-left:2px solid var(--line)}
+  .tl-item:last-child{border-left-color:transparent;padding-bottom:2px}
+  .tl-dot{position:absolute;left:-8px;top:8px;width:13px;height:13px;border-radius:50%;background:var(--primary);border:3px solid var(--paper)}
+  .tl-date{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.05em;color:var(--ink-faint);text-transform:uppercase}
+  .tl-tag{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:20px;background:var(--primary-soft);margin-left:8px;vertical-align:middle;font-weight:600}
+  .tl-title{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:1.08rem;margin:5px 0 4px}
+  .tl-sum{color:var(--ink-soft);font-size:13.5px;max-width:74ch}
+  /* ── Admin approvals ── */
+  .adminrow{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .adminrow .who{font-weight:600}
+  .adminrow .when{font-size:12px;color:var(--ink-faint);margin-top:2px}
+  .btn-ok{background:var(--primary);color:#fff;border:0;border-radius:8px;padding:8px 15px;font-weight:600;cursor:pointer;font-size:13px;font-family:"Public Sans"}
+  .btn-ok:hover{background:var(--primary-deep)}
+  .btn-no{background:var(--paper);color:var(--heat-hi);border:1px solid var(--line-strong);border-radius:8px;padding:8px 15px;font-weight:600;cursor:pointer;font-size:13px;font-family:"Public Sans"}
+  .btn-ok:disabled,.btn-no:disabled{opacity:.5;cursor:not-allowed}
 </style>
 </head>
 <body>
 <!--
   Needs Atlas — production web app (Firebase-ready).
   ────────────────────────────────────────────────────────────────────────
-  CONFIGURE:
-   1. Create a Firebase project → Web app → paste its config into FIREBASE_CONFIG below.
-   2. Enable Email/Password auth in Firebase console; invite Zufall users.
-   3. Put the built data next to this file:  cp ../data/tracts_need.csv ./tracts_need.csv
-      (or set DATA_URL to wherever you host it).
-   4. Deploy:  firebase deploy   (Hosting serves this /web folder).
-   5. Embed the ArcGIS temporal heat map: set ARCGIS_EMBED_URL to your published
-      dashboard / web-map app URL (shared to the org / via OAuth).
+  CONFIGURE (in the CONFIG block near the bottom of this file):
+   • FIREBASE_CONFIG   — your Firebase web-app config (already set for needs-atlas).
+   • ADMIN_EMAIL       — the account that approves new users and sees the Approvals panel.
+   • TURNSTILE_SITE_KEY— your Cloudflare Turnstile *site* key (public/safe to commit).
+                         Leave BLANK to keep self-serve sign-ups closed; paste the key
+                         to open the "Request an account" flow with a bot check.
+   • updates.json      — the "What's new" feed. Add entries there over time.
 
-  If FIREBASE_CONFIG is left blank, the app runs in DEMO MODE: a click-through
-  gate + sample data, so you can open index.html locally with no setup.
+  ACCESS MODEL
+   • Existing accounts (created by the admin in the Firebase console) always sign in —
+     they are unaffected by the approval system.
+   • Self-serve sign-up (shown only when TURNSTILE_SITE_KEY is set) creates a *pending*
+     request in Firestore (users/{uid}, status:"pending"). The admin approves or denies
+     it from the Approvals panel; only then can that person in.
+   • If Firestore isn't reachable, the app falls back to today's behaviour (any signed-in
+     account gets in) so no one is ever locked out mid-setup.
+
+  If FIREBASE_CONFIG is left blank, the app runs in DEMO MODE (click-through + sample data).
 -->
 <div id="gate">
   <div class="card">
     <div class="lock">&#128274;</div>
     <h1>Needs Atlas</h1>
     <div class="org">Zufall Health &middot; Food Aid Project</div>
+
+    <!-- Sign in -->
     <div id="authbox">
       <input id="email" type="email" placeholder="Email" autocomplete="username">
       <input id="password" type="password" placeholder="Password" autocomplete="current-password">
-      <button id="signin">Sign in</button>
+      <button class="primary" id="signin">Sign in</button>
       <div class="err" id="err"></div>
+      <button class="gate-link" id="toSignup" style="display:none">Need access? Request an account &rarr;</button>
     </div>
-    <button id="enterDemo" style="display:none">Enter demo &rarr;</button>
+
+    <!-- Request an account (self-serve sign-up) -->
+    <div id="signupbox" style="display:none">
+      <input id="spemail" type="email" placeholder="Work email" autocomplete="email">
+      <input id="sppw" type="password" placeholder="Choose a password (6+ characters)" autocomplete="new-password">
+      <div id="ts-container"></div>
+      <button class="primary" id="spbtn">Request access</button>
+      <div class="err" id="sperr"></div>
+      <div class="note">Your request goes to the administrator for approval. You'll be able to sign in once it's approved.</div>
+      <button class="gate-link" id="toSignin">&larr; Back to sign in</button>
+    </div>
+
+    <!-- Pending / denied / submitted message -->
+    <div id="pendbox" style="display:none">
+      <div class="pend-icon" id="pendIcon">&#9203;</div>
+      <h1 id="pendTitle" style="font-size:1.3rem">Request received</h1>
+      <div class="note" id="pendMsg"></div>
+      <button class="gate-link" id="pendSignout">Sign out</button>
+    </div>
+
+    <button class="primary" id="enterDemo" style="display:none">Enter demo &rarr;</button>
     <div class="mode" id="modeline"></div>
   </div>
 </div>
@@ -121,6 +175,8 @@
     <label class="sel" for="county">County</label>
     <select id="county"></select>
     <a class="dl" id="dlbtn" href="#" download>&#8595; Assessment (Word)</a>
+    <button class="ghost" id="updatesBtn">What's new</button>
+    <button class="ghost admin" id="approvalsBtn" style="display:none">Approvals</button>
     <button class="ghost" id="aboutBtn">About</button>
     <button class="ghost" id="signout" style="display:none">Sign out</button>
   </div>
@@ -146,6 +202,24 @@
     </div>
   </div>
   </div><!-- /dashView -->
+
+  <!-- What's new -->
+  <div id="updatesView" style="display:none">
+    <div class="panel about">
+      <h2>What's new</h2>
+      <p class="lead">A running log of changes to Needs Atlas as the tool evolves — new data sources, accuracy fixes, and features. Newest first.</p>
+      <div class="timeline" id="updList"></div>
+    </div>
+  </div>
+
+  <!-- Approvals (admin only) -->
+  <div id="adminView" style="display:none">
+    <div class="panel about">
+      <h2>Account approvals</h2>
+      <p class="lead">People who've requested an account are listed below. Approve to let them in, or deny to block them. You are the only account that sees this panel.</p>
+      <div id="adminList" style="margin-top:14px"></div>
+    </div>
+  </div>
 
   <div id="aboutView" style="display:none">
     <div class="panel about">
@@ -198,6 +272,9 @@
       <h3>How it stays current</h3>
       <p>An automated pipeline re-pulls the Census data and rebuilds every number and the map on a fixed schedule — the first of January, April, July, and October each year. (The ACS survey itself only updates once a year, so a quarterly check is more than enough to stay current.) The "Data &amp; updates" panel always shows the date of the most recent successful refresh and when the next one is due. No manual work is required for the numbers to stay fresh.</p>
 
+      <h3>Who can see this tool</h3>
+      <p>Needs Atlas sits behind a sign-in. The underlying data is public — it's official Census and Feeding America information anyone can look up — so the sign-in isn't about secrecy; it's <b>governance</b>: it keeps a record of who is using the tool and presents it as the professional, curated resource it is. New users can request an account from the sign-in screen; each request is reviewed and approved by the administrator before access is granted, and a bot check on the request form keeps automated sign-ups out.</p>
+
       <h3>Checks &amp; balances</h3>
       <ul>
         <li><b>One official source.</b> Every figure traces to a specific Census Bureau ACS table you can open yourself — no blended or proprietary inputs.</li>
@@ -233,10 +310,13 @@
     messagingSenderId: "176949265407",
     appId: "1:176949265407:web:59be0a3314808638d59dca"
   };
+  const ADMIN_EMAIL = "george@multigrain.com";   // approves new users; sees the Approvals panel
+  const TURNSTILE_SITE_KEY = "";                  // ← paste Cloudflare Turnstile *site* key to open self-serve sign-ups
   const DATA_URL = "tracts_need.csv";     // built by scripts/build_need_index.py
   const COUNTIES_URL = "counties.json";   // authoritative county rollup (matches the assessment docs)
   const GEOJSON_URL = "tracts.geojson";   // tract polygons for the map (built by scripts/build_geojson.py)
   const COUNTY_SHAPES_URL = "counties.geojson"; // county outlines for the map (built by scripts/build_geojson.py)
+  const UPDATES_URL = "updates.json";     // the "What's new" feed
   const DOCS_BASE = "https://raw.githubusercontent.com/MultigrainIntl/needs-atlas/main/data/"; // generated assessments
   // ──────────────────────────────────────────────────────────────────────
 
@@ -416,7 +496,7 @@
     countyOutline.bringToFront();
   }
 
-  // ── Update status: next scheduled run, last run success/fail, manual trigger ──
+  // ── Update status: next scheduled run, last run success/fail ──
   function nextQuarter(){
     const now=new Date(), months=[0,3,6,9];
     for(let y=now.getUTCFullYear();;y++) for(const m of months){ const d=new Date(Date.UTC(y,m,1,8,0,0)); if(d>now) return d; }
@@ -434,7 +514,172 @@
     box.innerHTML=rows.map(r=>`<div class="updrow"><span class="l">${r[0]}</span><span class="r">${r[1]}</span></div>`).join('');
   }
 
+  // ── "What's new" feed ───────────────────────────────────────────────────
+  // Seed list is the built-in fallback; updates.json (if present) overrides it,
+  // so the feed can grow over time without touching this file.
+  const SEED_UPDATES=[
+    {date:"2026-08-30",tag:"Feature",title:"“What's new” feed launched",summary:"This page — a running, dated log of changes to Needs Atlas so you can see how the tool evolves over time."},
+    {date:"2026-08-30",tag:"Access",title:"Account requests & approval (rolling out)",summary:"People can request an account from the sign-in screen; access is granted by the administrator, with a bot check on the request form. Turns on once final setup is complete."},
+    {date:"2026-08-28",tag:"Data",title:"Food insecurity added",summary:"County food-insecurity and child food-insecurity rates from Feeding America's Map the Meal Gap (2024) now appear on the dashboard and in the downloadable assessments."},
+    {date:"2026-08-28",tag:"Data",title:"SNAP participation added",summary:"Household SNAP/food-stamp receipt (Census table B22003) is now one of the tract need indicators and a dashboard figure."},
+    {date:"2026-08-27",tag:"Feature",title:"Interactive tract map",summary:"All 682 census tracts across the seven counties, shaded by need, with the selected county outlined. Click any tract for its numbers."},
+    {date:"2026-08-27",tag:"Accuracy",title:"Dashboard and documents reconciled",summary:"County headline figures now use the Census Bureau's published QuickFacts values, so the dashboard and the Word assessments always show the same number."},
+    {date:"2026-08-26",tag:"Feature",title:"About page & source links",summary:"A plain-English explanation of the method, checks and balances, and direct links to every Census table behind the numbers so anyone can verify them."}
+  ];
+  const TAG_COLORS={Feature:'#1E6B57',Data:'#2F6DA6',Accuracy:'#B07A2E',Access:'#7A5AA6',Launch:'#124A3B',Fix:'#B0492E'};
+  async function renderUpdates(){
+    const box=$('updList'); if(!box) return;
+    let ups=null;
+    try{ const r=await fetch(UPDATES_URL,{cache:'no-store'}); if(r.ok){ const j=await r.json(); if(j&&Array.isArray(j.updates)) ups=j.updates; } }catch(e){/* ignore */}
+    if(!ups||!ups.length) ups=SEED_UPDATES;
+    ups=ups.slice().sort((a,b)=>(a.date<b.date?1:(a.date>b.date?-1:0)));
+    box.innerHTML=ups.map(u=>{
+      const col=TAG_COLORS[u.tag]||'#1E6B57';
+      const d=new Date((u.date||'')+'T00:00:00');
+      const ds=isNaN(d.getTime())?(u.date||''):d.toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'});
+      const tag=u.tag?` <span class="tl-tag" style="color:${col};background:var(--primary-soft)">${u.tag}</span>`:'';
+      return `<div class="tl-item"><span class="tl-dot" style="background:${col}"></span><div class="tl-date">${ds}${tag}</div><div class="tl-title">${u.title||''}</div><div class="tl-sum">${u.summary||''}</div></div>`;
+    }).join('');
+  }
+
+  // ── View switching ──────────────────────────────────────────────────────
+  function showView(v){
+    const views={dash:'dashView',about:'aboutView',updates:'updatesView',admin:'adminView'};
+    Object.values(views).forEach(id=>{const el=$(id); if(el) el.style.display='none';});
+    const el=$(views[v]||'dashView'); if(el) el.style.display='block';
+    const ab=$('aboutBtn'); if(ab) ab.textContent = v==='about' ? '← Dashboard' : 'About';
+    const ub=$('updatesBtn'); if(ub) ub.textContent = v==='updates' ? '← Dashboard' : "What's new";
+    window.scrollTo(0,0);
+    if(v==='dash' && atlasMap) setTimeout(()=>atlasMap.invalidateSize(),60);
+    if(v==='updates') renderUpdates();
+    if(v==='admin') renderApprovals();
+  }
+
+  // ── Firebase / auth state (assigned in the async bootstrap below) ─────────
+  let auth=null, db=null, FB={}, isAdmin=false, appStarted=false, gateSubmitted=false;
+  let turnstileToken=null, tsRendered=false;
+
+  function gateMode(mode){
+    ['authbox','signupbox','pendbox','enterDemo'].forEach(id=>{const el=$(id); if(el) el.style.display='none';});
+    if(mode==='signin'){
+      $('authbox').style.display='block';
+      $('toSignup').style.display = (hasFirebase && TURNSTILE_SITE_KEY) ? 'inline-block' : 'none';
+    }else if(mode==='signup'){
+      $('signupbox').style.display='block';
+      renderTurnstile();
+    }else if(mode==='pending'||mode==='denied'||mode==='submitted'){
+      $('pendbox').style.display='block';
+      const map={
+        pending:['⏳','Request pending','Your account is waiting for the administrator to approve it. You\'ll be able to sign in once it\'s approved.'],
+        denied:['🚫','Access not granted','This account hasn\'t been approved for Needs Atlas. If you think that\'s a mistake, contact the administrator.'],
+        submitted:['✅','Request submitted','Thanks — your request has been sent to the administrator. You\'ll be able to sign in once it\'s approved.']
+      };
+      const m=map[mode];
+      $('pendIcon').textContent=m[0]; $('pendTitle').textContent=m[1]; $('pendMsg').textContent=m[2];
+      $('pendSignout').style.display = auth ? 'inline-block' : 'none';
+    }
+  }
+
+  function renderTurnstile(){
+    if(!TURNSTILE_SITE_KEY || tsRendered) return;
+    if(typeof turnstile==='undefined') return;   // api.js not loaded yet; onload callback will retry
+    try{
+      turnstile.render('#ts-container',{sitekey:TURNSTILE_SITE_KEY,
+        callback:t=>{turnstileToken=t; $('spbtn').disabled=false;},
+        'expired-callback':()=>{turnstileToken=null; $('spbtn').disabled=true;},
+        'error-callback':()=>{turnstileToken=null; $('spbtn').disabled=true;}});
+      tsRendered=true;
+      $('spbtn').disabled=true;   // require a completed check before enabling
+    }catch(e){/* ignore */}
+  }
+  window.onloadTurnstileCallback=()=>{ if($('signupbox').style.display!=='none') renderTurnstile(); };
+
+  // Decide what a signed-in user sees: admin → in (+panel); approved/no-record → in;
+  // pending/denied → the gate message; any Firestore error → in (never lock anyone out).
+  async function routeUser(u){
+    if(u.email && u.email.toLowerCase()===ADMIN_EMAIL.toLowerCase()){ isAdmin=true; enterApp(); return; }
+    if(!db){ enterApp(); return; }
+    try{
+      const snap=await FB.getDoc(FB.doc(db,'users',u.uid));
+      if(!snap.exists()){ enterApp(); return; }          // created in console / grandfathered
+      const st=(snap.data()||{}).status;
+      if(st==='approved'){ enterApp(); return; }
+      if(st==='denied'){ showGate('denied'); return; }
+      showGate('pending'); return;                         // pending or unknown → wait
+    }catch(e){ console.warn('Approval check unavailable — allowing sign-in:',e); enterApp(); return; }
+  }
+
+  function showGate(mode){ $('app').style.display='none'; $('gate').style.display='flex'; gateMode(mode); }
+  function enterApp(){
+    if(isAdmin){ const b=$('approvalsBtn'); if(b) b.style.display='inline-block'; }
+    startApp();
+  }
+
+  // ── Admin approvals panel ───────────────────────────────────────────────
+  async function renderApprovals(){
+    const box=$('adminList'); if(!box) return;
+    box.innerHTML='<p class="cap">Loading requests…</p>';
+    if(!db){ box.innerHTML='<p class="cap">The approvals database isn\'t set up yet. Once Firestore is enabled in the Firebase console, pending requests will appear here.</p>'; return; }
+    try{
+      const snap=await FB.getDocs(FB.query(FB.collection(db,'users'),FB.where('status','==','pending')));
+      const rows=[];
+      snap.forEach(d=>{ const u=d.data()||{}; rows.push({id:d.id,email:u.email||'(no email on record)',ts:u.requestedAt}); });
+      if(!rows.length){ box.innerHTML='<p class="cap">No pending requests right now.</p>'; return; }
+      box.innerHTML=rows.map(r=>{
+        const when=(r.ts&&r.ts.toDate)?('requested '+fmtDate(r.ts.toDate())):'';
+        return `<div class="adminrow" data-uid="${r.id}"><div><div class="who">${r.email}</div><div class="when">${when}</div></div>`+
+          `<div><button class="btn-ok" data-act="approve">Approve</button> <button class="btn-no" data-act="deny">Deny</button></div></div>`;
+      }).join('')+'<div class="cap" id="adminMsg" style="margin-top:12px"></div>';
+      box.querySelectorAll('button[data-act]').forEach(btn=>btn.addEventListener('click',async e=>{
+        const row=e.target.closest('.adminrow'); const uid=row.dataset.uid; const act=e.target.dataset.act;
+        row.querySelectorAll('button').forEach(b=>b.disabled=true);
+        try{
+          await FB.updateDoc(FB.doc(db,'users',uid),{status:act==='approve'?'approved':'denied',decidedAt:FB.serverTimestamp(),decidedBy:ADMIN_EMAIL});
+          row.remove();
+          if(!box.querySelector('.adminrow')) box.innerHTML='<p class="cap">No pending requests right now.</p>';
+        }catch(err){
+          row.querySelectorAll('button').forEach(b=>b.disabled=false);
+          const msg=$('adminMsg'); if(msg) msg.textContent='Could not save that change: '+(err.message||err);
+        }
+      }));
+    }catch(e){
+      box.innerHTML='<p class="cap">Couldn\'t load requests — the approvals database may not be set up yet. ('+(e.message||e)+')</p>';
+    }
+  }
+
+  // ── Self-serve sign-up ──────────────────────────────────────────────────
+  async function submitSignup(){
+    $('sperr').textContent='';
+    const email=($('spemail').value||'').trim(), pw=$('sppw').value||'';
+    if(!email||!pw){ $('sperr').textContent='Enter an email and a password.'; return; }
+    if(TURNSTILE_SITE_KEY && !turnstileToken){ $('sperr').textContent='Please complete the “I\'m human” check.'; return; }
+    $('spbtn').disabled=true;
+    let cred=null;
+    try{ cred=await FB.createUser(auth,email,pw); }
+    catch(e){
+      $('sperr').textContent = e.code==='auth/email-already-in-use' ? 'That email already has an account — try signing in.'
+        : e.code==='auth/weak-password' ? 'Password must be at least 6 characters.'
+        : e.code==='auth/invalid-email' ? 'That doesn\'t look like a valid email.'
+        : 'Could not create the request: '+(e.message||e);
+      $('spbtn').disabled=false; if(tsRendered&&typeof turnstile!=='undefined'){turnstile.reset();turnstileToken=null;} return;
+    }
+    // Record the pending request. If Firestore isn't ready, roll the account back so
+    // no one slips in un-approved, and tell them sign-ups aren't open yet.
+    try{
+      await FB.setDoc(FB.doc(db,'users',cred.user.uid),{email:email,status:'pending',requestedAt:FB.serverTimestamp()});
+    }catch(e){
+      try{ await cred.user.delete(); }catch(_){/* ignore */}
+      $('sperr').textContent='Sign-ups aren\'t open yet. Please contact the administrator.';
+      $('spbtn').disabled=false; return;
+    }
+    gateSubmitted=true;
+    try{ await FB.signOut(auth); }catch(_){/* ignore */}
+    showGate('submitted');
+  }
+
   function startApp(){
+    if(appStarted){ $('gate').style.display='none'; $('app').style.display='block'; return; }
+    appStarted=true;
     const sel=$('county');
     sel.innerHTML=D.counties.map(c=>`<option value="${c.county}">${c.county} County</option>`).join('');
     sel.addEventListener('change',e=>render(e.target.value));
@@ -442,9 +687,10 @@
     const rs=$('rampswatches'); if(rs) rs.innerHTML=CLASS_COLORS.map((c,i)=>`<span class="swatch" title="${CLASS_LABELS[i]} of tracts by need" style="background:${c}"></span>`).join('');
     const src=($('datamode').textContent==='Live data'?'live U.S. Census ACS 2019–2023 5-year estimates, census-tract level':'sample data — run the pipeline for live values');
     $('foot').textContent='Needs Atlas · Food Aid Project, Inc. · '+src+(D.generated?' · Data updated '+D.generated:'');
-    const showAbout=on=>{ $('dashView').style.display=on?'none':'block'; $('aboutView').style.display=on?'block':'none'; $('aboutBtn').textContent=on?'← Dashboard':'About'; window.scrollTo(0,0); if(!on&&atlasMap) setTimeout(()=>atlasMap.invalidateSize(),60); };
-    $('aboutBtn').addEventListener('click',()=>showAbout($('aboutView').style.display==='none'));
-    const ml=$('methodLink'); if(ml) ml.addEventListener('click',e=>{e.preventDefault();showAbout(true);});
+    $('aboutBtn').addEventListener('click',()=>showView($('aboutView').style.display==='none'?'about':'dash'));
+    $('updatesBtn').addEventListener('click',()=>showView($('updatesView').style.display==='none'?'updates':'dash'));
+    const ap=$('approvalsBtn'); if(ap) ap.addEventListener('click',()=>showView($('adminView').style.display==='none'?'admin':'dash'));
+    const ml=$('methodLink'); if(ml) ml.addEventListener('click',e=>{e.preventDefault();showView('about');});
     $('gate').style.display='none';$('app').style.display='block';
     render(D.counties[0].county);
     initMap();
@@ -453,19 +699,53 @@
 
   (async ()=>{
     D=await loadData();
+
+    // Gate-link wiring (works in every mode).
+    $('toSignup') && $('toSignup').addEventListener('click',()=>gateMode('signup'));
+    $('toSignin') && $('toSignin').addEventListener('click',()=>gateMode('signin'));
+    $('spbtn') && $('spbtn').addEventListener('click',submitSignup);
+
+    // If self-serve sign-ups are open, load the Turnstile widget script.
+    if(hasFirebase && TURNSTILE_SITE_KEY){
+      const s=document.createElement('script');
+      s.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onloadTurnstileCallback';
+      s.async=true; s.defer=true; document.head.appendChild(s);
+    }
+
     if(hasFirebase){
       $('modeline').textContent='Secure sign-in · Firebase Authentication';
       const {initializeApp}=await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
-      const {getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut}=await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
-      const auth=getAuth(initializeApp(FIREBASE_CONFIG));
+      const authMod=await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+      const app=initializeApp(FIREBASE_CONFIG);
+      auth=authMod.getAuth(app);
+      FB.createUser=authMod.createUserWithEmailAndPassword;
+      FB.signOut=authMod.signOut;
+      // Firestore is optional — if it isn't set up yet the app still runs (grandfathered access).
+      try{
+        const fs=await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+        db=fs.getFirestore(app);
+        FB.doc=fs.doc; FB.getDoc=fs.getDoc; FB.setDoc=fs.setDoc; FB.updateDoc=fs.updateDoc;
+        FB.collection=fs.collection; FB.query=fs.query; FB.where=fs.where; FB.getDocs=fs.getDocs;
+        FB.serverTimestamp=fs.serverTimestamp;
+      }catch(e){ console.warn('Firestore module unavailable:',e); db=null; }
+
       $('signin').addEventListener('click',async()=>{
         $('err').textContent='';
-        try{await signInWithEmailAndPassword(auth,$('email').value,$('password').value);}
+        try{await authMod.signInWithEmailAndPassword(auth,$('email').value,$('password').value);}
         catch(e){$('err').textContent='Sign-in failed. Check your credentials.';}
       });
       $('signout').style.display='inline-block';
-      $('signout').addEventListener('click',()=>signOut(auth));
-      onAuthStateChanged(auth,u=>{if(u){startApp();}else{$('gate').style.display='flex';$('app').style.display='none';}});
+      $('signout').addEventListener('click',()=>authMod.signOut(auth));
+      $('pendSignout') && $('pendSignout').addEventListener('click',()=>authMod.signOut(auth));
+
+      authMod.onAuthStateChanged(auth,u=>{
+        if(u){ routeUser(u); }
+        else{
+          $('app').style.display='none'; $('gate').style.display='flex';
+          if(gateSubmitted){ gateSubmitted=false; }   // keep the "submitted" message on screen
+          else{ gateMode('signin'); }
+        }
+      });
     }else{
       // DEMO MODE — no Firebase configured.
       $('authbox').style.display='none';$('enterDemo').style.display='block';

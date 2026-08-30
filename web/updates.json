@@ -1,0 +1,47 @@
+{
+  "_comment": "The 'What's new' feed for Needs Atlas. Add a new object to the top of the list for each change. Fields: date (YYYY-MM-DD), tag (Feature | Data | Accuracy | Access | Fix | Launch), title, summary. Newest entries are shown first automatically.",
+  "updates": [
+    {
+      "date": "2026-08-30",
+      "tag": "Feature",
+      "title": "“What's new” feed launched",
+      "summary": "This page — a running, dated log of changes to Needs Atlas so you can see how the tool evolves over time."
+    },
+    {
+      "date": "2026-08-30",
+      "tag": "Access",
+      "title": "Account requests & approval (rolling out)",
+      "summary": "People can request an account from the sign-in screen; access is granted by the administrator, with a bot check on the request form. Turns on once final setup is complete."
+    },
+    {
+      "date": "2026-08-28",
+      "tag": "Data",
+      "title": "Food insecurity added",
+      "summary": "County food-insecurity and child food-insecurity rates from Feeding America's Map the Meal Gap (2024) now appear on the dashboard and in the downloadable assessments."
+    },
+    {
+      "date": "2026-08-28",
+      "tag": "Data",
+      "title": "SNAP participation added",
+      "summary": "Household SNAP/food-stamp receipt (Census table B22003) is now one of the tract need indicators and a dashboard figure."
+    },
+    {
+      "date": "2026-08-27",
+      "tag": "Feature",
+      "title": "Interactive tract map",
+      "summary": "All 682 census tracts across the seven counties, shaded by need, with the selected county outlined. Click any tract for its numbers."
+    },
+    {
+      "date": "2026-08-27",
+      "tag": "Accuracy",
+      "title": "Dashboard and documents reconciled",
+      "summary": "County headline figures now use the Census Bureau's published QuickFacts values, so the dashboard and the Word assessments always show the same number."
+    },
+    {
+      "date": "2026-08-26",
+      "tag": "Feature",
+      "title": "About page & source links",
+      "summary": "A plain-English explanation of the method, checks and balances, and direct links to every Census table behind the numbers so anyone can verify them."
+    }
+  ]
+}
