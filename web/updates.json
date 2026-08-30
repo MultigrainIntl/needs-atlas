@@ -3,6 +3,12 @@
   "updates": [
     {
       "date": "2026-08-30",
+      "tag": "Data",
+      "title": "Chronic disease & health burden added",
+      "summary": "Community health measures from the CDC's PLACES project — diabetes, obesity, high blood pressure, heart disease, mental distress, and health-related social needs like transportation and housing — now appear on the dashboard (county vs. New Jersey) and in the downloadable county assessments."
+    },
+    {
+      "date": "2026-08-30",
       "tag": "Feature",
       "title": "“What's new” feed launched",
       "summary": "This page — a running, dated log of changes to Needs Atlas so you can see how the tool evolves over time."
