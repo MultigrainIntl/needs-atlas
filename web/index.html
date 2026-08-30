@@ -157,7 +157,7 @@
       <p>Every figure on this site describes real places: the seven New Jersey counties Zufall serves (Essex, Hunterdon, Middlesex, Morris, Somerset, Sussex, and Warren) and the 682 census tracts inside them. A "census tract" is a small, neighborhood-sized area of a few thousand people that the Census Bureau uses for reporting. For each tract and county we show the share of residents who are uninsured, living on a low income, over 65, or in a household with limited English — the conditions that drive demand for a community health center.</p>
 
       <h3>Where the data comes from</h3>
-      <p>Nearly every number on the dashboard is pulled directly from the <b>U.S. Census Bureau's American Community Survey (ACS)</b> — the government's official, ongoing survey of American households (the one exception, food insecurity, is described just below). We use the <b>2019–2023 five-year estimates</b> (the most reliable version for small areas), pulled straight from the Census Bureau's public data API. Nothing is hand-entered, invented by us, or bought from a third party. The map's tract boundaries come from the Census Bureau's own TIGER/Line cartographic files, and the downloadable county assessments add county- and state-level headline figures from <a href="https://www.census.gov/quickfacts" target="_blank" rel="noopener">Census QuickFacts</a>.</p>
+      <p>Nearly every number on the dashboard is pulled directly from the <b>U.S. Census Bureau's American Community Survey (ACS)</b> — the government's official, ongoing survey of American households (the one exception, food insecurity, is described just below). We use the <b>2019–2023 five-year estimates</b> (the most reliable version for small areas), pulled straight from the Census Bureau's public data API. Nothing is hand-entered, invented by us, or bought from a third party. The map's tract boundaries come from the Census Bureau's own TIGER/Line cartographic files. The county headline figures — the numbers in the tiles up top and in the downloadable assessments — use the Census Bureau's published county values (<a href="https://www.census.gov/quickfacts" target="_blank" rel="noopener">QuickFacts</a>), so the dashboard and the documents always show the same number; the neighborhood-level work (the map, the tract need scores, the concentration tables) is the live census-tract pipeline.</p>
       <p>The data is <b>not</b> distributed as PDFs — it lives in interactive tables and an open API, so we link straight to the source. These are the exact Census tables behind each indicator; each link opens the live table on the Census Bureau's own site:</p>
       <ul>
         <li>Uninsured rate — <a href="https://data.census.gov/table/ACSDT5Y2023.B27001" target="_blank" rel="noopener">Table B27001</a> · Health Insurance Coverage by Sex by Age</li>
@@ -344,7 +344,7 @@
     const avg=k=>Math.round(D.counties.reduce((s,x)=>s+(+x[k]||0),0)/D.counties.length*10)/10;
     const pctv=v=>v==null?'—':v+'%';
     const kpis=[['Population',fmt(c.population),''],['Need index',c.need_score,'0–100 · vs 7 counties',true],
-      ['Food insecurity',pctv(c.food_insecurity_pct),'Feeding America'],
+      ['Food insecurity',pctv(c.food_insecurity_pct),(c.child_food_insecurity_pct!=null?c.child_food_insecurity_pct+'% of children · Feeding America':'Feeding America')],
       ['Uninsured',pctv(c.uninsured_pct),''],['Under 200% FPL',pctv(c.under_200_fpl_pct),''],
       ['SNAP households',pctv(c.snap_pct),'Census ACS'],
       ['Limited English',pctv(c.lep_pct),''],['Age 65+',pctv(c.pct_65_plus),''],
