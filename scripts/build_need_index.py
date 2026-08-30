@@ -14,6 +14,13 @@ VARS = json.loads((ROOT / "config" / "acs_variables.json").read_text())
 RAW = ROOT / "data" / "acs_raw.csv"
 OUT = ROOT / "data" / "tracts_need.csv"
 
+# Municipality (town/city) each tract falls in — from config/tract_places.json,
+# built by point-in-polygon of tract centroids against Census TIGERweb county
+# subdivisions. Lets the dashboard/docs say "Newark · tract 70.00" instead of a
+# bare GEOID. Optional: absent file just leaves municipality blank.
+_TP = ROOT / "config" / "tract_places.json"
+TRACT_PLACES = (json.loads(_TP.read_text()).get("tracts", {}) if _TP.exists() else {})
+
 # The indicators that make up the composite tract Need Score (higher = more need).
 # All are census-tract ACS rates, min-max-normalized then averaged.
 NEED_INDICATORS = ["under_200_fpl_pct", "uninsured_pct",
@@ -49,6 +56,7 @@ def derive(row):
     out = {
         "GEOID": row["GEOID"],
         "county_name": row.get("county_name", ""),
+        "municipality": TRACT_PLACES.get(row["GEOID"], ""),
         "total_pop": int(pop) if pop is not None else None,
         "median_hh_income": num(row.get("B19013_001E")),
         "pov_rate": pct(num(row.get("B17001_002E")), num(row.get("B17001_001E"))),

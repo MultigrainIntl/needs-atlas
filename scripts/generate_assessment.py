@@ -212,8 +212,10 @@ def build(c, tracts, ref, ranks):
             lep_clause = (f", and {lep:.0f}% of households are limited-English-speaking"
                           if lep is not None else "")
             short = f"{int(t['GEOID'][-6:]) / 100:.2f}".rstrip("0").rstrip(".")
-            spot_txt = (f" The sharpest need sits in and around Census Tract {short} "
-                        f"(GEOID {t['GEOID']}): there, "
+            town = (t.get("municipality") or "").strip()
+            place_clause = (f"{town} (Census Tract {short}, GEOID {t['GEOID']})"
+                            if town else f"Census Tract {short} (GEOID {t['GEOID']})")
+            spot_txt = (f" The sharpest need sits in {place_clause}: there, "
                         f"{num(t,'uninsured_pct'):.0f}% of residents are uninsured and "
                         f"{num(t,'under_200_fpl_pct'):.0f}% live below 200% of the federal "
                         f"poverty level{lep_clause} — a concentration that county-level averages "
@@ -329,12 +331,14 @@ def render_runs(secs):
 
 def spotlight_rows(conc):
     """Return header + top-tract rows for the appendix table."""
-    hdr = ["Census tract (GEOID)", "Uninsured", "Below 200% FPL", "Lim.-Eng. HH", "Need score"]
+    hdr = ["Municipality", "Census tract (GEOID)", "Uninsured", "Below 200% FPL", "Lim.-Eng. HH", "Need score"]
     rows = []
     for t in (conc["spot"] if conc else []):
         def g(k, suf="%"):
             v = num(t, k); return f"{v:.0f}{suf}" if v is not None else "—"
-        rows.append([t["GEOID"], g("uninsured_pct"), g("under_200_fpl_pct"),
+        short = f"{int(t['GEOID'][-6:]) / 100:.2f}".rstrip("0").rstrip(".")
+        rows.append([(t.get("municipality") or "—").strip(),
+                     f"{short}  ({t['GEOID']})", g("uninsured_pct"), g("under_200_fpl_pct"),
                      g("lep_pct"), g("need_score", "")])
     return hdr, rows
 
