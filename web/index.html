@@ -67,6 +67,18 @@
   .updrow .l{color:var(--ink-soft)}.updrow .r{font-weight:600;text-align:right}
   .stat{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11.5px;font-weight:600;color:#fff}
   .stat.ok{background:var(--primary)}.stat.bad{background:var(--heat-hi)}.stat.run{background:var(--heat-lo)}.stat.na{background:var(--line-strong);color:var(--ink-soft)}
+  .swatches{display:inline-flex;gap:2px;vertical-align:middle}
+  .swatch{width:24px;height:12px;display:inline-block;border-radius:2px}
+  .about{margin:22px 0}
+  .about h2{font-size:1.55rem;letter-spacing:-.01em;margin-bottom:8px}
+  .about h3{font-size:1.06rem;margin:24px 0 6px}
+  .about p{margin:8px 0;color:var(--ink-soft);max-width:74ch}
+  .about .lead{font-size:1.08rem;color:var(--ink);max-width:74ch}
+  .about ul,.about ol{margin:8px 0;padding-left:20px;color:var(--ink-soft);max-width:74ch}
+  .about li{margin:5px 0}
+  .about a{color:var(--primary);font-weight:600;text-decoration:none;border-bottom:1px solid var(--primary-soft)}
+  .about a:hover{border-bottom-color:var(--primary)}
+  .about code,.about .mono{font-family:"IBM Plex Mono",monospace;font-size:.9em;background:var(--paper-2);padding:1px 5px;border-radius:4px}
 </style>
 </head>
 <body>
@@ -109,8 +121,10 @@
     <label class="sel" for="county">County</label>
     <select id="county"></select>
     <a class="dl" id="dlbtn" href="#" download>&#8595; Assessment (Word)</a>
+    <button class="ghost" id="aboutBtn">About</button>
     <button class="ghost" id="signout" style="display:none">Sign out</button>
   </div>
+  <div id="dashView">
   <div class="kpis" id="kpis"></div>
   <div class="grid2">
     <div class="panel"><h3>Composite need score by county</h3><div class="cap">Ranked 0–100 across the seven counties: 100 = highest need, 0 = lowest. Higher = greater concentration of low-income, uninsured, and access-barrier residents.</div><div class="chartwrap"><canvas id="countyChart"></canvas></div></div>
@@ -120,7 +134,7 @@
     <h3 id="mapTitle">Service-area need map — census tracts</h3>
     <div class="cap">Every census tract across the seven counties, shaded by need. Click any tract for its numbers.</div>
     <div id="map"></div>
-    <div class="maplegend"><span>Lower need</span><span class="ramp"></span><span>Higher need</span><span id="mapnote" style="margin-left:auto"></span></div>
+    <div class="maplegend"><span>Lower need</span><span class="swatches" id="rampswatches"></span><span>Higher need</span><span id="mapnote" style="margin-left:auto"></span></div>
     <div class="subhead"><h3 id="heatTitle" style="font-size:.95rem">Compact tract grid</h3><div class="cap" style="margin-bottom:8px">Each square is one census tract in the selected county, shaded by need.</div></div>
     <div class="cells" id="cells"></div>
   </div>
@@ -128,10 +142,65 @@
     <div class="panel"><h3 id="tableTitle">Highest-need tracts</h3><div class="cap">The numbers that go straight into a grant narrative.</div><div style="overflow-x:auto"><table id="tractTable"></table></div></div>
     <div class="panel"><h3>Data &amp; updates</h3><div class="cap">When the numbers refresh, and whether the last refresh worked.</div>
       <div id="updbox" class="updrows"></div>
-      <a class="dl" id="updbtn" href="https://github.com/MultigrainIntl/needs-atlas/actions/workflows/refresh.yml" target="_blank" rel="noopener" style="margin-top:14px;display:inline-block">&#8635; Run an update now</a>
-      <div class="cap" style="margin-top:8px;font-size:11.5px">Opens GitHub — sign in and click the grey <b>Run workflow</b> button. Updates otherwise run on their own each quarter.</div>
+      <div class="cap" style="margin-top:12px;font-size:12px;line-height:1.6">Figures refresh automatically every quarter (Jan&nbsp;1, Apr&nbsp;1, Jul&nbsp;1, Oct&nbsp;1), pulled directly from the U.S.&nbsp;Census Bureau — no sign-in or manual step needed. The site always shows the most recent completed refresh. <a href="#" id="methodLink" style="color:var(--primary);font-weight:600;text-decoration:none">How this works &amp; how to check the numbers &rarr;</a></div>
     </div>
   </div>
+  </div><!-- /dashView -->
+
+  <div id="aboutView" style="display:none">
+    <div class="panel about">
+      <h2>About Needs Atlas</h2>
+      <p class="lead">Needs Atlas turns official U.S. Census data into a plain, comparable picture of health and economic need across Zufall Health's seven-county service area — so a grant writer can find the hardest-hit neighborhoods and cite defensible numbers in minutes.</p>
+
+      <h3>What you're looking at</h3>
+      <p>Every figure on this site describes real places: the seven New Jersey counties Zufall serves (Essex, Hunterdon, Middlesex, Morris, Somerset, Sussex, and Warren) and the 682 census tracts inside them. A "census tract" is a small, neighborhood-sized area of a few thousand people that the Census Bureau uses for reporting. For each tract and county we show the share of residents who are uninsured, living on a low income, over 65, or in a household with limited English — the conditions that drive demand for a community health center.</p>
+
+      <h3>Where the data comes from</h3>
+      <p>Every number is pulled directly from the <b>U.S. Census Bureau's American Community Survey (ACS)</b> — the government's official, ongoing survey of American households. We use the <b>2019–2023 five-year estimates</b> (the most reliable version for small areas), pulled straight from the Census Bureau's public data API. Nothing is hand-entered, invented by us, or bought from a third party. The map's tract boundaries come from the Census Bureau's own TIGER/Line cartographic files.</p>
+      <p>The data is <b>not</b> distributed as PDFs — it lives in interactive tables and an open API, so we link straight to the source. These are the exact Census tables behind each indicator; each link opens the live table on the Census Bureau's own site:</p>
+      <ul>
+        <li>Uninsured rate — <a href="https://data.census.gov/table/ACSDT5Y2023.B27001" target="_blank" rel="noopener">Table B27001</a> · Health Insurance Coverage by Sex by Age</li>
+        <li>Low income (under 200% of the poverty line) — <a href="https://data.census.gov/table/ACSDT5Y2023.C17002" target="_blank" rel="noopener">Table C17002</a> · Ratio of Income to Poverty Level</li>
+        <li>Below the poverty line — <a href="https://data.census.gov/table/ACSDT5Y2023.B17001" target="_blank" rel="noopener">Table B17001</a> · Poverty Status</li>
+        <li>Limited-English households — <a href="https://data.census.gov/table/ACSDT5Y2023.C16002" target="_blank" rel="noopener">Table C16002</a> · Household Language</li>
+        <li>Age 65 and over — <a href="https://data.census.gov/table/ACSDT5Y2023.B01001" target="_blank" rel="noopener">Table B01001</a> · Sex by Age</li>
+        <li>Median household income — <a href="https://data.census.gov/table/ACSDT5Y2023.B19013" target="_blank" rel="noopener">Table B19013</a></li>
+        <li>Total population — <a href="https://data.census.gov/table/ACSDT5Y2023.B01003" target="_blank" rel="noopener">Table B01003</a></li>
+      </ul>
+      <p>Browse everything at <a href="https://data.census.gov" target="_blank" rel="noopener">data.census.gov</a>, see the full list of variables we pull in the <a href="https://api.census.gov/data/2023/acs/acs5/variables.html" target="_blank" rel="noopener">ACS API definitions</a>, or find the map boundaries under the Census Bureau's <a href="https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html" target="_blank" rel="noopener">Cartographic Boundary Files</a>.</p>
+
+      <h3>How to check a number yourself</h3>
+      <p>You never have to take our word for it. To verify, say, the uninsured rate we show for Essex County:</p>
+      <ol>
+        <li>Open <a href="https://data.census.gov" target="_blank" rel="noopener">data.census.gov</a>.</li>
+        <li>Search the table code — for the uninsured rate, <span class="mono">B27001</span> — and choose the <span class="mono">2023 ACS 5-Year Estimates</span>.</li>
+        <li>Add the geography you care about: a whole county (e.g. "Essex County, New Jersey") or a single tract.</li>
+        <li>The uninsured count is the sum of the "No health insurance coverage" rows; divide it by the total to get the percentage. Our pipeline does exactly that sum, automatically, for every tract.</li>
+      </ol>
+
+      <h3>How the Need Score is calculated</h3>
+      <p>The tract <b>Need Score (0–100)</b> is a simple, transparent blend of five need indicators: the uninsured rate, the share under 200% of the poverty line, the poverty rate, the share age 65+, and the share of limited-English households. For each indicator we place every tract on a 0-to-1 scale, where the tract with the highest value in the seven counties scores 1 and the lowest scores 0 (this is called min–max normalization). We then average the five and multiply by 100. A tract scoring 80 doesn't mean "80% of anything" — it means that, blending these five needs, it sits near the top of the service area.</p>
+      <p>The <b>county Need Index</b> in the bar chart is built the same way but from two headline indicators — the poverty rate and the uninsured rate — compared across the seven counties. That's why the highest-need county scores 100 and the lowest scores 0: the index is <em>relative</em>, ranking counties against each other rather than against an absolute standard.</p>
+
+      <h3>How it stays current</h3>
+      <p>An automated pipeline re-pulls the Census data and rebuilds every number and the map on a fixed schedule — the first of January, April, July, and October each year. (The ACS survey itself only updates once a year, so a quarterly check is more than enough to stay current.) The "Data &amp; updates" panel always shows the date of the most recent successful refresh and when the next one is due. No manual work is required for the numbers to stay fresh.</p>
+
+      <h3>Checks &amp; balances</h3>
+      <ul>
+        <li><b>One official source.</b> Every figure traces to a specific Census Bureau ACS table you can open yourself — no blended or proprietary inputs.</li>
+        <li><b>Fully reproducible.</b> The pull-and-calculate code is open and runs automatically; the same inputs always produce the same numbers, and the site and the downloadable Word assessments read from the identical data.</li>
+        <li><b>Transparent math.</b> The Need Score is a plain average of normalized rates — no hidden weighting and no black-box model.</li>
+        <li><b>Noise filtered, not hidden.</b> The "highest-need tracts" tables skip tiny or non-residential tracts (dorms, prisons, and the like, which produce misleading rates), while the map still shows every tract.</li>
+        <li><b>Nothing invented.</b> Where the Census has no reliable value for a small tract, the site shows a dash rather than a guess.</li>
+      </ul>
+
+      <h3>Honest limitations</h3>
+      <p>ACS figures are survey <em>estimates</em>, not a full count, so small tracts carry real margins of error — treat a single tract's number as a signal, not a precise measurement, and lean on county figures for the most stable comparisons. The Need Score ranks need <em>within</em> these seven counties, so even a "low" score here still describes a community with real needs. And because the five-year window (2019–2023) is the newest reliable ACS vintage, it can lag very recent local changes.</p>
+
+      <p class="cap" style="margin-top:20px">Needs Atlas is a project of Food Aid Project, Inc., built to support grant work at Zufall Health.</p>
+    </div>
+  </div>
+
   <footer id="foot"></footer>
 </div>
 
@@ -152,6 +221,7 @@
   const DATA_URL = "tracts_need.csv";     // built by scripts/build_need_index.py
   const COUNTIES_URL = "counties.json";   // authoritative county rollup (matches the assessment docs)
   const GEOJSON_URL = "tracts.geojson";   // tract polygons for the map (built by scripts/build_geojson.py)
+  const COUNTY_SHAPES_URL = "counties.geojson"; // county outlines for the map (built by scripts/build_geojson.py)
   const DOCS_BASE = "https://raw.githubusercontent.com/MultigrainIntl/needs-atlas/main/data/"; // generated assessments
   // ──────────────────────────────────────────────────────────────────────
 
@@ -176,6 +246,23 @@
     for(let i=0;i<2;i++){if(s>=stops[i][0]&&s<=stops[i+1][0]){a=stops[i];b=stops[i+1];break;}}
     const t=(s-a[0])/((b[0]-a[0])||1),c=a[1].map((v,i)=>Math.round(v+(b[1][i]-v)*t));
     return `rgb(${c[0]},${c[1]},${c[2]})`;
+  }
+
+  // Quantile classes for the tract map + grid. Tract Need Scores cluster in a narrow
+  // band, so a continuous ramp washes them together; binning into 5 equal-count
+  // classes (quintiles) spreads distinct colors evenly so high vs. low need pops.
+  const CLASS_COLORS=['#2C7B5E','#8FB63F','#F2C14E','#E8833A','#C0392B'];
+  const CLASS_LABELS=['lowest fifth','2nd fifth','middle fifth','4th fifth','highest fifth'];
+  let NEED_BREAKS=null;
+  function computeBreaks(){
+    const vals=(D&&D.tracts?D.tracts:[]).map(t=>t.need_score).filter(v=>v!=null).sort((a,b)=>a-b);
+    NEED_BREAKS = vals.length ? [.2,.4,.6,.8].map(p=>vals[Math.min(vals.length-1,Math.floor(p*vals.length))]) : null;
+  }
+  function needColor(s){
+    if(s==null) return cssv('--line');
+    if(!NEED_BREAKS) return heat(s);
+    let i=0; while(i<NEED_BREAKS.length && s>=NEED_BREAKS[i]) i++;
+    return CLASS_COLORS[i];
   }
 
   // Build {counties, tracts} from a tracts_need.csv, or fall back to sample.
@@ -261,16 +348,17 @@
     }
     const tr=D.tracts.filter(t=>t.county_name===name).sort((a,b)=>(b.need_score||0)-(a.need_score||0));
     $('heatTitle').textContent=name+' County — '+tr.length+' census tracts by need';
-    $('cells').innerHTML=tr.map(t=>`<div class="cell" title="Tract ${t.GEOID} · need ${t.need_score} · uninsured ${t.uninsured_pct}%" style="background:${heat(t.need_score)}"></div>`).join('');
+    $('cells').innerHTML=tr.map(t=>`<div class="cell" title="Tract ${t.GEOID} · need ${t.need_score} · uninsured ${t.uninsured_pct}%" style="background:${needColor(t.need_score)}"></div>`).join('');
     $('tableTitle').textContent='Highest-need tracts — '+name+' County';
     const trReal=tr.filter(t=>!isArtifact(t));   // residential neighborhoods only
     $('tractTable').innerHTML='<tr><th>Tract (GEOID)</th><th>Need</th><th>Uninsured</th><th>&lt;200% FPL</th><th>Median income</th></tr>'+
-      trReal.slice(0,8).map(t=>`<tr><td class="mono">${t.GEOID}</td><td><span class="score-pill" style="background:${heat(t.need_score)}">${t.need_score}</span></td><td>${t.uninsured_pct}%</td><td>${t.under_200_fpl_pct}%</td><td>$${fmt(t.median_hh_income)}</td></tr>`).join('');
+      trReal.slice(0,8).map(t=>`<tr><td class="mono">${t.GEOID}</td><td><span class="score-pill" style="background:${needColor(t.need_score)}">${t.need_score}</span></td><td>${t.uninsured_pct}%</td><td>${t.under_200_fpl_pct}%</td><td>$${fmt(t.median_hh_income)}</td></tr>`).join('');
     const dl=$('dlbtn'); if(dl){dl.href=DOCS_BASE+name.toLowerCase()+'_needs_assessment.docx';dl.setAttribute('download',name+'_needs_assessment.docx');}
+    focusCounty(name);   // outline + zoom the map to the selected county
   }
 
   // ── Interactive tract map (Leaflet + tracts.geojson) ────────────────────
-  let atlasMap=null;
+  let atlasMap=null, tractLayer=null, countyShapes=null, countyOutline=null, pendingCounty=null;
   async function initMap(){
     if(atlasMap || typeof L==='undefined') return;   // once, and only if Leaflet loaded
     let gj=null;
@@ -279,8 +367,8 @@
     atlasMap=L.map('map',{scrollWheelZoom:false,zoomControl:true}).setView([40.75,-74.5],9);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       {attribution:'&copy; OpenStreetMap contributors',maxZoom:18,subdomains:'abc'}).addTo(atlasMap);
-    const layer=L.geoJSON(gj,{
-      style:f=>({fillColor:heat(f.properties.need_score),weight:.6,color:'#ffffff',fillOpacity:.72}),
+    tractLayer=L.geoJSON(gj,{
+      style:f=>({fillColor:needColor(f.properties.need_score),weight:.5,color:'#ffffff',fillOpacity:.82}),
       onEachFeature:(f,lyr)=>{
         const p=f.properties, pc=v=>v==null?'—':(+v).toFixed(0)+'%';
         lyr.bindPopup(`<b>${p.county||''} County</b><br>Census tract ${(''+p.GEOID).slice(-6)}<br>`+
@@ -288,11 +376,24 @@
           `Uninsured: ${pc(p.uninsured_pct)} · Below 200% FPL: ${pc(p.under_200_fpl_pct)}<br>`+
           `Population: ${p.total_pop==null?'—':(+p.total_pop).toLocaleString()}`);
         lyr.on({mouseover:e=>e.target.setStyle({weight:2,color:'#16211D'}),
-                mouseout:e=>layer.resetStyle(e.target)});
+                mouseout:e=>tractLayer.resetStyle(e.target)});
       }});
-    layer.addTo(atlasMap);
-    atlasMap.fitBounds(layer.getBounds(),{padding:[12,12]});
+    tractLayer.addTo(atlasMap);
+    try{ const r=await fetch(COUNTY_SHAPES_URL,{cache:'no-store'}); if(r.ok){ const cg=await r.json(); countyShapes=(cg&&cg.features)||null; } }catch(e){/* ignore */}
+    atlasMap.fitBounds(tractLayer.getBounds(),{padding:[12,12]});   // always show the full 7-county service area
+    if(pendingCounty){ focusCounty(pendingCounty); pendingCounty=null; }
     $('mapnote').textContent=gj.features.length+' census tracts';
+  }
+  // Outline the selected county in place (full service area stays in view for context).
+  // Drawn above the tracts and non-interactive so tract popups keep working underneath.
+  function focusCounty(name){
+    if(!atlasMap){ pendingCounty=name; return; }   // map not ready yet — apply on init
+    if(!countyShapes) return;
+    if(countyOutline){ atlasMap.removeLayer(countyOutline); countyOutline=null; }
+    const feat=countyShapes.find(f=>f.properties && f.properties.county_name===name);
+    if(!feat) return;
+    countyOutline=L.geoJSON(feat,{interactive:false,style:{color:cssv('--primary-deep')||'#124A3B',weight:3.5,fill:false,opacity:1,lineJoin:'round'}}).addTo(atlasMap);
+    countyOutline.bringToFront();
   }
 
   // ── Update status: next scheduled run, last run success/fail, manual trigger ──
@@ -301,31 +402,29 @@
     for(let y=now.getUTCFullYear();;y++) for(const m of months){ const d=new Date(Date.UTC(y,m,1,8,0,0)); if(d>now) return d; }
   }
   const fmtDate=d=>d.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});
-  async function updateStatus(){
+  function updateStatus(){
     const box=$('updbox'); if(!box) return;
     const nq=nextQuarter(), days=Math.ceil((nq-new Date())/86400000);
-    const rows=[['Data current as of', D.generated?fmtDate(new Date(D.generated+'T00:00:00')):'—'],
-                ['Next scheduled update', fmtDate(nq)+' · in '+days+' day'+(days===1?'':'s')]];
-    box.innerHTML=rows.map(r=>`<div class="updrow"><span class="l">${r[0]}</span><span class="r">${r[1]}</span></div>`).join('')+
-      '<div class="updrow"><span class="l">Last update run</span><span class="r" id="lastrun"><span class="stat na">checking…</span></span></div>';
-    try{
-      const r=await fetch('https://api.github.com/repos/MultigrainIntl/needs-atlas/actions/workflows/refresh.yml/runs?per_page=1');
-      const j=await r.json(); const run=j.workflow_runs&&j.workflow_runs[0]; const el=$('lastrun');
-      if(run&&el){ let cls='na',lab='unknown';
-        if(run.status!=='completed'){cls='run';lab='running…';}
-        else if(run.conclusion==='success'){cls='ok';lab='succeeded';}
-        else{cls='bad';lab='failed';}
-        el.innerHTML=`<span class="stat ${cls}">${lab}</span> ${fmtDate(new Date(run.created_at))}`;
-      } else if(el){ el.innerHTML='<span class="stat na">unavailable</span>'; }
-    }catch(e){ const el=$('lastrun'); if(el) el.innerHTML='<span class="stat na">unavailable</span>'; }
+    const live=$('datamode').textContent==='Live data';
+    const asOf=D.generated?fmtDate(new Date(D.generated+'T00:00:00')):'—';
+    const last=live?`<span class="stat ok">succeeded</span> ${asOf}`:'<span class="stat na">demo data</span>';
+    const rows=[['Data current as of', asOf],
+                ['Next scheduled refresh', fmtDate(nq)+' · in '+days+' day'+(days===1?'':'s')],
+                ['Last refresh', last]];
+    box.innerHTML=rows.map(r=>`<div class="updrow"><span class="l">${r[0]}</span><span class="r">${r[1]}</span></div>`).join('');
   }
 
   function startApp(){
     const sel=$('county');
     sel.innerHTML=D.counties.map(c=>`<option value="${c.county}">${c.county} County</option>`).join('');
     sel.addEventListener('change',e=>render(e.target.value));
-    const src=($('datamode').textContent==='Live data'?'live U.S. Census ACS 2020–2024 5-year estimates, census-tract level':'sample data — run the pipeline for live values');
+    computeBreaks();
+    const rs=$('rampswatches'); if(rs) rs.innerHTML=CLASS_COLORS.map((c,i)=>`<span class="swatch" title="${CLASS_LABELS[i]} of tracts by need" style="background:${c}"></span>`).join('');
+    const src=($('datamode').textContent==='Live data'?'live U.S. Census ACS 2019–2023 5-year estimates, census-tract level':'sample data — run the pipeline for live values');
     $('foot').textContent='Needs Atlas · Food Aid Project, Inc. · '+src+(D.generated?' · Data updated '+D.generated:'');
+    const showAbout=on=>{ $('dashView').style.display=on?'none':'block'; $('aboutView').style.display=on?'block':'none'; $('aboutBtn').textContent=on?'← Dashboard':'About'; window.scrollTo(0,0); if(!on&&atlasMap) setTimeout(()=>atlasMap.invalidateSize(),60); };
+    $('aboutBtn').addEventListener('click',()=>showAbout($('aboutView').style.display==='none'));
+    const ml=$('methodLink'); if(ml) ml.addEventListener('click',e=>{e.preventDefault();showAbout(true);});
     $('gate').style.display='none';$('app').style.display='block';
     render(D.counties[0].county);
     initMap();
