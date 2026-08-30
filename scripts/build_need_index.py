@@ -178,6 +178,28 @@ def main():
         for c in counties:
             c["health"] = pcs.get(c["county"])
 
+    # Attach provider-to-population ratios (County Health Rankings) and ALICE
+    # household rates (United For ALICE) — both county-level.
+    providers_meta = None
+    PR = ROOT / "config" / "providers.json"
+    if PR.exists():
+        prj = _json.loads(PR.read_text())
+        providers_meta = {"source": prj.get("source"), "source_url": prj.get("source_url"),
+                          "release": prj.get("release"), "measures": prj.get("measures"),
+                          "nj": prj.get("nj")}
+        prc = prj.get("counties", {})
+        for c in counties:
+            c["providers"] = prc.get(c["county"])
+    alice_meta = None
+    AL = ROOT / "config" / "alice.json"
+    if AL.exists():
+        alj = _json.loads(AL.read_text())
+        alice_meta = {"source": alj.get("source"), "source_url": alj.get("source_url"),
+                      "data_year": alj.get("data_year"), "nj": alj.get("nj")}
+        alc = alj.get("counties", {})
+        for c in counties:
+            c["alice_pct"] = (alc.get(c["county"], {}) or {}).get("pct_below_alice")
+
     # County Need Index: min-max of poverty + uninsured + food insecurity across the
     # seven counties, averaged x100 (relative ranking; 100 = highest, 0 = lowest).
     index_keys = ("poverty_pct", "uninsured_pct", "food_insecurity_pct")
@@ -192,6 +214,7 @@ def main():
         {"generated": __import__("datetime").date.today().isoformat(),
          "source": "ACS 5-year via Needs Atlas pipeline",
          "food_insecurity_source": fi_meta, "places": places_meta,
+         "providers": providers_meta, "alice": alice_meta,
          "counties": counties}, indent=2))
     print(f"Wrote county rollup ({len(counties)} counties) -> data/counties.json")
 

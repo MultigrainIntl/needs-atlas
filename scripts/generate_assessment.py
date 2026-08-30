@@ -39,6 +39,16 @@ PLC = PL.get("counties", {})
 PLNJ = PL.get("nj", {})
 PLLAB = PL.get("measures", {})
 
+_PR_PATH = ROOT / "config" / "providers.json"
+PR = json.loads(_PR_PATH.read_text()) if _PR_PATH.exists() else {}
+PRC = PR.get("counties", {})
+PRNJ = PR.get("nj", {})
+
+_AL_PATH = ROOT / "config" / "alice.json"
+AL = json.loads(_AL_PATH.read_text()) if _AL_PATH.exists() else {}
+ALC = AL.get("counties", {})
+ALNJ = AL.get("nj", {})
+
 CITES = {
     "qf": ("U.S. Census Bureau QuickFacts. {county} County, New Jersey and New Jersey. "
            "2020-2024 American Community Survey 5-Year Estimates and 2025 Population "
@@ -55,16 +65,17 @@ CITES = {
                "County Data, " + str(PL.get("release", "")) + " release — model-based small-area "
                "estimates (crude prevalence) from the Behavioral Risk Factor Surveillance System. "
                "Retrieved from cdc.gov/places. Accessed " + TODAY + "."),
+    "chr": ("County Health Rankings & Roadmaps, " + str(PR.get("release", "")) + " release. "
+            "University of Wisconsin Population Health Institute. Retrieved from countyhealthrankings.org. "
+            "Accessed " + TODAY + "."),
+    "alice": ("United Way — United For ALICE. New Jersey ALICE Report (" + str(AL.get("data_year", "")) +
+              " data). Retrieved from unitedforalice.org. Accessed " + TODAY + "."),
 }
 
 # External sources not yet wired in — listed honestly as pending, never fabricated.
 PENDING_ALL = [
-    ("alice", "ALICE (Asset Limited, Income Constrained, Employed) household rate, county and municipal",
-     "United Way United For ALICE — New Jersey"),
-    ("njshad", "Prenatal care, infant mortality (including racial disparity), and neighborhood-level chronic-disease detail",
+    ("njshad", "Prenatal care and infant mortality, including racial disparities",
      "New Jersey State Health Assessment Data (NJSHAD)"),
-    ("chr", "Primary-care, dental, and mental-health provider-to-population ratios; severe housing problems",
-     "County Health Rankings & Roadmaps (Univ. of Wisconsin)"),
 ]
 
 CITE_RE = re.compile(r"\[\[cite:([a-z_]+)\]\]")
@@ -168,6 +179,10 @@ def build(c, tracts, ref, ranks):
     s = STATE
     conc = concentration(c["county"], tracts, ref) if tracts else None
     has_tracts = conc is not None
+    aln = (ALC.get(c["county"]) or {}).get("pct_below_alice")
+    alice_clause = (f"Poverty alone understates the strain: {aln}% of {c['county']} County households fall below "
+                    f"the ALICE threshold — unable to afford basic necessities despite, in most cases, being "
+                    f"employed (New Jersey: {ALNJ.get('pct_below_alice')}%).[[cite:alice]] ") if aln is not None else ""
     secs = [
         ("Poverty, income, and the case for concentrated need",
          f"The communities Zufall Health serves within {c['county']} County, New Jersey "
@@ -176,7 +191,7 @@ def build(c, tracts, ref, ranks):
          f"{rel(c['median_hh_income'], s['median_hh_income'], 'above', 'below', 'near')} the "
          f"statewide median of ${s['median_hh_income']:,}, and {c['poverty_pct']}% of "
          f"residents live in poverty, {rel(c['poverty_pct'], s['poverty_pct'])} the New Jersey "
-         f"rate of {s['poverty_pct']}%.[[cite:qf]] County averages, however, flatten the "
+         f"rate of {s['poverty_pct']}%.[[cite:qf]] {alice_clause}County averages, however, flatten the "
          f"neighborhoods where need concentrates — which a census-tract view brings into focus."),
     ]
 
@@ -216,14 +231,21 @@ def build(c, tracts, ref, ranks):
             f"grant application must document, and it is where Zufall's sites and outreach can be "
             f"targeted for greatest effect."))
 
+    prov = PRC.get(c["county"])
+    _rat = lambda x: (x or "").replace(":1", "")
+    prov_txt = ""
+    if prov:
+        prov_txt = (f" Provider supply reinforces the gap: {c['county']} County has roughly one primary-care "
+                    f"physician per {_rat(prov['pcp_ratio'])} residents, one dentist per {_rat(prov['dent_ratio'])}, "
+                    f"and one mental-health provider per {_rat(prov['mh_ratio'])} — against statewide figures of "
+                    f"{_rat(PRNJ['pcp_ratio'])}, {_rat(PRNJ['dent_ratio'])}, and {_rat(PRNJ['mh_ratio'])} "
+                    f"respectively.[[cite:chr]]")
     secs.append((
         "Barriers to care: insurance and providers",
         f"Access to coverage is a clear barrier. {c['uninsured_under65_pct']}% of {c['county']} "
         f"County residents under age 65 are uninsured, "
         f"{rel(c['uninsured_under65_pct'], s['uninsured_under65_pct'])} the statewide rate of "
-        f"{s['uninsured_under65_pct']}%.[[cite:qf]] Provider-supply measures — primary-care, "
-        f"dental, and mental-health provider-to-population ratios — are pending source connection "
-        f"(see below) and are expected to reinforce this access gap."))
+        f"{s['uninsured_under65_pct']}%.[[cite:qf]]" + prov_txt))
 
     h = PLC.get(c["county"])
     if h and h.get("DIABETES") is not None:
@@ -322,11 +344,11 @@ def to_docx(c, secs, order, pending, conc, path):
     r = doc.add_paragraph().add_run(f"{c['county']} County Needs Assessment — {datetime.date.today():%B %Y}")
     r.bold = True; r.font.size = Pt(16)
     note = ("County and statewide figures below are published U.S. Census Bureau values; the "
-            "census-tract concentration analysis is drawn from ACS 5-year tract tables; the "
-            "food-insecurity figure is from Feeding America's Map the Meal Gap; chronic-disease "
-            "and community-health figures are from the CDC's PLACES project. "
-            "ALICE and provider-ratio indicators are pending source connection and are listed "
-            "at the end — not estimated.")
+            "census-tract concentration analysis is drawn from ACS 5-year tract tables; food insecurity "
+            "is from Feeding America's Map the Meal Gap; chronic-disease and community-health figures are "
+            "from the CDC's PLACES project; ALICE household data is from United For ALICE; and "
+            "provider-to-population ratios are from County Health Rankings. Remaining indicators (see end) "
+            "are listed as pending — not estimated.")
     b = doc.add_paragraph().add_run(note)
     b.italic = True; b.font.size = Pt(8.5); b.font.color.rgb = RGBColor(0x1E, 0x6B, 0x57)
     for title, runs in secs:
@@ -368,10 +390,10 @@ def to_docx(c, secs, order, pending, conc, path):
 
 def to_md(c, secs, order, pending, conc):
     out = [f"# {c['county']} County Needs Assessment — {datetime.date.today():%B %Y}", "",
-           "_County/state figures are published Census values; the tract concentration analysis "
-           "is from ACS 5-year tract tables; food insecurity is from Feeding America's Map the "
-           "Meal Gap; chronic disease/community health is from CDC PLACES. ALICE / provider-ratio "
-           "indicators pending (listed below) — not estimated._\n"]
+           "_County/state figures are published Census values; tract concentration from ACS 5-year "
+           "tract tables; food insecurity from Feeding America; chronic disease/community health from "
+           "CDC PLACES; ALICE from United For ALICE; provider ratios from County Health Rankings. "
+           "Remaining indicators (listed below) pending — not estimated._\n"]
     for title, runs in secs:
         out.append(f"## {title}")
         out.append("".join(t if k == "t" else f"[{t}]" for k, t in runs) + "\n")
