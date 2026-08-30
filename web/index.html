@@ -80,6 +80,11 @@
   th{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);font-weight:500}
   td.mono{font-family:"IBM Plex Mono",monospace;font-size:12.5px}
   .score-pill{display:inline-block;min-width:38px;text-align:center;padding:2px 8px;border-radius:20px;font-weight:600;font-size:12.5px;color:#fff}
+  tr.tract-extra{display:none}
+  #tractWrap.tract-open{max-height:460px;overflow-y:auto}
+  #tractWrap.tract-open tr.tract-extra{display:table-row}
+  .tract-toggle{margin-top:12px;background:none;border:1px solid var(--line-strong);color:var(--ink-soft);font:inherit;font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:8px;cursor:pointer}
+  .tract-toggle:hover{border-color:var(--primary);color:var(--primary)}
   footer{margin-top:28px;padding-top:18px;border-top:1px solid var(--line);font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-faint)}
   #map{width:100%;height:460px;border-radius:10px;margin-top:14px;border:1px solid var(--line);background:var(--paper-2)}
   .leaflet-container{font-family:"Public Sans",sans-serif;background:var(--paper-2)}
@@ -236,7 +241,7 @@
     <div class="cells" id="cells"></div>
   </div>
   <div class="grid2">
-    <div class="panel"><h3 id="tableTitle">Highest-need tracts</h3><div class="cap">The numbers that go straight into a grant narrative.</div><div style="overflow-x:auto"><table id="tractTable"></table></div></div>
+    <div class="panel"><h3 id="tableTitle">Highest-need tracts</h3><div class="cap">The numbers that go straight into a grant narrative.</div><div id="tractWrap" style="overflow-x:auto"><table id="tractTable"></table></div><button id="tractToggle" class="tract-toggle" hidden></button></div>
     <div class="panel"><h3>Data &amp; updates</h3><div class="cap">When the numbers refresh, and whether the last refresh worked.</div>
       <div id="updbox" class="updrows"></div>
       <div class="cap" style="margin-top:12px;font-size:12px;line-height:1.6">Figures refresh automatically every quarter (Jan&nbsp;1, Apr&nbsp;1, Jul&nbsp;1, Oct&nbsp;1), pulled directly from the U.S.&nbsp;Census Bureau — no sign-in or manual step needed. The site always shows the most recent completed refresh. <a href="#" id="methodLink" style="color:var(--primary);font-weight:600;text-decoration:none">How this works &amp; how to check the numbers &rarr;</a></div>
@@ -593,8 +598,22 @@
     $('cells').innerHTML=tr.map(t=>`<div class="cell" title="Tract ${t.GEOID} · need ${t.need_score} · uninsured ${t.uninsured_pct}%" style="background:${needColor(t.need_score)}"></div>`).join('');
     $('tableTitle').textContent='Highest-need tracts — '+name+' County';
     const trReal=tr.filter(t=>!isArtifact(t));   // residential neighborhoods only
+    const TOP=8;
+    const tractRow=(t,i)=>`<tr class="${i>=TOP?'tract-extra':''}"><td>${t.municipality?`<b>${t.municipality}</b>`:'<span class="ink-soft">—</span>'}</td><td class="mono" title="Census tract ${tractNo(t.GEOID)} · GEOID ${t.GEOID}">${t.municipality?'tract ':''}${tractNo(t.GEOID)}<br><span style="font-size:11px;color:var(--ink-soft)">${t.GEOID}</span></td><td><span class="score-pill" style="background:${needColor(t.need_score)}">${t.need_score}</span></td><td>${t.uninsured_pct}%</td><td>${t.under_200_fpl_pct}%</td><td>$${fmt(t.median_hh_income)}</td></tr>`;
     $('tractTable').innerHTML='<tr><th>Location</th><th>Tract (GEOID)</th><th>Need</th><th>Uninsured</th><th>&lt;200% FPL</th><th>Median income</th></tr>'+
-      trReal.slice(0,8).map(t=>`<tr><td>${t.municipality?`<b>${t.municipality}</b>`:'<span class="ink-soft">—</span>'}</td><td class="mono" title="Census tract ${tractNo(t.GEOID)} · GEOID ${t.GEOID}">${t.municipality?'tract ':''}${tractNo(t.GEOID)}<br><span style="font-size:11px;color:var(--ink-soft)">${t.GEOID}</span></td><td><span class="score-pill" style="background:${needColor(t.need_score)}">${t.need_score}</span></td><td>${t.uninsured_pct}%</td><td>${t.under_200_fpl_pct}%</td><td>$${fmt(t.median_hh_income)}</td></tr>`).join('');
+      trReal.map(tractRow).join('');
+    // Expander: full ranked list is rendered but rows past the top 8 stay hidden until asked for.
+    const wrap=$('tractWrap'), tog=$('tractToggle');
+    if(tog){
+      wrap.classList.remove('tract-open');            // collapse on every county switch
+      if(trReal.length>TOP){
+        tog.hidden=false;
+        const setLbl=()=>{const open=wrap.classList.contains('tract-open');
+          tog.textContent=open?'Show top 8 ▲':`Show all ${trReal.length} tracts in ${name} ▼`;};
+        setLbl();
+        tog.onclick=()=>{wrap.classList.toggle('tract-open');setLbl();};
+      } else { tog.hidden=true; }
+    }
     const dl=$('dlbtn'); if(dl){dl.href=DOCS_BASE+name.toLowerCase()+'_needs_assessment.docx';dl.setAttribute('download',name+'_needs_assessment.docx');}
     renderHealth(name,c);   // CDC PLACES community health burden
     renderProviders(name);  // County Health Rankings provider-to-population ratios
