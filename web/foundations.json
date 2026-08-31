@@ -1,0 +1,45 @@
+{
+  "source": "IRS Form 990-PF filings, via grantmakers.io foundation profiles and ProPublica Nonprofit Explorer",
+  "source_url": "https://www.grantmakers.io",
+  "compiled": "2026-08-31",
+  "method": "Curated starting prospects: real New Jersey private foundations verified on grantmakers.io/ProPublica, chosen for fit to community-health / human-services (Zufall) and food-security / health-equity (Food Aid Project). Dollar figures are foundation ASSETS from the latest public 990-PF (a private foundation must pay out roughly 5% of assets in grants each year). Focus areas reflect each foundation's publicly stated mission.",
+  "caveats": [
+    "990 data lags 1–2 years, so this shows who a foundation IS and what it funds — it is prospecting, not a list of open deadlines like the federal Funding matches.",
+    "Many private foundations do not accept unsolicited proposals (some fund only by invitation or through calls for proposals). Always confirm current guidelines on the foundation's own site before applying.",
+    "Community foundations (e.g. Princeton Area Community Foundation, Community Foundation of New Jersey) file a 990 rather than a 990-PF, so they are not in this 990-PF list — they are strong, application-friendly funders worth checking directly."
+  ],
+  "grantee_search": "https://www.grantmakers.io/search/grantees/",
+  "profiles": {
+    "zufall": {
+      "label": "Foundations — community health & human services (Zufall service area)",
+      "peers_to_search": ["Zufall Health Center", "community health center New Jersey", "federally qualified health center"],
+      "foundations": [
+        {"name": "Victoria Foundation", "ein": "221554541", "city": "Newark", "state": "NJ", "assets_musd": 335, "focus": "Newark neighborhoods, education, community & environment", "geo": "Newark / Essex County", "gm_url": "https://www.grantmakers.io/profiles/v1/221554541-victoria-foundation-inc", "pp_url": "https://projects.propublica.org/nonprofits/organizations/221554541"},
+        {"name": "Healthcare Foundation of New Jersey", "ein": "223451664", "city": "Millburn", "state": "NJ", "assets_musd": 208, "focus": "Health & healthcare access; behavioral health", "geo": "Greater MetroWest / Newark", "gm_url": "https://www.grantmakers.io/profiles/v1/223451664-healthcare-foundation-of-new-jersey-inc", "pp_url": "https://projects.propublica.org/nonprofits/organizations/223451664"},
+        {"name": "The MCJ Amelior Foundation", "ein": "222497895", "city": "Morristown", "state": "NJ", "assets_musd": 106, "focus": "Newark youth, education & community wellbeing", "geo": "Newark / NJ", "gm_url": "https://www.grantmakers.io/profiles/v1/222497895-the-mcj-amelior-foundation", "pp_url": "https://projects.propublica.org/nonprofits/organizations/222497895"},
+        {"name": "Schumann Fund for New Jersey", "ein": "521556076", "city": "Montclair", "state": "NJ", "assets_musd": 34, "focus": "Early childhood, health & nonprofit capacity", "geo": "Essex / Newark", "gm_url": "https://www.grantmakers.io/profiles/v1/521556076-schumann-fund-for-new-jersey-inc", "pp_url": "https://projects.propublica.org/nonprofits/organizations/521556076"},
+        {"name": "The Prudential Foundation", "ein": "222175290", "city": "Newark", "state": "NJ", "assets_musd": 77, "focus": "Newark economic mobility, community & health", "geo": "Newark / national", "gm_url": "https://www.grantmakers.io/profiles/v1/222175290-prudential-foundation-inc", "pp_url": "https://projects.propublica.org/nonprofits/organizations/222175290"},
+        {"name": "Johnson & Johnson Foundation (United States)", "ein": "226062811", "city": "New Brunswick", "state": "NJ", "assets_musd": 250, "focus": "Community & global health, health workforce", "geo": "Middlesex / national", "gm_url": "https://www.grantmakers.io/profiles/v1/226062811-johnson-and-johnson-foundation-united-states-inc", "pp_url": "https://projects.propublica.org/nonprofits/organizations/226062811"},
+        {"name": "Turrell Fund", "ein": "221551936", "city": "Montclair", "state": "NJ", "assets_musd": 120, "focus": "Wellbeing of young children (birth–8) & their families", "geo": "New Jersey", "gm_url": "https://www.grantmakers.io/profiles/v1/221551936-turrell-fund", "pp_url": "https://projects.propublica.org/nonprofits/organizations/221551936"},
+        {"name": "Hyde and Watson Foundation", "ein": "222425725", "city": "Warren Township", "state": "NJ", "assets_musd": 133, "focus": "Capital & equipment grants: health, human services, education", "geo": "NJ / NY metro", "gm_url": "https://www.grantmakers.io/profiles/v1/222425725-hyde-and-watson-foundation", "pp_url": "https://projects.propublica.org/nonprofits/organizations/222425725"},
+        {"name": "E. J. Grassmann Trust", "ein": "226326539", "city": "Warren", "state": "NJ", "assets_musd": 35, "focus": "Human services, health & education", "geo": "Union County & NJ", "gm_url": "https://www.grantmakers.io/profiles/v1/226326539-e-j-grassmann-trust", "pp_url": "https://projects.propublica.org/nonprofits/organizations/226326539"},
+        {"name": "Bristol-Myers Squibb Foundation", "ein": "133127947", "city": "Princeton", "state": "NJ", "assets_musd": 83, "focus": "Health equity & access to care", "geo": "NJ / national", "gm_url": "https://www.grantmakers.io/profiles/v1/133127947-bristol-myers-squibb-foundation-inc", "pp_url": "https://projects.propublica.org/nonprofits/organizations/133127947"},
+        {"name": "Robert Wood Johnson Foundation", "ein": "226029397", "city": "Princeton", "state": "NJ", "assets_musd": 13419, "focus": "Health & health equity (largely calls-for-proposals, not unsolicited)", "geo": "NJ / national", "gm_url": "https://www.grantmakers.io/profiles/v1/226029397-robert-wood-johnson-foundation", "pp_url": "https://projects.propublica.org/nonprofits/organizations/226029397"},
+        {"name": "PSEG Foundation", "ein": "223125880", "city": "Newark", "state": "NJ", "assets_musd": 30, "focus": "NJ community: equity, environment, safety", "geo": "New Jersey", "gm_url": "https://www.grantmakers.io/profiles/v1/223125880-pseg-foundation-inc", "pp_url": "https://projects.propublica.org/nonprofits/organizations/223125880"}
+      ]
+    },
+    "fap": {
+      "label": "Foundations — food security, hunger relief & health equity",
+      "peers_to_search": ["Community FoodBank of New Jersey", "Fulfill Monmouth Ocean", "NORWESCAP", "food bank New Jersey"],
+      "foundations": [
+        {"name": "The Provident Bank Foundation", "ein": "043739441", "city": "Iselin", "state": "NJ", "assets_musd": 17, "focus": "Community enrichment incl. hunger & food security", "geo": "New Jersey", "gm_url": "https://www.grantmakers.io/profiles/v1/043739441-provident-bank-foundation-inc", "pp_url": "https://projects.propublica.org/nonprofits/organizations/043739441"},
+        {"name": "OceanFirst Foundation", "ein": "223465454", "city": "Toms River", "state": "NJ", "assets_musd": 11, "focus": "NJ community incl. hunger relief & health", "geo": "New Jersey", "gm_url": "https://www.grantmakers.io/profiles/v1/223465454-oceanfirst-foundation", "pp_url": "https://projects.propublica.org/nonprofits/organizations/223465454"},
+        {"name": "PSEG Foundation", "ein": "223125880", "city": "Newark", "state": "NJ", "assets_musd": 30, "focus": "NJ community: equity, environment, food security", "geo": "New Jersey", "gm_url": "https://www.grantmakers.io/profiles/v1/223125880-pseg-foundation-inc", "pp_url": "https://projects.propublica.org/nonprofits/organizations/223125880"},
+        {"name": "The Prudential Foundation", "ein": "222175290", "city": "Newark", "state": "NJ", "assets_musd": 77, "focus": "Economic mobility & community incl. food access", "geo": "Newark / national", "gm_url": "https://www.grantmakers.io/profiles/v1/222175290-prudential-foundation-inc", "pp_url": "https://projects.propublica.org/nonprofits/organizations/222175290"},
+        {"name": "Victoria Foundation", "ein": "221554541", "city": "Newark", "state": "NJ", "assets_musd": 335, "focus": "Newark neighborhoods incl. food & nutrition", "geo": "Newark / Essex County", "gm_url": "https://www.grantmakers.io/profiles/v1/221554541-victoria-foundation-inc", "pp_url": "https://projects.propublica.org/nonprofits/organizations/221554541"},
+        {"name": "Robert Wood Johnson Foundation", "ein": "226029397", "city": "Princeton", "state": "NJ", "assets_musd": 13419, "focus": "Health equity, healthy communities, nutrition (calls-for-proposals)", "geo": "NJ / national", "gm_url": "https://www.grantmakers.io/profiles/v1/226029397-robert-wood-johnson-foundation", "pp_url": "https://projects.propublica.org/nonprofits/organizations/226029397"},
+        {"name": "Bristol-Myers Squibb Foundation", "ein": "133127947", "city": "Princeton", "state": "NJ", "assets_musd": 83, "focus": "Health equity & access", "geo": "NJ / national", "gm_url": "https://www.grantmakers.io/profiles/v1/133127947-bristol-myers-squibb-foundation-inc", "pp_url": "https://projects.propublica.org/nonprofits/organizations/133127947"}
+      ]
+    }
+  }
+}

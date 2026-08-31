@@ -208,6 +208,7 @@
       <div class="menu-panel" id="menuPanel">
         <button class="menu-item" id="menuDash">Dashboard</button>
         <button class="menu-item" id="menuFunding">Funding matches</button>
+        <button class="menu-item" id="menuFoundations">Foundations</button>
         <button class="menu-item" id="menuUpdates">What's new</button>
         <button class="menu-item" id="menuAbout">About</button>
         <button class="menu-item" id="menuFaq">FAQ</button>
@@ -283,6 +284,16 @@
     </div>
   </div>
 
+  <div id="foundationsView" style="display:none">
+    <div class="panel about">
+      <h2 id="foundationsTitle">Foundation prospects</h2>
+      <p class="lead">Private foundations whose giving fits Zufall's community-health and human-services mission — a starting prospect list drawn from IRS Form 990-PF data. Unlike the federal Funding matches, foundations rarely post open deadlines, so this is about <em>who to build a relationship with</em>. Open each foundation's grant history to see who it actually funds, then confirm current guidelines before reaching out.</p>
+      <div id="foundationsList" style="margin-top:14px"></div>
+      <div id="foundationsSeed" class="statewide-note" style="margin-top:16px"></div>
+      <div id="foundationsCaveats" class="cap" style="margin-top:14px"></div>
+    </div>
+  </div>
+
   <!-- Approvals (admin only) -->
   <div id="adminView" style="display:none">
     <div class="panel about">
@@ -308,6 +319,7 @@
         <li><b>Highest-need tracts</b> — the neighborhood-level table that drops straight into a grant narrative.</li>
         <li><b>Viewable &amp; downloadable assessments</b> — read each county's fully-cited needs-assessment in the app (the "Assessment" button), then download the Word version, formatted for grant submissions.</li>
         <li><b>Funding matches</b> — open federal grant opportunities from Grants.gov, ranked by fit to each county's needs, with a plain "why it fits" case and closing dates.</li>
+        <li><b>Foundations</b> — private foundations whose giving fits community-health and human-services work, from IRS 990-PF data (the source behind grantmakers.io), each with its focus, size, grant history, and 990. The philanthropy side of the funding picture, alongside the federal one.</li>
         <li><b>What's new</b> — a running log of changes as the tool evolves.</li>
         <li><b>Secure accounts</b> — sign-in with administrator-approved access for new users.</li>
       </ul>
@@ -444,6 +456,7 @@
   const COUNTY_SHAPES_URL = "counties.geojson"; // county outlines for the map (built by scripts/build_geojson.py)
   const UPDATES_URL = "updates.json";     // the "What's new" feed
   const GRANTS_URL = "grants.json";       // matched funding opportunities (Grants.gov)
+  const FOUNDATIONS_URL = "foundations.json"; // curated 990-PF foundation prospects (grantmakers.io / ProPublica)
   const PROVIDERS_URL = "providers.json"; // County Health Rankings provider-to-population ratios
   const ALICE_URL = "alice.json";         // United For ALICE household rates
   const MATERNAL_URL = "maternal.json";   // County Health Rankings low birthweight
@@ -549,14 +562,16 @@
     try{ const r=await fetch(ALICE_URL,{cache:'no-store'}); if(r.ok) alice=await r.json(); }catch(e){/* ignore */}
     let maternal=null;
     try{ const r=await fetch(MATERNAL_URL,{cache:'no-store'}); if(r.ok) maternal=await r.json(); }catch(e){/* ignore */}
+    let foundations=null;
+    try{ const r=await fetch(FOUNDATIONS_URL,{cache:'no-store'}); if(r.ok) foundations=await r.json(); }catch(e){/* ignore */}
     if(tracts){
       $('datamode').textContent='Live data';$('datamode').classList.add('live');
       // Prefer the authoritative county rollup; fall back to aggregating the tracts.
       const base = counties ? {counties, tracts} : aggregate(tracts);
-      base.generated=generated; base.places=places; base.statewide=statewide; base.grants=grants; base.providers=providers; base.alice=alice; base.maternal=maternal; return base;
+      base.generated=generated; base.places=places; base.statewide=statewide; base.grants=grants; base.providers=providers; base.alice=alice; base.maternal=maternal; base.foundations=foundations; return base;
     }
     $('datamode').textContent='Demo data';
-    return window.ATLAS_SAMPLE;
+    const s=window.ATLAS_SAMPLE||{}; s.foundations=foundations; return s;
   }
 
   // CDC PLACES: which measures appear in the county-vs-NJ bar chart, and short axis labels.
@@ -621,6 +636,7 @@
     renderHealth(name,c);   // CDC PLACES community health burden
     renderProviders(name);  // County Health Rankings provider-to-population ratios
     renderFunding(name,c);  // Grants.gov opportunities matched to this county
+    renderFoundations();    // curated foundation prospects (990-PF)
     if($('assessmentView')&&getComputedStyle($('assessmentView')).display!=='none') renderAssessment(name);
     focusCounty(name);   // outline + zoom the map to the selected county
   }
@@ -740,6 +756,29 @@
         `<div class="grant-meta">${o.agency} · Closes <b style="color:${urg}">${fmtDate(new Date(o.close+'T00:00:00'))}</b> (${days} day${days===1?'':'s'}) · CFDA ${o.cfda||'—'} · ${o.number}</div>`+
         `<div class="grant-why">${why}</div></div>`;
     }).join('');
+  }
+
+  // ── Foundation prospects (curated 990-PF data; grantmakers.io + ProPublica) ──
+  function fmtAssets(m){ if(m==null) return '—'; return m>=1000?('$'+(m/1000).toFixed(1)+'B'):('$'+m+'M'); }
+  function renderFoundations(){
+    const box=$('foundationsList'); if(!box) return;
+    const F=D.foundations;
+    if(!F||!F.profiles||!F.profiles.zufall){ box.innerHTML='<p class="cap">The foundation list isn\'t available right now.</p>'; return; }
+    const prof=F.profiles.zufall;
+    box.innerHTML=prof.foundations.map(f=>
+      `<div class="grant"><div class="grant-top">`+
+      `<a href="${f.gm_url}" target="_blank" rel="noopener" class="grant-title">${f.name}</a>`+
+      `<span class="grant-fit lo">${fmtAssets(f.assets_musd)} in assets</span></div>`+
+      `<div class="grant-meta">${f.city}, ${f.state} · ${f.geo}</div>`+
+      `<div class="grant-why"><b>Focus:</b> ${f.focus} &nbsp;·&nbsp; `+
+      `<a href="${f.gm_url}" target="_blank" rel="noopener">Grant history</a> · `+
+      `<a href="${f.pp_url}" target="_blank" rel="noopener">990 (ProPublica)</a></div></div>`
+    ).join('');
+    const seed=$('foundationsSeed');
+    if(seed) seed.innerHTML=`<b>Find more — "who funds organizations like us":</b> on grantmakers.io, search by <em>grantee</em> for peers such as `+
+      prof.peers_to_search.map(p=>`“${p}”`).join(', ')+` to see which foundations fund them. <a href="${F.grantee_search}" target="_blank" rel="noopener">Open grantee search →</a>`;
+    const cav=$('foundationsCaveats');
+    if(cav) cav.innerHTML='Source: '+F.source+'.<ul style="margin:8px 0 0 18px">'+(F.caveats||[]).map(c=>`<li>${c}</li>`).join('')+'</ul>';
   }
 
   // ── Assessment preview (renders the county .md in-app before download) ──
@@ -877,7 +916,7 @@
 
   // ── View switching ──────────────────────────────────────────────────────
   function showView(v){
-    const views={dash:'dashView',assessment:'assessmentView',funding:'fundingView',about:'aboutView',faq:'faqView',updates:'updatesView',admin:'adminView'};
+    const views={dash:'dashView',assessment:'assessmentView',funding:'fundingView',foundations:'foundationsView',about:'aboutView',faq:'faqView',updates:'updatesView',admin:'adminView'};
     Object.values(views).forEach(id=>{const el=$(id); if(el) el.style.display='none';});
     const el=$(views[v]||'dashView'); if(el) el.style.display='block';
     const items={dash:'menuDash',funding:'menuFunding',updates:'menuUpdates',about:'menuAbout',faq:'menuFaq',admin:'menuApprovals'};
@@ -1029,6 +1068,7 @@
     $('assessBtn') && $('assessBtn').addEventListener('click',()=>showView('assessment'));
     $('menuDash') && $('menuDash').addEventListener('click',()=>showView('dash'));
     $('menuFunding') && $('menuFunding').addEventListener('click',()=>showView('funding'));
+    $('menuFoundations') && $('menuFoundations').addEventListener('click',()=>showView('foundations'));
     $('menuUpdates') && $('menuUpdates').addEventListener('click',()=>showView('updates'));
     $('menuAbout') && $('menuAbout').addEventListener('click',()=>showView('about'));
     $('menuFaq') && $('menuFaq').addEventListener('click',()=>showView('faq'));

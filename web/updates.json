@@ -2,6 +2,12 @@
   "_comment": "The 'What's new' feed for Needs Atlas. Add a new object to the top of the list for each change. Fields: date (YYYY-MM-DD), tag (Feature | Data | Accuracy | Access | Fix | Launch), title, summary. Newest entries are shown first automatically.",
   "updates": [
     {
+      "date": "2026-08-31",
+      "tag": "Feature",
+      "title": "Foundations — private funders, not just federal grants",
+      "summary": "A new Foundations view surfaces private foundations whose giving fits community-health and human-services work, drawn from IRS 990-PF data (the source behind grantmakers.io) — each with its focus, size, grant history, and 990. Federal NOFOs are only part of the picture; this adds the philanthropy side. Find it in the Menu."
+    },
+    {
       "date": "2026-08-30",
       "tag": "Access",
       "title": "Census tracts now show their town",

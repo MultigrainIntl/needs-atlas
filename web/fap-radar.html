@@ -42,12 +42,13 @@
 
   <div id="list"></div>
 
-  <div class="panel">
-    <h3>What's next for this radar</h3>
-    <p>Federal opportunities that fit an organization this size are limited at any one moment, so this list is intentionally short and precise rather than padded. The larger near-term source of funding for Food Aid Project is <b>philanthropy</b>: private foundations that fund food security, health equity, and civic-tech work. That layer can be built from open IRS 990 data (the same source behind grantmakers.io) — surfacing which foundations give to work like ours, how much, and to whom. Say the word and it gets added here.</p>
-  </div>
+  <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.4rem;letter-spacing:-.02em;margin:34px 0 2px">Foundation prospects</h2>
+  <p class="lead" style="font-size:1rem">Private foundations that fund food security, health equity, and community work — the larger near-term source of funding for an organization this size. Drawn from IRS Form 990-PF data (the source behind grantmakers.io). Foundations rarely post deadlines, so this is about <em>who to build relationships with</em>: open each one's grant history to see who it funds, then confirm current guidelines before reaching out.</p>
+  <div id="foundations"></div>
+  <div id="fseed" class="sub" style="margin-top:14px"></div>
+  <div id="fcav" class="sub"></div>
 
-  <footer id="foot">Food Aid Project, Inc. · Source: Grants.gov · Auto-refreshed weekly</footer>
+  <footer id="foot">Food Aid Project, Inc. · Sources: Grants.gov (federal) + IRS 990-PF via grantmakers.io / ProPublica (foundations)</footer>
 </div>
 
 <script>
@@ -73,6 +74,27 @@
     }).join('');
     const note=data.note?`<div class="grant-meta" style="margin-top:14px;color:var(--ink-faint)">${data.note}</div>`:'';
     list.insertAdjacentHTML('beforeend',note);
+  })();
+
+  // Foundation prospects (independent of the federal feed above)
+  (async ()=>{
+    let F=null;
+    try{ const r=await fetch('foundations.json?x='+Date.now(),{cache:'no-store'}); if(r.ok) F=await r.json(); }catch(e){}
+    const prof=F&&F.profiles&&F.profiles.fap, fb=document.getElementById('foundations');
+    if(!prof||!fb){ if(fb) fb.innerHTML='<div class="grant"><div class="grant-meta">Foundation list unavailable right now.</div></div>'; return; }
+    const fA=m=>m==null?'—':(m>=1000?'$'+(m/1000).toFixed(1)+'B':'$'+m+'M');
+    fb.innerHTML=prof.foundations.map(f=>`<div class="grant"><div class="grant-top">`+
+      `<a class="grant-title" href="${f.gm_url}" target="_blank" rel="noopener">${f.name}</a>`+
+      `<span class="tag">${fA(f.assets_musd)} assets</span></div>`+
+      `<div class="grant-meta">${f.city}, ${f.state} · ${f.geo}</div>`+
+      `<div class="grant-meta"><b>Focus:</b> ${f.focus} · `+
+      `<a href="${f.gm_url}" target="_blank" rel="noopener">Grant history</a> · `+
+      `<a href="${f.pp_url}" target="_blank" rel="noopener">990</a></div></div>`).join('');
+    const seed=document.getElementById('fseed');
+    if(seed) seed.innerHTML='<b>Find more — who funds organizations like us:</b> on grantmakers.io, search by grantee for peers such as '+
+      prof.peers_to_search.map(p=>'“'+p+'”').join(', ')+'. <a href="'+F.grantee_search+'" target="_blank" rel="noopener">Open grantee search →</a>';
+    const cav=document.getElementById('fcav');
+    if(cav) cav.innerHTML='Source: '+F.source+'. '+(F.caveats||[]).join(' ');
   })();
 </script>
 </body>
