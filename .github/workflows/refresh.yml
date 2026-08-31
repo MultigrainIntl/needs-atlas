@@ -53,6 +53,7 @@ jobs:
           cp config/providers.json web/providers.json || true
           cp config/alice.json    web/alice.json      || true
           cp config/maternal.json web/maternal.json   || true
+          cp config/foundations.json web/foundations.json || true
           cp data/*_needs_assessment.md web/ || true
 
       - name: Commit outputs
@@ -61,8 +62,8 @@ jobs:
           git config user.email "atlas-bot@users.noreply.github.com"
           git add -f data/*.docx data/*.md 2>/dev/null || true
           git add -f data/tracts_need.csv data/counties.json 2>/dev/null || true
-          git add -f config/places.json config/food_insecurity.json config/grants.json config/providers.json config/alice.json config/maternal.json 2>/dev/null || true
-          git add -f web/tracts_need.csv web/counties.json web/grants.json web/providers.json web/alice.json web/maternal.json web/tracts.geojson web/counties.geojson 2>/dev/null || true
+          git add -f config/places.json config/food_insecurity.json config/grants.json config/providers.json config/alice.json config/maternal.json config/foundations.json 2>/dev/null || true
+          git add -f web/tracts_need.csv web/counties.json web/grants.json web/providers.json web/alice.json web/maternal.json web/foundations.json web/tracts.geojson web/counties.geojson 2>/dev/null || true
           git add -f web/*_needs_assessment.md 2>/dev/null || true
           git commit -m "data: build $(date -u +%Y-%m-%d)" || echo "no changes"
           git push
