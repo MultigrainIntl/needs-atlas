@@ -1,31 +1,9 @@
 {
   "source": "Grants.gov Search2 API — open federal opportunities for Food Aid Project, Inc.",
   "source_url": "https://www.grants.gov",
-  "pulled": "2026-08-31",
+  "pulled": "2026-09-07",
   "note": "Open federal opportunities matched to Food Aid Project's own mission. Federal NOFOs for an organization this size are limited at any moment; foundation prospecting (IRS 990 data) is a larger near-term source and can be added next. Always verify eligibility on grants.gov.",
   "opportunities": [
-    {
-      "number": "HHS-2026-ACF-OCS-EE-0026",
-      "title": "Community Economic Development Projects",
-      "agency": "Administration for Children and Families - OCS",
-      "close": "2026-09-08",
-      "cfda": "93.570",
-      "themes": [
-        "community-dev"
-      ],
-      "url": "https://www.grants.gov/search-results-detail/362237"
-    },
-    {
-      "number": "HRSA-27-099",
-      "title": "Fiscal Year 2027 Expanding Nutrition Services",
-      "agency": "Health Resources and Services Administration",
-      "close": "2026-09-09",
-      "cfda": "93.224",
-      "themes": [
-        "food-security"
-      ],
-      "url": "https://www.grants.gov/search-results-detail/362823"
-    },
     {
       "number": "USDA-AMS-TM-CCG-G-26-0001",
       "title": "Cold Chain Grants for Emergency Food Assistance",
