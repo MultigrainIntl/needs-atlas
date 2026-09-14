@@ -1,7 +1,7 @@
 {
   "source": "Grants.gov Search2 API — open federal opportunities for Food Aid Project, Inc.",
   "source_url": "https://www.grants.gov",
-  "pulled": "2026-09-07",
+  "pulled": "2026-09-14",
   "note": "Open federal opportunities matched to Food Aid Project's own mission. Federal NOFOs for an organization this size are limited at any moment; foundation prospecting (IRS 990 data) is a larger near-term source and can be added next. Always verify eligibility on grants.gov.",
   "opportunities": [
     {
